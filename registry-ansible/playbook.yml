@@ -1,12 +1,55 @@
 ---
 - name : Build and push greenstand image
-  connection: network_cli
-  gather_facts: false
   hosts: localhost
+  vars:
+    images_and_services:
+    - image: treetracker-mobile-api:latest
+      service: treetracker-mobile-api
   tasks:
     # TODO: Versioning needs to be sorted out here
+    - debug:
+        var: images_and_services
     - name: Tag and push to Greenstand registry
       docker_image:
-        name: treetracker-mobile-api:latest
-        repository: ci.treetracker.org/treetracker-mobile-api:latest
+        name: "{{ item.image }}"
+        repository: "ci.treetracker.org/{{item.image}}"
         push: yes
+        with_items: " {{ images_and_services }} "
+
+
+- name : Copy config to swarm
+  hosts: swarm
+  tasks:
+    # TODO sort out dir
+    - name: make folder
+      file:
+        path: /opt/config
+        state: directory
+        mode: 0755
+    - name: Copy config
+      copy:
+        src: config.js
+        dest: /opt/config/config.js
+        owner: root
+        group: root
+        mode: 0644
+        backup: yes
+        force: yes
+
+- name : Update swarm
+  connection: network_cli
+  hosts: swarm_manager
+  vars:
+    images_and_services:
+    - image: treetracker-mobile-api:latest
+      service: treetracker-mobile-api
+  tasks:
+    - name: Update swarm service
+      docker_swarm_service:
+        name: "{{ item.service }}"
+        image: "ci.treetracker.org/{{item.image}}"
+        mounts:
+        - source: /opt/config
+          target: /opt/config
+        replicas: 2
+      with_items: " {{ images_and_services }} "

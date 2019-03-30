@@ -4,10 +4,14 @@
   hosts: localhost
   vars:
     mobile_api_dir: src/mobile-api
+    mobile_api_dockerfile: TreetrackerMobileApi.Dockerfile
+    admin_api_dir: src/mobile-api
+    admin_api_dockerfile: TreetrackerAdminApi.Dockerfile
   tasks:
     - shell: 'date +"%s"'
       register: timestamp
 
+    # treetracker-mobile-api
     - git:
         repo: git@github.com:Greenstand/treetracker-mobile-api.git
         depth: 1
@@ -21,13 +25,13 @@
         mobile_api_tag: "{{ version }}-{{ timestamp.stdout }}-{{ sha.stdout }}"
 
     - copy:
-        src: docker/TreetrackerMobileApi.Dockerfile
-        dest: "{{ mobile_api_dir }}/TreetrackerMobileApi.Dockerfile"
+        src: "docker/{{ mobile_api_dockerfile }}"
+        dest: "{{ mobile_api_dir }}/{{ mobile_api_dockerfile }}"
 
     - name: Build an image
       docker_image:
         path: "{{ mobile_api_dir }}"
-        dockerfile: TreetrackerMobileApi.Dockerfile
+        dockerfile: "{{ mobile_api_dockerfile }}"
         name: treetracker-mobile-api
         state: present
 
@@ -35,4 +39,35 @@
       docker_image:
         name: treetracker-mobile-api:latest
         tag: "{{ mobile_api_tag }}"
+        state: present
+
+
+    # treetracker-admin-api
+    - git:
+        repo: git@github.com:Greenstand/treetracker-admin.git
+        depth: 1
+        version: "{{ version }}"
+        dest: "{{ admin_api_dir }}"
+
+    - shell: "cd {{ admin_api_dir }}; git rev-parse --short HEAD"
+      register: sha
+
+    - set_fact:
+        admin_api_tag: "{{ version }}-{{ timestamp.stdout }}-{{ sha.stdout }}"
+
+    - copy:
+        src: "docker/{{ admin_api_dockerfile }}"
+        dest: "{{ admin_api_dir }}/{{ admin_api_dockerfile }}"
+
+    - name: Build an image
+      docker_image:
+        path: "{{ admin_api_dir }}/server"
+        dockerfile: "{{ admin_api_dockerfile }}"
+        name: treetracker-admin-api
+        state: present
+
+    - name: Tag this image
+      docker_image:
+        name: treetracker-admin-api:latest
+        tag: "{{ admin_api_tag }}"
         state: present

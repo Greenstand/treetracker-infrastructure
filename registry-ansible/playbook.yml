@@ -1,0 +1,12 @@
+---
+- name : Build and push greenstand image
+  connection: network_cli
+  gather_facts: false
+  hosts: localhost
+  tasks:
+    # TODO: Versioning needs to be sorted out here
+    - name: Tag and push to Greenstand registry
+      docker_image:
+        name: treetracker-mobile-api:latest
+        repository: ci.treetracker.org/treetracker-mobile-api:latest
+        push: yes

@@ -5,20 +5,17 @@
   vars:
     mobile_api_dir: src/mobile-api
   tasks:
-    - shell: "cd {{ mobile_api_dir }}; git rev-parse --short HEAD"
-      register: sha
-
     - shell: 'date +"%s"'
       register: timestamp
-
-    - debug:
-        msg: "{{ sha.stdout }}" 
 
     - git:
         repo: git@github.com:Greenstand/treetracker-mobile-api.git
         depth: 1
         version: "{{ version }}"
         dest: "{{ mobile_api_dir }}"
+
+    - shell: "cd {{ mobile_api_dir }}; git rev-parse --short HEAD"
+      register: sha
 
     - set_fact:
         mobile_api_tag: "{{ version }}-{{ timestamp.stdout }}-{{ sha.stdout }}"

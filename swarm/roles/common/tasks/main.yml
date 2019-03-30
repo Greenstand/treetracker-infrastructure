@@ -1,0 +1,41 @@
+---
+
+- name: Add user 'jon'
+  user:
+    name: jon
+    shell: /bin/bash
+    groups: sudo
+    append: yes
+    state: present
+- name: add public key from GitHub
+  authorized_key:
+    user: jon
+    state: present
+    key: https://github.com/jonleibowitz.keys
+
+- name: enable basic ufw config
+  ufw:
+    rule: limit
+    name: OpenSSH
+    state: enabled
+
+- name: enable tcp ports required for Docker Swarm
+  ufw:
+    rule: allow
+    to_port: '{{ item }}'
+    state: reloaded
+    proto: tcp
+  with_items:
+    - 2376
+    - 2377
+    - 7946
+
+- name: enable udp ports for Docker Swarm
+  ufw:
+    rule: allow
+    to_port: '{{ item }}'
+    state: reloaded
+    proto: udp
+  with_items:
+    - 7946
+    - 4789

@@ -1,18 +1,27 @@
 ---
 
-- name: Add user 'jon'
+- name: Add sudo users
   user:
-    name: jon
+    name: '{{ item }}'
     shell: /bin/bash
     groups: sudo
     append: yes
     state: present
+  with_items:
+    - jon
+    - matt
 - name: add public key from GitHub
   authorized_key:
     user: jon
     state: present
     key: https://github.com/jonleibowitz.keys
 
+- name: add matt's public key
+  authorized_key:
+    user: matt
+    state: present
+    key: https://github.com/mckornfield.keys
+    
 - name: enable basic ufw config
   ufw:
     rule: limit
@@ -26,6 +35,7 @@
     state: reloaded
     proto: tcp
   with_items:
+    - 80
     - 2376
     - 2377
     - 7946

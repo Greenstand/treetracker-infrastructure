@@ -1,0 +1,41 @@
+---
+
+- name: Build docker containers
+  hosts: localhost
+  vars:
+    mobile_api_dir: src/mobile-api
+  tasks:
+    - shell: "cd {{ mobile_api_dir }}; git rev-parse --short HEAD"
+      register: sha
+
+    - shell: 'date +"%s"'
+      register: timestamp
+
+    - debug:
+        msg: "{{ sha.stdout }}" 
+
+    - git:
+        repo: git@github.com:Greenstand/treetracker-mobile-api.git
+        depth: 1
+        version: "{{ version }}"
+        dest: "{{ mobile_api_dir }}"
+
+    - set_fact:
+        mobile_api_tag: "{{ version }}-{{ timestamp.stdout }}-{{ sha.stdout }}"
+
+    - copy:
+        src: docker/TreetrackerMobileApi.Dockerfile
+        dest: "{{ mobile_api_dir }}/TreetrackerMobileApi.Dockerfile"
+
+    - name: Build an image
+      docker_image:
+        path: "{{ mobile_api_dir }}"
+        dockerfile: TreetrackerMobileApi.Dockerfile
+        name: treetracker-mobile-api
+        state: present
+
+    - name: Tag this image
+      docker_image:
+        name: treetracker-mobile-api:latest
+        tag: "{{ mobile_api_tag }}"
+        state: present

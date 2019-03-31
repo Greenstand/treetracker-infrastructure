@@ -92,16 +92,26 @@
         force: yes
 
 - name : Update swarm
-  connection: network_cli
   hosts: swarm_manager
-  vars:
-    images_and_services:
-    - image: treetracker-mobile-api:latest
-      service: treetracker-mobile-api
-    - image: treetracker-admin-api:latest
-      service: treetracker-admin-api
   tasks:
+    - name: Install docker python
+      tags: swarm_update
+      apt:
+        name: python3-docker
+        state: present
+    - name: Install pip
+      tags: swarm_update
+      apt:
+        name: python3-pip
+        state: present
+    - name: Install docker python
+      tags: swarm_update
+      pip:
+        name:
+        - docker>=3.7.2
+        - request>=2.20.1
     - name: Update swarm service
+      tags: swarm_update
       docker_swarm_service:
         name: "{{ item.service }}"
         image: "ci.treetracker.org/{{item.image}}"
@@ -109,4 +119,8 @@
         - source: /opt/config
           target: /opt/config
         replicas: 2
-      with_items: " {{ images_and_services }} "
+      with_items:
+        - image: ci.treetracker.org/treetracker-mobile-api:latest
+          service: treetracker-mobile-api
+        - image: ci.treetracker.org/treetracker-admin-api:latest
+          service: treetracker-admin-api

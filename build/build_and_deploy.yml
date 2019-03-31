@@ -81,13 +81,16 @@
         mode: 0755
     - name: Copy config
       copy:
-        src: config.js
-        dest: /opt/config/config.js
+        src: "{{item}}"
+        dest: "/opt/config/{{item}}"
         owner: root
         group: root
         mode: 0644
         backup: yes
         force: yes
+      with_items:
+      - config.js
+      - datasources.json
     - name: Install docker python
       apt:
         name: python3-docker
@@ -116,6 +119,9 @@
       docker_swarm_service:
         name: "{{ item.service }}"
         image: "{{item.image}}"
+        publish:
+        - published_port: "{{item.published_port}}"
+          target_port: "{{item.internal_port}}"
         force_update: yes
         mounts:
         - source: /opt/config
@@ -124,5 +130,9 @@
       with_items:
         - image: ci.treetracker.org/treetracker-mobile-api:latest
           service: treetracker-mobile-api
+          published_port: 3000
+          internal_port: 3000
         - image: ci.treetracker.org/treetracker-admin-api:latest
           service: treetracker-admin-api
+          published_port: 3001 # can be changed
+          internal_port: 3000

@@ -4,4 +4,4 @@ if [[ -z "$1" ]]; then
   exit 1
 fi
 
-ansible-playbook build_and_deploy.yml -e "version="$1
+ansible-playbook build_and_deploy.yml -e "version="$1 -i hosts

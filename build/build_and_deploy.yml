@@ -5,7 +5,7 @@
   vars:
     mobile_api_dir: src/mobile-api
     mobile_api_dockerfile: TreetrackerMobileApi.Dockerfile
-    admin_api_dir: src/mobile-api
+    admin_api_dir: src/admin-api
     admin_api_dockerfile: TreetrackerAdminApi.Dockerfile
   tasks:
     - shell: 'date +"%s"'
@@ -21,24 +21,14 @@
     - shell: "cd {{ mobile_api_dir }}; git rev-parse --short HEAD"
       register: sha
 
-    - set_fact:
-        mobile_api_tag: "{{ version }}-{{ timestamp.stdout }}-{{ sha.stdout }}"
-
     - copy:
         src: "docker/{{ mobile_api_dockerfile }}"
-        dest: "{{ mobile_api_dir }}/{{ mobile_api_dockerfile }}"
+        dest: "{{ mobile_api_dir }}/Dockerfile"
 
-    - name: Build an image
+    - name: Build mobile api image
       docker_image:
         path: "{{ mobile_api_dir }}"
-        dockerfile: "{{ mobile_api_dockerfile }}"
         name: treetracker-mobile-api
-        state: present
-
-    - name: Tag this image
-      docker_image:
-        name: treetracker-mobile-api:latest
-        tag: "{{ mobile_api_tag }}"
         state: present
 
 
@@ -52,44 +42,35 @@
     - shell: "cd {{ admin_api_dir }}; git rev-parse --short HEAD"
       register: sha
 
-    - set_fact:
-        admin_api_tag: "{{ version }}-{{ timestamp.stdout }}-{{ sha.stdout }}"
-
     - copy:
         src: "docker/{{ admin_api_dockerfile }}"
-        dest: "{{ admin_api_dir }}/{{ admin_api_dockerfile }}"
+        dest: "{{ admin_api_dir }}/Dockerfile"
 
-    - name: Build an image
-      docker_image:
-        path: "{{ admin_api_dir }}/server"
-        dockerfile: "{{ admin_api_dockerfile }}"
-        name: treetracker-admin-api
-        state: present
-
-    - name: Tag this image
-      docker_image:
-        name: treetracker-admin-api:latest
-        tag: "{{ admin_api_tag }}"
-        state: present
 
 - name : Build and push greenstand image
   hosts: localhost
-  vars:
-    images_to_push:
-    - image: treetracker-mobile-api:latest
-    - image: treetracker-admin-api:latest
-    - image: "treetracker-admin-api:{{admin_api_tag}}"
-    - image: "treetracker-mobile-api:{{admin_mobile_tag}}"
 
   tasks:
-    - debug:
-        var: images_and_services
+    - set_fact:
+        mobile_api_tag: "{{ version }}-{{ timestamp.stdout }}-{{ sha.stdout }}"
+
+    - set_fact:
+        admin_api_tag: "{{ version }}-{{ timestamp.stdout }}-{{ sha.stdout }}"
+
     - name: Tag and push to Greenstand registry
       docker_image:
         name: "{{ item.image }}"
-        repository: "ci.treetracker.org/{{item.image}}"
+        repository: "{{item.tag}}"
         push: yes
-        with_items: " {{ images_to_push }} "
+      with_items:
+      - image: treetracker-mobile-api:latest
+        tag: ci.treetracker.org/treetracker-mobile-api:latest
+      - image: treetracker-mobile-api:latest
+        tag: "ci.treetracker.org/treetracker-mobile-api:{{mobile_api_tag}}"
+      - image: treetracker-admin-api:latest
+        tag: ci.treetracker.org/treetracker-admin-api:latest
+      - image: treetracker-admin-api:latest
+        tag: "ci.treetracker.org/treetracker-admin-api{{admin_api_tag}}"
 
 
 - name : Copy config to swarm

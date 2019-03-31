@@ -5,7 +5,7 @@ RUN mkdir -p $DIR
 
 COPY server/ $DIR/server
 COPY common/ $DIR/common
-COPY package*.json index.js $DIR
+COPY package*.json $DIR
 
 WORKDIR $DIR
 RUN npm install

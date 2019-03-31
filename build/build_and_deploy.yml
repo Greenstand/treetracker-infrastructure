@@ -7,6 +7,7 @@
     mobile_api_dockerfile: TreetrackerMobileApi.Dockerfile
     admin_api_dir: src/admin-api
     admin_api_dockerfile: TreetrackerAdminApi.Dockerfile
+    registry_url: ci.treetracker.org
   tasks:
     - shell: 'date +"%s"'
       register: timestamp
@@ -25,13 +26,20 @@
         src: "docker/{{ mobile_api_dockerfile }}"
         dest: "{{ mobile_api_dir }}/Dockerfile"
 
+    - set_fact:
+        mobile_api_tag: "{{ version }}-{{ timestamp.stdout }}-{{ sha.stdout }}"
+
     - name: Build mobile api image
       docker_image:
         path: "{{ mobile_api_dir }}"
-        name: treetracker-mobile-api
+        name: "{{registry_url}}/treetracker-mobile-api"
+        tag: "{{item}}"
         state: present
+        push: yes
         force: yes
-
+      with_items:
+      - latest
+      - "{{mobile_api_tag}}"
 
     # treetracker-admin-api
     - git:
@@ -47,38 +55,20 @@
         src: "docker/{{ admin_api_dockerfile }}"
         dest: "{{ admin_api_dir }}/Dockerfile"
 
-    - name: Build admin api image
-      docker_image:
-        path: "{{ admin_api_dir }}"
-        name: treetracker-admin-api
-        state: present
-        force: yes
-
-
-- name : Build and push greenstand image
-  hosts: localhost
-
-  tasks:
-    - set_fact:
-        mobile_api_tag: "{{ version }}-{{ timestamp.stdout }}-{{ sha.stdout }}"
-
     - set_fact:
         admin_api_tag: "{{ version }}-{{ timestamp.stdout }}-{{ sha.stdout }}"
 
-    - name: Tag and push to Greenstand registry
+    - name: Build admin api image and push
       docker_image:
-        name: "{{ item.image }}"
-        repository: "{{item.tag}}"
+        path: "{{ admin_api_dir }}"
+        name: "{{registry_url}}/treetracker-admin-api"
+        tag: "{{item}}"
+        state: present
         push: yes
+        force: yes
       with_items:
-      - image: treetracker-mobile-api:latest
-        tag: ci.treetracker.org/treetracker-mobile-api:latest
-      - image: treetracker-mobile-api:latest
-        tag: "ci.treetracker.org/treetracker-mobile-api:{{mobile_api_tag}}"
-      - image: treetracker-admin-api:latest
-        tag: ci.treetracker.org/treetracker-admin-api:latest
-      - image: treetracker-admin-api:latest
-        tag: "ci.treetracker.org/treetracker-admin-api:{{admin_api_tag}}"
+      - latest
+      - "{{admin_api_tag}}"
 
 
 - name : Copy config to swarm
@@ -98,10 +88,6 @@
         mode: 0644
         backup: yes
         force: yes
-
-- name : Update swarm
-  hosts: swarm_manager
-  tasks:
     - name: Install docker python
       apt:
         name: python3-docker
@@ -115,6 +101,16 @@
         name:
         - docker>=3.7.2
         - request>=2.20.1
+    - name: Pull new images
+      docker_image:
+        name: "{{item}}"
+      with_items:
+      - ci.treetracker.org/treetracker-mobile-api:latest
+      - ci.treetracker.org/treetracker-admin-api:latest
+
+- name : Update swarm
+  hosts: swarm_manager
+  tasks:
     - name: Update swarm service
       tags: swarm_update
       docker_swarm_service:
@@ -123,7 +119,7 @@
         force_update: yes
         mounts:
         - source: /opt/config
-          target: /opt/config
+          target: /opt/server/config
         replicas: 2
       with_items:
         - image: ci.treetracker.org/treetracker-mobile-api:latest

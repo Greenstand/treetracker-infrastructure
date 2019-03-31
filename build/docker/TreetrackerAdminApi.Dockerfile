@@ -10,4 +10,4 @@ COPY package*.json $DIR
 WORKDIR $DIR
 RUN npm install
 
-ENTRYPOINT while true; do sleep 2; date; done
+ENTRYPOINT node server/server.js

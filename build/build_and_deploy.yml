@@ -95,17 +95,14 @@
   hosts: swarm_manager
   tasks:
     - name: Install docker python
-      tags: swarm_update
       apt:
         name: python3-docker
         state: present
     - name: Install pip
-      tags: swarm_update
       apt:
         name: python3-pip
         state: present
     - name: Install docker python
-      tags: swarm_update
       pip:
         name:
         - docker>=3.7.2
@@ -114,7 +111,8 @@
       tags: swarm_update
       docker_swarm_service:
         name: "{{ item.service }}"
-        image: "ci.treetracker.org/{{item.image}}"
+        image: "{{item.image}}"
+        force_update: yes
         mounts:
         - source: /opt/config
           target: /opt/config

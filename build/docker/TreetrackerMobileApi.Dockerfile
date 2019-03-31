@@ -9,4 +9,4 @@ COPY package*.json index.js $DIR
 WORKDIR $DIR
 RUN npm install
 
-ENTRYPOINT node index.js
+ENTRYPOINT while true; do sleep 2; date; done

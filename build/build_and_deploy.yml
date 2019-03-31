@@ -30,6 +30,7 @@
         path: "{{ mobile_api_dir }}"
         name: treetracker-mobile-api
         state: present
+        force: yes
 
 
     # treetracker-admin-api
@@ -45,6 +46,13 @@
     - copy:
         src: "docker/{{ admin_api_dockerfile }}"
         dest: "{{ admin_api_dir }}/Dockerfile"
+
+    - name: Build admin api image
+      docker_image:
+        path: "{{ admin_api_dir }}"
+        name: treetracker-admin-api
+        state: present
+        force: yes
 
 
 - name : Build and push greenstand image
@@ -70,7 +78,7 @@
       - image: treetracker-admin-api:latest
         tag: ci.treetracker.org/treetracker-admin-api:latest
       - image: treetracker-admin-api:latest
-        tag: "ci.treetracker.org/treetracker-admin-api{{admin_api_tag}}"
+        tag: "ci.treetracker.org/treetracker-admin-api:{{admin_api_tag}}"
 
 
 - name : Copy config to swarm

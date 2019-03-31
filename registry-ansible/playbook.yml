@@ -9,12 +9,12 @@
     # TODO: Versioning needs to be sorted out here
     - debug:
         var: images_and_services
-        #- name: Tag and push to Greenstand registry
-      #      docker_image:
-      # name: "{{ item.image }}"
-      #j  repository: "ci.treetracker.org/{{item.image}}"
-      #  push: yes
-      #with_items: " {{ images_and_services }} "
+    - name: Tag and push to Greenstand registry
+      docker_image:
+        name: "{{ item.image }}"
+        repository: "ci.treetracker.org/{{item.image}}"
+        push: yes
+        with_items: " {{ images_and_services }} "
 
 
 - name : Copy config to swarm

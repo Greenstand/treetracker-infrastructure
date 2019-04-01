@@ -1,0 +1,87 @@
+---
+
+- name: Build docker containers
+  hosts: localhost
+  vars:
+    mobile_api_dir: src/mobile-api
+    mobile_api_dockerfile: files/TreetrackerMobileApi.Dockerfile
+    admin_api_dir: src/admin-api
+    admin_api_dockerfile: TreetrackerAdminApi.Dockerfile
+    registry_url: ci.treetracker.org
+  tasks:
+    - shell: 'date +"%s"'
+      register: timestamp
+
+    # TODO: fight with this
+    - file:
+        state: directory
+        name: src
+
+    # treetracker-mobile-api
+    - git:
+      tags: mobile-api
+        repo: git@github.com:Greenstand/treetracker-mobile-api.git
+        depth: 1
+        version: "{{ version }}"
+        dest: "{{ mobile_api_dir }}"
+
+    - shell: "cd {{ mobile_api_dir }}; git rev-parse --short HEAD"
+      tags: mobile-api
+      register: sha
+
+    - copy:
+      tags: mobile-api
+        src: "docker/{{ mobile_api_dockerfile }}"
+        dest: "{{ mobile_api_dir }}/Dockerfile"
+
+    - set_fact:
+      tags: mobile-api
+        mobile_api_tag: "{{ version }}-{{ timestamp.stdout }}-{{ sha.stdout }}"
+
+    - name: Build mobile api image
+      tags: mobile-api
+      docker_image:
+        path: "{{ mobile_api_dir }}"
+        name: "{{registry_url}}/treetracker-mobile-api"
+        tag: "{{item}}"
+        state: present
+        push: yes
+        force: yes
+      with_items:
+      - latest
+      - "{{mobile_api_tag}}"
+
+    # treetracker-admin-api
+    - name: build admin-api
+      tags: admin-api
+      git:
+        repo: git@github.com:Greenstand/treetracker-admin.git
+        depth: 1
+        version: "{{ version }}"
+        dest: "{{ admin_api_dir }}"
+
+    - shell: "cd {{ admin_api_dir }}; git rev-parse --short HEAD"
+      tags: admin-api
+      register: sha
+
+    - copy:
+      tags: admin-api
+        src: "docker/{{ admin_api_dockerfile }}"
+        dest: "{{ admin_api_dir }}/Dockerfile"
+
+    - set_fact:
+      tags: admin-api
+        admin_api_tag: "{{ version }}-{{ timestamp.stdout }}-{{ sha.stdout }}"
+
+    - name: Build admin api image and push
+      tags: admin-api
+      docker_image:
+        path: "{{ admin_api_dir }}"
+        name: "{{registry_url}}/treetracker-admin-api"
+        tag: "{{item}}"
+        state: present
+        push: yes
+        force: yes
+      with_items:
+      - latest
+      - "{{admin_api_tag}}"

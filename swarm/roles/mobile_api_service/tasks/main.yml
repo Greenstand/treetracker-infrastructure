@@ -10,5 +10,5 @@
     force_update: yes
     mounts:
     - source: /opt/config
-      target: /opt/server/config
+      target: "{{config_folder}}"
     replicas: 2

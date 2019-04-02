@@ -1,6 +1,6 @@
 
 ---
-- hosts: localhost
+- hosts: localhost-py3
   roles:
     - admin_api_build
 
@@ -9,7 +9,7 @@
   roles:
     - admin_api_service
 
-- hosts: localhost
+- hosts: localhost-py3
   roles:
     - mobile_api_build
 

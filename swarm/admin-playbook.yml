@@ -1,5 +1,5 @@
 ---
-- hosts: localhost
+- hosts: localhost-py3
   roles:
     - admin_api_build
 

@@ -1,5 +1,5 @@
 ---
-- hosts: localhost
+- hosts: localhost-py3
   roles:
     - mobile_api_build
 

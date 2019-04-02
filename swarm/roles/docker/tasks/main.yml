@@ -24,6 +24,9 @@
     state: directory
     mode: 0755
 # TODO: Need to warn if configs aren't available
+- stat:
+    path: config.js
+  register: file_details
 - name: Copy config
   copy:
     src: "{{item}}"
@@ -36,3 +39,4 @@
   with_items:
   - config.js
   - datasources.json
+  when: file_details.stat.exists == True

@@ -1,0 +1,19 @@
+
+---
+- hosts: localhost
+  roles:
+    - admin_api_build
+
+- hosts: swarm_single
+  remote_user: root
+  roles:
+    - admin_api_service
+
+- hosts: localhost
+  roles:
+    - mobile_api_build
+
+- hosts: swarm_single
+  remote_user: root
+  roles:
+    - mobile_api_service

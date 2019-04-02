@@ -10,6 +10,7 @@
   with_items:
     - jon
     - matt
+    - zaven
 - name: add public key from GitHub
   authorized_key:
     user: jon
@@ -21,7 +22,21 @@
     user: matt
     state: present
     key: https://github.com/mckornfield.keys
-    
+
+- name: add zaven's public key
+  authorized_key:
+    user: zaven
+    state: present
+    key: https://github.com/deepwinter.keys
+
+- name: enable passwordless sudo
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^%sudo'
+    line: '%sudo ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+
 - name: enable basic ufw config
   ufw:
     rule: limit
@@ -35,7 +50,6 @@
     state: reloaded
     proto: tcp
   with_items:
-    - 80
     - 2376
     - 2377
     - 7946

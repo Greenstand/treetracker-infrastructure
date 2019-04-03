@@ -1,4 +1,10 @@
+localhost-py3 ansible_host=localhost ansible_connection=local ansible_python_interpreter=/usr/bin/python3
+
 [swarm]
 manager1 ansible_host="134.209.41.252" ansible_python_interpreter=python3
 manager2 ansible_host="165.227.211.150" ansible_python_interpreter=python3
 manager3 ansible_host="165.227.210.130" ansible_python_interpreter=python3
+
+[swarm_single]
+manager1 ansible_host="134.209.41.252" ansible_python_interpreter=python3
+

@@ -1,0 +1,6 @@
+---
+image: ci.treetracker.org/treetracker-mobile-api:latest
+service: treetracker-mobile-api
+published_port: 3000
+internal_port: 3000
+config_folder: /opt/server/config

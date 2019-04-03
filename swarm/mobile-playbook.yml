@@ -1,0 +1,9 @@
+---
+- hosts: localhost-py3
+  roles:
+    - mobile_api_build
+
+- hosts: swarm_single
+  remote_user: root
+  roles:
+    - mobile_api_service

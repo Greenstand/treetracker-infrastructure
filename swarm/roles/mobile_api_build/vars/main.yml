@@ -1,0 +1,6 @@
+---
+build_dir: src/mobile-api
+dockerfile: TreetrackerMobileApi.Dockerfile
+repo: https://github.com/Greenstand/treetracker-mobile-api.git
+registry_url: ci.treetracker.org
+image_name: treetracker-mobile-api

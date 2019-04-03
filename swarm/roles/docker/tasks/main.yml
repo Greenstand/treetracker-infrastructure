@@ -9,6 +9,34 @@
 
 - name: Install list of packages
   apt:
-    name: ['apt-transport-https','ca-certificates','curl','software-properties-common','docker-ce']
+    name: ['apt-transport-https','ca-certificates','curl','software-properties-common','docker-ce','python3-docker','python3-pip']
     state: present
     update_cache: yes
+- name: Install docker python
+  pip:
+    name:
+    - docker>=3.7.2
+    - request>=2.20.1
+# TODO: Create docker user to associate folders with
+- name: make folder for config
+  file:
+    path: /opt/config
+    state: directory
+    mode: 0755
+# TODO: Need to warn if configs aren't available
+- stat:
+    path: config.js
+  register: file_details
+- name: Copy config
+  copy:
+    src: "{{item}}"
+    dest: "/opt/config/{{item}}"
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+    force: yes
+  with_items:
+  - config.js
+  - datasources.json
+  when: file_details.stat.exists == True

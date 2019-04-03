@@ -1,5 +1,4 @@
 ---
-
 - name: Add sudo users
   user:
     name: '{{ item }}'
@@ -63,3 +62,4 @@
   with_items:
     - 7946
     - 4789
+

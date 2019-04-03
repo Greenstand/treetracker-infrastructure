@@ -1,0 +1,7 @@
+---
+image: ci.treetracker.org/treetracker-admin-api:latest
+service: treetracker-admin-api
+published_port: 3001
+internal_port: 3000
+ansible_python_interpreter: python3
+config_folder: /opt/admin-api-server

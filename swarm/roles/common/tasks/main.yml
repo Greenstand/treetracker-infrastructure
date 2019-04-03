@@ -36,30 +36,25 @@
     line: '%sudo ALL=(ALL) NOPASSWD: ALL'
     validate: 'visudo -cf %s'
 
+- name: Disallow password authentication
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^PasswordAuthentication"
+    line: "PasswordAuthentication no"
+    state: present
+  notify: Restart ssh
+
+- name: PermitRootLogin hardening
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^PermitRootLogin"
+    line: "PermitRootLogin without-password"
+    state: present
+  notify: Restart ssh
+
 - name: enable basic ufw config
   ufw:
     rule: limit
     name: OpenSSH
     state: enabled
-
-- name: enable tcp ports required for Docker Swarm
-  ufw:
-    rule: allow
-    to_port: '{{ item }}'
-    state: reloaded
-    proto: tcp
-  with_items:
-    - 2376
-    - 2377
-    - 7946
-
-- name: enable udp ports for Docker Swarm
-  ufw:
-    rule: allow
-    to_port: '{{ item }}'
-    state: reloaded
-    proto: udp
-  with_items:
-    - 7946
-    - 4789
 

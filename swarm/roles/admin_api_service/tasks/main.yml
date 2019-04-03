@@ -9,6 +9,6 @@
       target_port: "{{internal_port}}"
     force_update: yes
     mounts:
-    - source: /opt/config
-      target: "{{config_folder}}"
+    - source: /opt/config/datasources.json
+      target: /opt/server/server/datasources.json
     replicas: 2

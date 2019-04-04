@@ -1,10 +1,10 @@
 ---
 - hosts: localhost-py3
   roles:
-    - web_map_content_build
+  - web_map_content_build
 
-      #- hosts: swarm_single
-      #  remote_user: root
-      #  roles:
-      #    - web_map_api_service
-      #
+- hosts: swarm_single
+  remote_user: root
+  roles:
+  - web_map_content_service
+

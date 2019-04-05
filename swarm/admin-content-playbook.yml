@@ -1,9 +1,0 @@
----
-- hosts: localhost-py3
-  roles:
-    - admin_content_build
-
-- hosts: swarm_single
-  remote_user: root
-  roles:
-    - admin_content_service

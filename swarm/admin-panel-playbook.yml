@@ -1,0 +1,9 @@
+---
+- hosts: localhost-py3
+  roles:
+    - admin_panel_build
+
+      #- hosts: swarm_single
+      #  remote_user: root
+      #  roles:
+      #    - admin_panel_service

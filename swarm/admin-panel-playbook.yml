@@ -3,7 +3,7 @@
   roles:
     - admin_panel_build
 
-      #- hosts: swarm_single
-      #  remote_user: root
-      #  roles:
-      #    - admin_panel_service
+- hosts: swarm_single
+  remote_user: root
+  roles:
+    - admin_panel_service

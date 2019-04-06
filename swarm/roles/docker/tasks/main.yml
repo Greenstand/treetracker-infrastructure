@@ -90,3 +90,18 @@
   with_items:
   - web-map-config.js
   when: file_details.stat.exists == True
+
+- local_action: stat path="{{ role_path }}/files/prod-nginx.conf"
+  register: file_details
+- name: Copy datasources
+  copy:
+    src: "{{item}}"
+    dest: "/opt/config/{{item}}"
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+    force: yes
+  with_items:
+  - prod-nginx.conf
+  when: file_details.stat.exists == True

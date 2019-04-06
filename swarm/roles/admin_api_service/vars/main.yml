@@ -1,5 +1,5 @@
 ---
 image: ci.treetracker.org/treetracker-admin-api:latest
 service: treetracker-admin-api
-published_port: 3001
+published_port: 3002
 internal_port: 3000

@@ -1,5 +1,5 @@
 ---
 image: ci.treetracker.org/treetracker-admin-panel:latest
 service: treetracker-admin-panel
-published_port: 8082
+published_port: 8081
 internal_port: 3000

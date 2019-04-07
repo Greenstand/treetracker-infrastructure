@@ -8,7 +8,4 @@
     - published_port: "{{published_port}}"
       target_port: "{{internal_port}}"
     force_update: yes
-    mounts:
-    - source: /opt/config
-      target: /opt/admin-api-server/server/config
     replicas: 2

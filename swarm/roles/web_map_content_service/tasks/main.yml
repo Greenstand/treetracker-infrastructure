@@ -9,6 +9,6 @@
       target_port: "{{internal_port}}"
     force_update: yes
     mounts:
-    - source: /opt/config
-      target: /opt/admin-api-server/server/config
+    - source: /opt/config/web-map-config.js
+      target: /var/www/js/config.js
     replicas: 2

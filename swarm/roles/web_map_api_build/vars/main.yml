@@ -1,0 +1,6 @@
+---
+build_dir: src/web-map
+dockerfile: TreetrackerWebMapApi.Dockerfile
+repo: https://github.com/Greenstand/treetracker-web-map.git
+registry_url: ci.treetracker.org
+image_name: treetracker-web-map-api

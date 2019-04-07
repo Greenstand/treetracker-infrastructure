@@ -1,13 +1,12 @@
 FROM node:8.12-slim
 
-ENV DIR /opt/server/
+ENV DIR /opt/admin-api-server
 RUN mkdir -p $DIR
 
-COPY server/ $DIR/server
-COPY common/ $DIR/common
-COPY package*.json $DIR
+COPY server $DIR
 
 WORKDIR $DIR
-RUN npm install
+RUN npm install supervisor -g \
+  && npm install
 
 ENTRYPOINT node server/server.js

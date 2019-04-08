@@ -2,14 +2,6 @@
 - hosts: swarm
   remote_user: root
 
-  vars:
-    github_users:
-      - name: jonleibowitz
-        groups: sudo,docker
-      - name: mckornfield
-        groups: sudo, docker
-      - name: deepwinter
-        groups: sudo, docker
   roles:
     - docker
     - users

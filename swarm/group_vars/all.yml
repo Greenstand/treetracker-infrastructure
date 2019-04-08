@@ -2,3 +2,10 @@
 any_errors_fatal: True
 max_fail_percentage: 0
 version: deploy.1
+github_users:
+  - name: jonleibowitz
+    groups: sudo,docker
+  - name: mckornfield
+    groups: sudo, docker
+  - name: deepwinter
+    groups: sudo, docker

@@ -1,11 +1,18 @@
 FROM node:8.12-slim
 
-ENV DIR /opt/admin-web
-RUN mkdir -p ${DIR}/
+ENV DIR /opt/build
+
+RUN mkdir -p $DIR
+COPY client/ $DIR
 
 WORKDIR $DIR
 
-COPY client/ $DIR
-RUN npm install
+RUN npm install \
+  && npm run build
 
-ENTRYPOINT npm start
+FROM nginx:1.15.10
+
+ENV DIR /var/www/admin
+
+RUN mkdir -p $DIR
+COPY --from=0 /opt/build $DIR

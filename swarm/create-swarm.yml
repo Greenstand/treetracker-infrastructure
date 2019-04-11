@@ -6,3 +6,4 @@
     - docker
     - users
     - common
+    - config_files

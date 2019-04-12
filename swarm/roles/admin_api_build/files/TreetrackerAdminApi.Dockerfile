@@ -6,7 +6,6 @@ RUN mkdir -p $DIR
 COPY server $DIR
 
 WORKDIR $DIR
-RUN npm install supervisor -g \
-  && npm install
+RUN npm install
 
 ENTRYPOINT node server/server.js

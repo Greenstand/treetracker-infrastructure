@@ -24,10 +24,25 @@
     src: "{{ dockerfile }}"
     dest: "{{ build_dir }}/Dockerfile"
 
-- tags: build
-  name: generate tag
+- name: copy Nginx conf
+  tags: build
+  copy:
+    src: nginx.conf
+    dest: "{{ build_dir}}/nginx.conf"
+
+- name: generate tag
+  tags: build
   set_fact:
     tag: "{{ version }}-{{ timestamp.stdout }}-{{ sha.stdout }}"
+
+- name: Run npm install in client folder
+  tags: build
+  npm:
+    path: "{{build_dir}}/client"
+
+- name: Run npm build in client folder
+  shell: "cd {{ build_dir }}/client; export REACT_APP_API_BASE_URL=api/admin ;npm run build"
+  tags: build
 
 - name: Build {{image_name}} image and push
   tags: build

@@ -6,6 +6,7 @@
     mode: 0755
 # TODO: Need to warn if configs aren't available
 - local_action: stat path="{{ role_path }}/files/config.js"
+  become: no
   register: file_details
 - name: Copy config
   copy:
@@ -21,6 +22,7 @@
   when: file_details.stat.exists == True
 
 - local_action: stat path="{{ role_path }}/files/datasources.json"
+  become: no
   register: file_details
 - name: Copy datasources
   copy:
@@ -36,6 +38,7 @@
   when: file_details.stat.exists == True
 
 - local_action: stat path="{{ role_path }}/files/web-map-config.js"
+  become: no
   register: file_details
 - name: Copy web map config
   copy:
@@ -51,6 +54,7 @@
   when: file_details.stat.exists == True
 
 - local_action: stat path="{{ role_path }}/files/prod-nginx.conf"
+  become: no
   register: file_details
 - name: Copy datasources
   copy:

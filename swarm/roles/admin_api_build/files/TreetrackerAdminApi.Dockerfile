@@ -8,4 +8,6 @@ COPY server $DIR
 WORKDIR $DIR
 RUN npm install
 
-ENTRYPOINT node server/server.js
+WORKDIR ${DIR}/server
+
+ENTRYPOINT node server.js

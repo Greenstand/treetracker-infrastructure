@@ -1,0 +1,9 @@
+---
+- hosts: swarm
+  roles:
+    - config_files
+
+- hosts: swarm_single
+  remote_user: root
+  roles:
+    - reverse_proxy_service

@@ -1,0 +1,16 @@
+- name: Update swarm service
+  tags: swarm_update
+  #TODO Make this a yaml file and commit instead
+  docker_swarm_service:
+    name: reverse-proxy
+    image: nginx:1.15.10
+    publish:
+    - published_port: 80
+      target_port: 80
+    - published_port: 443
+      target_port: 443
+    force_update: yes
+    mounts:
+    - source: /opt/config/
+      target: /etc/nginx/conf.d
+    mode: global

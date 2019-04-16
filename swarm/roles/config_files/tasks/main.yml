@@ -56,7 +56,7 @@
 - local_action: stat path="{{ role_path }}/files/prod-nginx.conf"
   become: no
   register: file_details
-- name: Copy datasources
+- name: Copy nginx config
   copy:
     src: "{{item}}"
     dest: "/opt/config/{{item}}"

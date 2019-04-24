@@ -1,2 +1,73 @@
 - name: disable reverse proxy
-  shell: docker service rm reverse-proxy
+  shell: docker service rm reverse-proxy || echo 0
+
+- name: create folders
+  file:
+    path: "{{item}}"
+    state: directory
+    mode: 0755
+  with_items:
+  - /opt/certbot/nginx
+  - /opt/certbot/conf
+  - /opt/certbot/www
+
+- name: Copy up nginx conf for cert retrieval
+  copy:
+    src: challenge-nginx.conf
+    dest: /opt/certbot/nginx/challenge-nginx.conf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+    force: yes
+
+- name: Get hostname of current node
+  shell: "{% raw %} docker node inspect self --format '{{ .Description.Hostname}}' {% endraw %}"
+  register: hostname
+
+- name: Add certbot service and run
+  docker_swarm_service:
+    name: certbot-runner
+    image: certbot/certbot
+    replicas: 1
+    constraints:
+    - "node.hostname == {{hostname.stdout}}"
+    publish:
+    - published_port: 80
+      target_port: 80
+    - published_port: 443
+      target_port: 443
+    mounts:
+    - source: /opt/certbot/conf
+      target: /etc/letsencrypt
+    - source: /opt/certbot/www
+      target: /var/www/certbot
+    args:
+      - "certonly"
+      - "--standalone"
+      - "--register-unsafely-without-email"
+      - "--agree-tos"
+      - "-d"
+      - "{{domain}}"
+
+- name: Slurp fullchain.pem
+  slurp:
+    src: "/opt/certbot/conf/live/{{domain}}/fullchain.pem"
+  register: fullchain_content
+
+- name: Create secret out of fullchain.pem
+  docker_secret:
+    name: fullchain.pem
+    data: "{{fullchain_content['content']}}"
+    state: present
+
+- name: Slurp privkey.pem
+  slurp:
+    src: "/opt/certbot/conf/live/{{domain}}/fullchain.pem"
+  register: privkey_content
+
+- name: Create secret out of privkey.pem
+  docker_secret:
+    name: privkey.pem
+    data: "{{privkey_content['content']}}"
+    state: present

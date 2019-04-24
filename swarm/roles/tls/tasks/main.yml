@@ -11,63 +11,61 @@
   - /opt/certbot/conf
   - /opt/certbot/www
 
-- name: Copy up nginx conf for cert retrieval
-  copy:
-    src: challenge-nginx.conf
-    dest: /opt/certbot/nginx/challenge-nginx.conf
-    owner: root
-    group: root
-    mode: 0644
-    backup: yes
-    force: yes
-
 - name: Get hostname of current node
   shell: "{% raw %} docker node inspect self --format '{{ .Description.Hostname}}' {% endraw %}"
   register: hostname
 
-- name: Add certbot service and run
-  docker_swarm_service:
-    name: certbot-runner
-    image: certbot/certbot
-    replicas: 1
-    constraints:
-    - "node.hostname == {{hostname.stdout}}"
-    publish:
-    - published_port: 80
-      target_port: 80
-    - published_port: 443
-      target_port: 443
-    mounts:
-    - source: /opt/certbot/conf
-      target: /etc/letsencrypt
-    - source: /opt/certbot/www
-      target: /var/www/certbot
-    args:
-      - "certonly"
-      - "--standalone"
-      - "--register-unsafely-without-email"
-      - "--agree-tos"
-      - "-d"
-      - "{{domain}}"
-
+  #- name: Add certbot service and run
+  #  tags: retrieve
+  #  docker_swarm_service:
+  #    name: certbot-runner
+  #    image: certbot/certbot
+  #    replicas: 1
+  #    constraints:
+  #    - "node.hostname == {{hostname.stdout}}"
+  #    publish:
+  #    - published_port: 80
+  #      target_port: 80
+  #    - published_port: 443
+  #      target_port: 443
+  #    mounts:
+  #    - source: /opt/certbot/conf
+  #      target: /etc/letsencrypt
+  #    - source: /opt/certbot/www
+  #      target: /var/www/certbot
+  #    args:
+  #      - "certonly"
+  #      - "--standalone"
+  #      - "--register-unsafely-without-email"
+  #      - "--agree-tos"
+  #      - "-d"
+  #      - "{{domain}}"
+  #
+  ## TODO: Add wait here
 - name: Slurp fullchain.pem
+  tags: secret
   slurp:
     src: "/opt/certbot/conf/live/{{domain}}/fullchain.pem"
   register: fullchain_content
 
 - name: Create secret out of fullchain.pem
+  tags: secret
   docker_secret:
     name: fullchain.pem
-    data: "{{fullchain_content['content']}}"
+    data: "{{fullchain_content['content'] | b64decode}}"
     state: present
+    force: yes
 
 - name: Slurp privkey.pem
+  tags: secret
   slurp:
-    src: "/opt/certbot/conf/live/{{domain}}/fullchain.pem"
+    src: "/opt/certbot/conf/live/{{domain}}/privkey.pem"
   register: privkey_content
 
 - name: Create secret out of privkey.pem
+  tags: secret
   docker_secret:
     name: privkey.pem
-    data: "{{privkey_content['content']}}"
+    data: "{{privkey_content['content'] | b64decode}}"
     state: present
+    force: yes

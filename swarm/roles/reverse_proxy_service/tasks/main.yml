@@ -1,3 +1,14 @@
+- name: disable certbot service if running
+  shell: docker service rm certbot-runner || echo 0
+
+- name: Get secret key for fullchain pem
+  shell: "{% raw %} docker secret inspect fullchain.pem --format '{{ .ID }}'{% endraw %}"
+  register: fullchain_id
+
+- name: Get secret key for fullchain pem
+  shell: "{% raw %} docker secret inspect privkey.pem --format '{{ .ID }}'{% endraw %}"
+  register: privkey_id
+
 - name: Update swarm service
   tags: swarm_update
   #TODO Make this a yaml file and commit instead
@@ -10,6 +21,11 @@
     - published_port: 443
       target_port: 443
     force_update: yes
+    secrets:
+    - secret_name: fullchain.pem
+      secret_id: "{{ fullchain_id.stdout }}"
+    - secret_name: privkey.pem
+      secret_id: "{{ privkey_id.stdout }}"
     mounts:
     - source: /opt/config/
       target: /etc/nginx/conf.d

@@ -2,7 +2,7 @@
 any_errors_fatal: True
 max_fail_percentage: 0
 version: deploy.1
-domain: swarm-test.treetracker.org
+domain: devswarm.treetracker.org
 github_users:
   - name: jonleibowitz
     groups: sudo,docker

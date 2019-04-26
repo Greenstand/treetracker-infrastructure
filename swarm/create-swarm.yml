@@ -1,6 +1,6 @@
 ---
 - hosts: swarm
-  become: yes
+  user: root
   roles:
     - docker
     - users

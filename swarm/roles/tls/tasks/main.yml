@@ -1,6 +1,8 @@
 - name: disable reverse proxy
   shell: docker service rm reverse-proxy || echo 0
 
+# BIG TODO: Get this working in a different way, currently very chicken and egg
+
 - name: create folders
   file:
     path: "{{item}}"
@@ -15,33 +17,37 @@
   shell: "{% raw %} docker node inspect self --format '{{ .Description.Hostname}}' {% endraw %}"
   register: hostname
 
-  #- name: Add certbot service and run
-  #  tags: retrieve
-  #  docker_swarm_service:
-  #    name: certbot-runner
-  #    image: certbot/certbot
-  #    replicas: 1
-  #    constraints:
-  #    - "node.hostname == {{hostname.stdout}}"
-  #    publish:
-  #    - published_port: 80
-  #      target_port: 80
-  #    - published_port: 443
-  #      target_port: 443
-  #    mounts:
-  #    - source: /opt/certbot/conf
-  #      target: /etc/letsencrypt
-  #    - source: /opt/certbot/www
-  #      target: /var/www/certbot
-  #    args:
-  #      - "certonly"
-  #      - "--standalone"
-  #      - "--register-unsafely-without-email"
-  #      - "--agree-tos"
-  #      - "-d"
-  #      - "{{domain}}"
-  #
-  ## TODO: Add wait here
+- name: Add certbot service and run
+  tags: retrieve
+  docker_swarm_service:
+    force_update: yes
+    name: certbot-runner
+    image: certbot/certbot
+    replicas: 1
+    constraints:
+    - "node.hostname == {{hostname.stdout}}"
+    publish:
+    - published_port: 80
+      target_port: 80
+    - published_port: 443
+      target_port: 443
+    mounts:
+    - source: /opt/certbot/conf
+      target: /etc/letsencrypt
+    - source: /opt/certbot/www
+      target: /var/www/certbot
+    args:
+      - "certonly"
+      - "--standalone"
+      - "--register-unsafely-without-email"
+      - "--agree-tos"
+      - "-d"
+      - "{{domain}}"
+
+- name: Wait for pem file to be created
+  wait_for:
+    path: "/opt/certbot/conf/live/{{domain}}/fullchain.pem"
+
 - name: Slurp fullchain.pem
   tags: secret
   slurp:

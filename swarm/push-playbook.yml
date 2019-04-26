@@ -1,0 +1,9 @@
+---
+- hosts: swarm_single
+  remote_user: root
+  roles:
+    - admin_api_service
+    - admin_panel_service
+    - mobile_api_service
+    - web_map_api_service
+    - web_map_content_service

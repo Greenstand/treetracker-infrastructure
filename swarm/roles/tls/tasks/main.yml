@@ -11,18 +11,27 @@
   with_items:
   - /opt/certbot/nginx
   - /opt/certbot/conf
-  - /opt/certbot/www
+  - /opt/certbot/lib
+  - /opt/certbot/lib/webroot
+
+- name: copy nginx conf
+  copy:
+    src: nginx-challenge.conf
+    dest: /opt/certbot/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: 0644
+    force: yes
 
 - name: Get hostname of current node
   shell: "{% raw %} docker node inspect self --format '{{ .Description.Hostname}}' {% endraw %}"
   register: hostname
 
-- name: Add certbot service and run
-  tags: retrieve
+- name: Start nginx to advertise as healthy
   docker_swarm_service:
     force_update: yes
-    name: certbot-runner
-    image: certbot/certbot
+    name: reverse-proxy
+    image: nginx
     replicas: 1
     constraints:
     - "node.hostname == {{hostname.stdout}}"
@@ -34,13 +43,37 @@
     mounts:
     - source: /opt/certbot/conf
       target: /etc/letsencrypt
-    - source: /opt/certbot/www
-      target: /var/www/certbot
+    - source: /opt/certbot/lib
+      target: /var/lib/letsencrypt
+    - source: /opt/certbot/nginx
+      target: /etc/nginx/conf.d
+
+- name: Wait for 10s to loadbalancer picks up as healthy
+  wait_for:
+    port: 80
+    delay: 20
+
+- name: Add certbot service and run
+  tags: retrieve
+  docker_swarm_service:
+    force_update: yes
+    name: certbot-runner
+    image: certbot/certbot
+    replicas: 1
+    constraints:
+    - "node.hostname == {{hostname.stdout}}"
+    mounts:
+    - source: /opt/certbot/conf
+      target: /etc/letsencrypt
+    - source: /opt/certbot/lib
+      target: /var/lib/letsencrypt
     args:
       - "certonly"
-      - "--standalone"
+      - "--webroot"
       - "--register-unsafely-without-email"
       - "--agree-tos"
+      - "--webroot-path"
+      - "/var/lib/letsencrypt/webroot/"
       - "-d"
       - "{{domain}}"
 

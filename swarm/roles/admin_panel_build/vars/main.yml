@@ -1,5 +1,5 @@
 ---
-build_dir: src/admin-api
+build_dir: src/admin-panel
 dockerfile: TreetrackerAdminPanel.Dockerfile
 repo: https://github.com/Greenstand/treetracker-admin.git
 registry_url: ci.treetracker.org

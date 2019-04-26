@@ -1,5 +1,5 @@
 ---
-build_dir: src/web-map
+build_dir: src/web-content
 dockerfile: TreetrackerWebMapContent.Dockerfile
 repo: https://github.com/Greenstand/treetracker-web-map.git
 registry_url: ci.treetracker.org

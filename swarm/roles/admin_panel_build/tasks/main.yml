@@ -40,6 +40,10 @@
   npm:
     path: "{{build_dir}}/client"
 
+- name: Run npm build in client folder
+  shell: "cd {{ build_dir }}/client; export REACT_APP_API_BASE_URL=api/admin ;npm run build"
+  tags: build
+
 - name: Build {{image_name}} image and push
   tags: build
   docker_image:

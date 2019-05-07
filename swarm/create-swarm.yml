@@ -6,3 +6,13 @@
     - users
     - common
     - config_files
+
+- hosts: swarm_single
+  user: root
+  roles:
+    - init
+
+- hosts: swarm
+  user: root
+  roles:
+    - join

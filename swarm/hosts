@@ -4,7 +4,7 @@ localhost-py3 ansible_host=localhost ansible_connection=local ansible_python_int
 managers
 workers
 
-[managers_test_old]
+[managers_test]
 manager1 ansible_host="134.209.41.252" ansible_python_interpreter=python3
 manager2 ansible_host="165.227.211.150" ansible_python_interpreter=python3
 manager3 ansible_host="165.227.210.130" ansible_python_interpreter=python3
@@ -12,11 +12,18 @@ manager3 ansible_host="165.227.210.130" ansible_python_interpreter=python3
 [swarm_single_test_old]
 manager1 ansible_host="134.209.41.252" ansible_python_interpreter=python3
 
-[managers]
-dev-manager1 ansible_host="174.138.63.173" ansible_python_interpreter=python3
-dev-manager2 ansible_host="134.209.161.5" ansible_python_interpreter=python3
+[managers_dev]
+dev-manager1 ansible_host="68.183.48.44" ansible_python_interpreter=python3
+dev-manager2 ansible_host="68.183.152.215" ansible_python_interpreter=python3
+dev-manager3 ansible_host="142.93.186.200" ansible_python_interpreter=python3
 
-[swarm_single]
-dev-manager1 ansible_host="174.138.63.173" ansible_python_interpreter=python3
+[manager_single_dev]
+dev-manager1 ansible_host="68.183.48.44" ansible_python_interpreter=python3
+
+[managers:children]
+managers_dev
+
+[swarm_single:children]
+manager_single_dev
 
 [workers]

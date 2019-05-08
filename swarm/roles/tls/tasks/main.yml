@@ -5,11 +5,8 @@
 
 - name: remove cert files if existant
   file:
-    path: "{{item}}"
+    path: "/opt/certbot/conf"
     state: absent
-  with_items:
-  -  "/opt/certbot/conf/live/{{domain}}/privkey.pem"
-  -  "/opt/certbot/conf/live/{{domain}}/fullchain.pem"
 
 - name: create folders
   file:
@@ -56,10 +53,10 @@
     - source: /opt/certbot/nginx
       target: /etc/nginx/conf.d
 
-- name: Wait for 10s so that loadbalancer picks up as healthy
+- name: Wait for 30s so that loadbalancer picks up as healthy
   wait_for:
     port: 80
-    delay: 20
+    delay: 30
 
 - name: Add certbot service and run
   tags: retrieve
@@ -82,6 +79,11 @@
       - "--agree-tos"
       - "--webroot-path"
       - "/var/lib/letsencrypt/webroot/"
+      - "--cert-name"
+      - "{{domain}}"
+      - "--force-renewal"
+     # - "--staging"
+      - "-n"
       - "-d"
       - "{{domain}}"
 

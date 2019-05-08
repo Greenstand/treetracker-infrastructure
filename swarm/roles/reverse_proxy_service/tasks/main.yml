@@ -1,6 +1,3 @@
-- name: disable certbot service if running
-  shell: docker service rm certbot-runner || echo 0
-
 - name: Get secret key for fullchain pem
   shell: "{% raw %} docker secret inspect fullchain.pem --format '{{ .ID }}'{% endraw %}"
   register: fullchain_id
@@ -9,9 +6,17 @@
   shell: "{% raw %} docker secret inspect privkey.pem --format '{{ .ID }}'{% endraw %}"
   register: privkey_id
 
+- name: Get hostname of current node
+  shell: "{% raw %} docker node inspect self --format '{{ .Description.Hostname}}' {% endraw %}"
+  register: hostname
+
+- name: Remove certbot if running
+  docker_swarm_service:
+    name: certbot-runner
+    state: absent
+
 - name: Update swarm service
   tags: swarm_update
-  #TODO Make this a yaml file and commit instead
   docker_swarm_service:
     name: reverse-proxy
     image: nginx:1.15.10

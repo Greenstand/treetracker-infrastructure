@@ -9,8 +9,8 @@ manager1 ansible_host="134.209.41.252" ansible_python_interpreter=python3
 manager2 ansible_host="165.227.211.150" ansible_python_interpreter=python3
 manager3 ansible_host="165.227.210.130" ansible_python_interpreter=python3
 
-[swarm_single_test_old]
-manager1 ansible_host="134.209.41.252" ansible_python_interpreter=python3
+[swarm_single_test]
+manager1 ansible_host="134.209.41.252" ansible_python_interpreter=python3 domain=swarm-test.treetracker.org
 
 [managers_dev]
 dev-manager1 ansible_host="68.183.48.44" ansible_python_interpreter=python3
@@ -18,12 +18,12 @@ dev-manager2 ansible_host="68.183.152.215" ansible_python_interpreter=python3
 dev-manager3 ansible_host="142.93.186.200" ansible_python_interpreter=python3
 
 [manager_single_dev]
-dev-manager1 ansible_host="68.183.48.44" ansible_python_interpreter=python3
+dev-manager1 ansible_host="68.183.48.44" ansible_python_interpreter=python3 domain=swarm-dev.treetracker.org
 
 [managers:children]
-managers_dev
+managers_test
 
 [swarm_single:children]
-manager_single_dev
+swarm_single_test
 
 [workers]

@@ -1,7 +1,15 @@
 - name: disable reverse proxy
-  shell: docker service rm reverse-proxy || echo 0
+  docker_swarm_service:
+    name: reverse-proxy
+    state: absent
 
-# BIG TODO: Get this working in a different way, currently very chicken and egg
+- name: remove cert files if existant
+  file:
+    path: "{{item}}"
+    state: absent
+  with_items:
+  -  "/opt/certbot/conf/live/{{domain}}/privkey.pem"
+  -  "/opt/certbot/conf/live/{{domain}}/fullchain.pem"
 
 - name: create folders
   file:
@@ -48,7 +56,7 @@
     - source: /opt/certbot/nginx
       target: /etc/nginx/conf.d
 
-- name: Wait for 10s to loadbalancer picks up as healthy
+- name: Wait for 10s so that loadbalancer picks up as healthy
   wait_for:
     port: 80
     delay: 20

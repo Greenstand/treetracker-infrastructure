@@ -80,21 +80,21 @@
       - "--webroot-path"
       - "/var/lib/letsencrypt/webroot/"
       - "--cert-name"
-      - "{{domain}}"
+      - "certs"
       - "--force-renewal"
-     # - "--staging"
+#      - "--staging"
       - "-n"
       - "-d"
       - "{{domain}}"
 
 - name: Wait for pem file to be created
   wait_for:
-    path: "/opt/certbot/conf/live/{{domain}}/fullchain.pem"
+    path: "/opt/certbot/conf/live/certs/fullchain.pem"
 
 - name: Slurp fullchain.pem
   tags: secret
   slurp:
-    src: "/opt/certbot/conf/live/{{domain}}/fullchain.pem"
+    src: "/opt/certbot/conf/live/certs/fullchain.pem"
   register: fullchain_content
 
 - name: Create secret out of fullchain.pem
@@ -108,7 +108,7 @@
 - name: Slurp privkey.pem
   tags: secret
   slurp:
-    src: "/opt/certbot/conf/live/{{domain}}/privkey.pem"
+    src: "/opt/certbot/conf/live/certs/privkey.pem"
   register: privkey_content
 
 - name: Create secret out of privkey.pem

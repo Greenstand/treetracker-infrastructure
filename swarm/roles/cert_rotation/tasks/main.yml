@@ -1,0 +1,26 @@
+---
+- name: create folders
+  file:
+    path: "{{item}}"
+    state: directory
+    mode: 0755
+  with_items:
+  - /opt/certbot/nginx
+  - /opt/certbot/conf
+  - /opt/certbot/lib
+  - /opt/certbot/lib/webroot
+
+- name: Copy rotate script
+  copy:
+    src: rotate.sh
+    dest: /opt/certbot/rotate.sh
+    owner: root
+    group: root
+    mode: 0700
+    force: yes
+
+- name: Set cron for rotate script
+  cron:
+    name: "check dirs"
+    minute: "*"
+    job: "/opt/certbot/rotate.sh >> /opt/certbot/log.out"

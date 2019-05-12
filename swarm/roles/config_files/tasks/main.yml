@@ -68,3 +68,13 @@
   with_items:
   - prod-nginx.conf
   when: file_details.stat.exists == True
+
+- name: create folders for certs if non existant
+  file:
+    path: "{{item}}"
+    state: directory
+    mode: 0755
+  with_items:
+  - /opt/certbot/conf
+  - /opt/certbot/lib
+  - /opt/certbot/lib/webroot

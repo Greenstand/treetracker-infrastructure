@@ -34,4 +34,8 @@
     mounts:
     - source: /opt/config/
       target: /etc/nginx/conf.d
+    - source: /opt/certbot/conf
+      target: /etc/letsencrypt
+    - source: /opt/certbot/lib
+      target: /var/lib/letsencrypt
     mode: global

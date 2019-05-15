@@ -2,7 +2,39 @@
 
 CERT_DIR=/opt/certbot/conf/live/certs/
 TIME=$(date)
+DOMAIN=
 echo "Attempt to rotate cert at $TIME"
+
+echo "Rotating cert to old-certs folder"
+RENEWAL_DIR=/opt/certbot/conf/renewal
+mv ${RENEWAL_DIR}/certs.conf ${RENEWAL_DIR}/certs_old.conf
+ARCHIVE_DIR=/opt/certbot/conf/archive
+mv ${ARCHIVE_DIR}/certs ${RENEWAL_DIR}/certs_old
+mv $CERT_DIR /opt/certbot/conf/live/certs_old
+
+
+NODENAME=$(docker node inspect self --format '{{ .Description.Hostname}}')
+
+docker service update --constraint-add "node.hostname == $NODENAME" reverse-proxy
+
+docker service rm certbot-runner || 0
+
+docker service create --name certbot-runner \
+  --restart-condition none \
+  --detach \
+  --mount type=bind,source=/opt/certbot/conf,destination=/etc/letsencrypt \
+  --mount type=bind,source=/opt/certbot/lib,destination=/var/lib/letsencrypt \
+  --constraint "node.hostname == $NODENAME" \
+  certbot/certbot:v0.33.1 \
+  certonly --webroot --register-unsafely-without-email --agree-tos \
+  --webroot-path /var/lib/letsencrypt/webroot \
+  --cert-name certs \
+  --force-renewal \
+  -d REPLACE_ME
+
+timeout 15 docker service logs -f certbot-runner
+
+docker service rollback reverse-proxy
 
 if [[ ! -f ${CERT_DIR}/fullchain.pem ]]; then
   echo "Cert not updated, exiting"
@@ -37,7 +69,3 @@ docker service update \
 docker secret rm TEMP-fullchain.pem
 docker secret rm TEMP-privkey.pem
 
-echo "Rotating cert to old-certs folder"
-OLD_CERT_DIR=/opt/certbot/conf/live/old_certs
-rm -rf $OLD_CERT_DIR
-mv $CERT_DIR $OLD_CERT_DIR

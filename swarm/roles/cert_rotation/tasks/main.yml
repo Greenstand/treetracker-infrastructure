@@ -19,8 +19,16 @@
     mode: 0700
     force: yes
 
+- name: Update hostname
+  replace:
+    path: /opt/certbot/rotate.sh
+    regexp: REPLACE_ME
+    replace: "{{domain}}"
+
 - name: Set cron for rotate script
   cron:
     name: "check dirs"
-    minute: "*"
+    minute: "0"
+    hour: "0"
+    weekday: "1,2,3,4,5,6" # TODO Change this
     job: "/opt/certbot/rotate.sh >> /opt/certbot/log.out"

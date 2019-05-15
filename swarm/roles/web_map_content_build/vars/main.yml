@@ -1,7 +1,7 @@
 ---
 build_dir: src/web-content
 dockerfile: TreetrackerWebMapContent.Dockerfile
-repo: https://github.com/Greenstand/treetracker-web-map.git
+repo: ssh://git@github.com/Greenstand/treetracker-web-map.git
 registry_url: ci.treetracker.org
 image_name: treetracker-web-map-content
 nginx_conf: nginx-web-map.conf

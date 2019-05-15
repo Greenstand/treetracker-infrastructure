@@ -4,3 +4,4 @@
     advertise_addr: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
     join_token: "{{ hostvars[groups['swarm_single'][0]]['swarm_info']['swarm_facts']['JoinTokens']['Manager'] }}"
     remote_addrs:  [ "{{ hostvars[groups['swarm_single'][0]]['remote_man_addr'] }}:2377" ] 
+  when: hostvars[groups['swarm_single'][0]]['remote_man_addr'] != hostvars[inventory_hostname]['ansible_default_ipv4']['address']

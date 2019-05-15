@@ -9,7 +9,7 @@
 
 - name: Install list of packages
   apt:
-    name: ['apt-transport-https','ca-certificates','curl','software-properties-common','docker-ce','python3-docker','python3-pip']
+    name: ['apt-transport-https','ca-certificates','curl','software-properties-common','docker-ce','python3-docker','python3-pip', 'build-essential', 'libssl-dev','libffi-dev']
     state: present
     update_cache: yes
 
@@ -34,11 +34,10 @@
     - 7946
     - 4789
     
-# This is not idempotent and fails on subsequent requets :(
 - name: Install docker python
   pip:
     name:
+    - pip>=9.0.1
     - docker>=3.7.2
-    - request>=2.20.1
     - passlib>=1.6
-  ignore_errors: yes
+    extra_args: --upgrade

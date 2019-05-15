@@ -24,12 +24,12 @@ domain=swarm-test.treetracker.org
 #Dev cluster
 
 [managers_dev]
-dev-manager1 ansible_host="68.183.48.44"
-dev-manager2 ansible_host="68.183.152.215"
-dev-manager3 ansible_host="142.93.186.200"
+dev-manager1 ansible_host="134.209.166.78"
+dev-manager2 ansible_host="45.55.59.201"
+dev-manager3 ansible_host="138.197.77.108"
 
 [manager_single_dev]
-dev-manager1 ansible_host="68.183.48.44"
+dev-manager1 ansible_host="134.209.166.78"
 
 [dev:children]
 managers_dev
@@ -40,9 +40,9 @@ domain=swarm-dev.treetracker.org
 
 # Active group
 [managers:children]
-managers_test
+managers_dev
 
 [swarm_single:children]
-manager_single_test
+manager_single_dev
 
 [workers]

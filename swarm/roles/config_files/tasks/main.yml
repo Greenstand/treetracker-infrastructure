@@ -52,6 +52,13 @@
   with_items:
   - prod-nginx.conf
 
+- name: Add password protection to /admin endpoint
+  htpasswd:
+    path: /opt/config/nginx.htpasswd
+    name: "{{admin_user}}"
+    password: "{{admin_password}}"
+    crypt_scheme: md5_crypt
+
 - name: create folders for certs if non existant
   file:
     path: "{{item}}"

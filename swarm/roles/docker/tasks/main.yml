@@ -40,4 +40,5 @@
     name:
     - docker>=3.7.2
     - request>=2.20.1
+    - passlib>=1.6
   ignore_errors: yes

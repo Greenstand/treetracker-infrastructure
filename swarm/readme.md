@@ -15,3 +15,7 @@ In order to pass the health check for the load balancer, we have to set the LB t
 * running those 2 in order should get everything going
 * I have a wrapper script for the second, `build_and_deploy.sh`
 * and the last bit I don't like is the config files have to be copied in
+
+## Using vault
+
+To run any of these playbooks, please create a file, `vault-password-file`, which has the appropriate vault password in it. Then run `ansible-playbook --vault-id vault-password-file PLAYBOOK_NAME.yml` to use the password to decrypt the file contents

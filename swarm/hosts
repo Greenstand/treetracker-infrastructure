@@ -40,9 +40,9 @@ domain=swarm-dev.treetracker.org
 
 # Active group
 [managers:children]
-managers_dev
+managers_test
 
 [swarm_single:children]
-manager_single_dev
+manager_single_test
 
 [workers]

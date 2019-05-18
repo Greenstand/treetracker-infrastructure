@@ -4,4 +4,4 @@ if [[ -z "$1" ]]; then
   exit 1
 fi
 
-ansible-playbook deploy-all-playbook.yml -e "version="$1 --vault-id vault-password-file -vv
+ansible-playbook build-and-deploy-all-playbook.yml -e "version="$1 --vault-id vault-password-file -vv

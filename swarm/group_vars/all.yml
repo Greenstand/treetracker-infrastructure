@@ -1,7 +1,7 @@
 ---
 any_errors_fatal: True
 max_fail_percentage: 0
-version: deploy.1
+version: master
 ansible_python_interpreter: python3
 github_users:
   - name: jonleibowitz

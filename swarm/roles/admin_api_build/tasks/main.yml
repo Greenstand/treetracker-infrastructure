@@ -1,8 +1,6 @@
 ---
-- shell: 'date +"%s"'
-  register: timestamp
-
-- file:
+- name: ensure src dir created
+  file:
     state: directory
     name: src
 
@@ -13,30 +11,33 @@
     depth: 1
     version: "{{ version }}"
     dest: "{{ build_dir }}"
+    update: yes
+  register: gitresult
 
-- shell: "cd {{ build_dir }}; git rev-parse --short HEAD"
+- name: copy dockerfile
   tags: build
-  register: sha
-
-- tags: build
   copy:
     src: "{{ dockerfile }}"
     dest: "{{ build_dir }}/Dockerfile"
 
-- tags: build
+- name: create tag
+  tags: build
   set_fact:
-    tag: "{{ version }}-{{ timestamp.stdout }}-{{ sha.stdout }}"
+    tag: "{{ version }}-{{ gitresult.after }}"
 
 - name: Build admin api image and push
   tags: build
   become: yes
   docker_image:
-    path: "{{ build_dir }}"
     name: "{{registry_url}}/{{image_name}}"
+    build:
+      path: "{{ build_dir }}"
     tag: "{{item}}"
     state: present
     push: yes
-    force: yes
+    force_tag: yes
+    force_source: yes
+    source: build
   with_items:
   - latest
   - "{{tag}}"

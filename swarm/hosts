@@ -1,4 +1,4 @@
-localhost-py3 ansible_host=localhost ansible_connection=local ansible_python_interpreter=python3
+localhost-py3 ansible_host=localhost ansible_connection=local ansible_python_interpreter=/usr/bin/python3
 
 [swarm:children]
 managers

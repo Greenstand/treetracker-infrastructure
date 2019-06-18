@@ -1,28 +1,29 @@
 ---
-- shell: 'date +"%s"'
-  register: timestamp
-
-- file:
+- name: ensure src dir created
+  file:
     state: directory
     name: src
 
-- name: clone {{ repo }}
+- name: clone admin-api
   tags: build
   git:
     repo: "{{repo}}"
     depth: 1
     version: "{{ version }}"
     dest: "{{ build_dir }}"
+    update: yes
+  register: gitresult
 
-- shell: "cd {{ build_dir }}; git rev-parse --short HEAD"
-  tags: build
-  register: sha
-
-- name: copy Dockerfile
+- name: copy dockerfile
   tags: build
   copy:
     src: "{{ dockerfile }}"
     dest: "{{ build_dir }}/Dockerfile"
+
+- name: create tag
+  tags: build
+  set_fact:
+    tag: "{{ version }}-{{ gitresult.after }}"
 
 - name: copy Nginx conf
   tags: build
@@ -30,18 +31,13 @@
     src: nginx.conf
     dest: "{{ build_dir}}/nginx.conf"
 
-- name: generate tag
-  tags: build
-  set_fact:
-    tag: "{{ version }}-{{ timestamp.stdout }}-{{ sha.stdout }}"
-
 - name: Run npm install in client folder
   tags: build
   npm:
     path: "{{build_dir}}/client"
 
 - name: Run npm build in client folder
-  shell: "cd {{ build_dir }}/client; export REACT_APP_API_BASE_URL=api/admin ;npm run build"
+  shell: "cd {{ build_dir }}/client; npm run build"
   tags: build
 
 - name: Build {{image_name}} image and push

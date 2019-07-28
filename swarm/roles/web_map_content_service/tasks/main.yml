@@ -1,6 +1,10 @@
+- name: Ensure proxy network exists
+  docker_network:
+    name: proxy
+    driver: overlay
+
 - name: Update swarm service
   tags: swarm_update
-  #TODO Make this a yaml file and commit instead
   docker_swarm_service:
     name: "{{service}}"
     image: "{{image}}"
@@ -12,3 +16,5 @@
     - source: /opt/config/web-map-config.js
       target: /var/www/js/config.js
     replicas: 2
+    networks:
+    - proxy

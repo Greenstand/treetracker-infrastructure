@@ -1,7 +1,4 @@
 ---
-- shell: 'date +"%s"'
-  register: timestamp
-
 - file:
     state: directory
     name: src
@@ -13,13 +10,9 @@
     depth: 1
     version: "{{ version }}"
     dest: "{{ build_dir }}"
+  register: gitresult
 
-- shell: "cd {{ build_dir }}; git rev-parse --short HEAD"
-  tags: build
-  register: sha
-
-
-- name: copy Dockerfile
+- name: copy dockerfile
   tags: build
   copy:
     src: "{{ dockerfile }}"
@@ -31,20 +24,30 @@
     src: "{{ nginx_conf }}"
     dest: "{{ build_dir }}/{{ nginx_conf }}"
 
-- tags: build
-  name: generate tag
+- name: create tag
+  tags: build
   set_fact:
-    tag: "{{ version }}-{{ timestamp.stdout }}-{{ sha.stdout }}"
+    tag: "{{ version }}-{{ gitresult.after }}"
+
+- name: login to registry
+  docker_login:
+    registry: "{{registry_url}}"
+    username: "{{registry_username}}"
+    password: "{{registry_password}}"
 
 - name: Build {{image_name}} image and push
   tags: build
   docker_image:
-    path: "{{ build_dir }}"
     name: "{{registry_url}}/{{image_name}}"
+    build:
+      path: "{{ build_dir }}"
+      pull: no
     tag: "{{item}}"
     state: present
     push: yes
-    force: yes
+    force_tag: yes
+    force_source: yes
+    source: build
   with_items:
   - latest
   - "{{tag}}"

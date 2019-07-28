@@ -32,6 +32,7 @@
     name: "{{registry_url}}/{{image_name}}"
     build:
       path: "{{ build_dir }}"
+      pull: no
     tag: "{{item}}"
     state: present
     push: yes

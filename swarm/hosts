@@ -1,3 +1,4 @@
+[local]
 localhost-py3 ansible_host=localhost ansible_connection=local ansible_python_interpreter=/usr/bin/python3
 
 [swarm:children]
@@ -7,7 +8,7 @@ workers
 #Test cluster
 
 [managers_test]
-manager1 ansible_host="134.209.41.252" 
+manager1 ansible_host="134.209.41.252"
 manager2 ansible_host="165.227.211.150"
 manager3 ansible_host="165.227.210.130"
 
@@ -39,6 +40,7 @@ manager_single_dev
 domain=swarm-dev.treetracker.org
 
 # Active group
+
 [managers:children]
 managers_test
 

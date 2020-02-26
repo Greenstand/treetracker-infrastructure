@@ -1,0 +1,14 @@
+[Unit]
+Description=Treetracker SQS Consumer
+Documentation=https://github.com/Greenstand
+After=network.target
+
+[Service]
+Environment=
+Type=simple
+User=root
+ExecStart=/usr/bin/node /root/treetracker-database/pipeline/consumer/consumer.js
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

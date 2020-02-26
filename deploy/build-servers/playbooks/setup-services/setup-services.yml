@@ -1,0 +1,29 @@
+---
+- hosts: all
+  tasks:
+
+  - name: Copy service files to a remote server
+    copy:
+      src: systemd/
+      dest: /etc/systemd/system/
+
+  - name: enable services
+    systemd:
+      name: treetracker-pipeline-microservice
+      enabled: true
+
+  - name: enable services
+    systemd:
+      name: treetracker-sqs-consumer
+      enabled: true
+
+#  - name: enable services
+#    systemd:
+#      name: notify-sentry@service
+#      enabled: true
+
+  - name: daemon reload
+    systemd:
+      daemon-reload: true
+
+

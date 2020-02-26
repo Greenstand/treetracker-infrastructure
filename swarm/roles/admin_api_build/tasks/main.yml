@@ -1,0 +1,44 @@
+---
+- name: ensure src dir created
+  file:
+    state: directory
+    name: src
+
+- name: clone admin-api
+  tags: build
+  git:
+    repo: "{{repo}}"
+    depth: 1
+    version: "{{ version }}"
+    dest: "{{ build_dir }}"
+    update: yes
+  register: gitresult
+
+- name: copy dockerfile
+  tags: build
+  copy:
+    src: "{{ dockerfile }}"
+    dest: "{{ build_dir }}/Dockerfile"
+
+- name: create tag
+  tags: build
+  set_fact:
+    tag: "{{ version }}-{{ gitresult.after }}"
+
+- name: Build admin api image and push
+  tags: build
+  become: yes
+  docker_image:
+    name: "{{registry_url}}/{{image_name}}"
+    build:
+      path: "{{ build_dir }}"
+      pull: no
+    tag: "{{item}}"
+    state: present
+    push: yes
+    force_tag: yes
+    force_source: yes
+    source: build
+  with_items:
+  - latest
+  - "{{tag}}"

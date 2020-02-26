@@ -1,4 +1,50 @@
-[swarm]
-manager1 ansible_host="134.209.41.252" ansible_python_interpreter=python3
-manager2 ansible_host="165.227.211.150" ansible_python_interpreter=python3
-manager3 ansible_host="165.227.210.130" ansible_python_interpreter=python3
+[local]
+localhost-py3 ansible_host=localhost ansible_connection=local ansible_python_interpreter=/usr/bin/python3
+
+[swarm:children]
+managers
+workers
+
+#Test cluster
+
+[managers_test]
+manager1 ansible_host="134.209.41.252"
+manager2 ansible_host="165.227.211.150"
+manager3 ansible_host="165.227.210.130"
+
+[manager_single_test]
+manager1 ansible_host="134.209.41.252"
+
+[test:children]
+managers_test
+manager_single_test
+
+[test:vars]
+domain=swarm-test.treetracker.org
+
+#Dev cluster
+
+[managers_dev]
+dev-manager1 ansible_host="134.209.166.78"
+dev-manager2 ansible_host="45.55.59.201"
+dev-manager3 ansible_host="138.197.77.108"
+
+[manager_single_dev]
+dev-manager1 ansible_host="134.209.166.78"
+
+[dev:children]
+managers_dev
+manager_single_dev
+
+[dev:vars]
+domain=swarm-dev.treetracker.org
+
+# Active group
+
+[managers:children]
+managers_test
+
+[swarm_single:children]
+manager_single_test
+
+[workers]

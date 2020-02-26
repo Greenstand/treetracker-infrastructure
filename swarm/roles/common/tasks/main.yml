@@ -1,51 +1,31 @@
 ---
+- name: enable passwordless sudo
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^%sudo'
+    line: '%sudo ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
 
-- name: Add sudo users
-  user:
-    name: '{{ item }}'
-    shell: /bin/bash
-    groups: sudo
-    append: yes
+- name: Disallow password authentication
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^PasswordAuthentication"
+    line: "PasswordAuthentication no"
     state: present
-  with_items:
-    - jon
-    - matt
-- name: add public key from GitHub
-  authorized_key:
-    user: jon
-    state: present
-    key: https://github.com/jonleibowitz.keys
+  notify: Restart ssh
 
-- name: add matt's public key
-  authorized_key:
-    user: matt
+- name: PermitRootLogin hardening
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^PermitRootLogin"
+    line: "PermitRootLogin without-password"
     state: present
-    key: https://github.com/mckornfield.keys
-    
+  notify: Restart ssh
+
 - name: enable basic ufw config
   ufw:
     rule: limit
     name: OpenSSH
     state: enabled
 
-- name: enable tcp ports required for Docker Swarm
-  ufw:
-    rule: allow
-    to_port: '{{ item }}'
-    state: reloaded
-    proto: tcp
-  with_items:
-    - 80
-    - 2376
-    - 2377
-    - 7946
-
-- name: enable udp ports for Docker Swarm
-  ufw:
-    rule: allow
-    to_port: '{{ item }}'
-    state: reloaded
-    proto: udp
-  with_items:
-    - 7946
-    - 4789

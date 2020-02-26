@@ -1,0 +1,7 @@
+---
+dependencies: []
+
+galaxy_info:
+  description: Create users based on GitHub accounts. 
+
+## copied from https://github.com/geerlingguy/ansible-role-github-users

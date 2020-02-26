@@ -14,7 +14,7 @@
 
   - name: enable services
     systemd:
-      name: treetracker-sqs-consumer
+      name: treetracker-pipeline-consumer
       enabled: true
 
 #  - name: enable services

@@ -1,0 +1,32 @@
+---
+- name: deploy update to pipeline microservice
+  hosts: all
+  become: yes
+  serial: 1
+  tasks:
+    
+    - name: stop pipeline microservice
+      systemd:
+        name: treetracker-pipeline-microservice
+        state: stopped
+
+    - name: remove microservice api directory
+      file:
+        state: absent
+        path: ~/treetracker-pipeline-microservice
+
+    - name: ensure directory exists
+      file:
+        path: ~/treetracker-pipeline-microservice
+        state: directory
+
+    - name: copy pipeline microservice
+      unarchive:
+        src: ../../build/treetracker-pipeline-microservice.tar.gz
+        dest: ~/treetracker-pipeline-microservice
+
+    - name: restart pipeline microservice
+      systemd:
+        name: treetracker-pipeline-microservice
+        enabled: true
+        state: restarted

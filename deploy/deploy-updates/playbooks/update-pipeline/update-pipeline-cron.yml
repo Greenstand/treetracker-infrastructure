@@ -1,0 +1,35 @@
+---
+- name: deploy update
+  hosts: all
+  become: yes
+  tasks:
+
+    - name: remove crontab
+      shell: crontab -r || true
+
+      #    - name: Wait for port 25060 of any IP to close active connections, ignoring connections for specified hosts
+      # wait_for:
+      #  host: 0.0.0.0
+      #  port: 25060
+      #  state: drained
+
+    - name: remove cron directory
+      file:
+        state: absent
+        path: ~/treetracker-pipeline-cron
+
+    - name: ensure directory exists
+      file:
+        path: ~/treetracker-pipeline-cron
+        state: directory
+
+    - name: copy cron files
+      unarchive:
+        src: ../../build/treetracker-pipeline-cron.tar.gz
+        dest: ~/treetracker-pipeline-cron
+
+    - name: pipeline cron
+      cron:
+        name: "pipeline cron"
+        job: "~/treetracker-pipeline-cron/process-bulk-uploads.sh"
+

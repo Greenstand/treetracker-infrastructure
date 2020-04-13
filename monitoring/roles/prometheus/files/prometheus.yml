@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 30s 
+  scrape_timeout: 10s 
+  evaluation_interval: 1m
+
+scrape_configs:
+  - job_name: test
+    metrics_path: /metrics
+    static_configs: 
+      - targets: ["localhost:9090", "localhost:9191"]
+        labels:
+          local: label2

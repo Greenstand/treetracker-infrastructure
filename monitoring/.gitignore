@@ -2,3 +2,5 @@ src/
 *.retry
 *.swp
 vault-password-file
+terraform.tfvars
+.terraform

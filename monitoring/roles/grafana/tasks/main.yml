@@ -1,0 +1,21 @@
+---
+- name: Add the Grafana user
+  user:
+    name: grafana-sys
+    comment: Grafana System
+    uid: 1445
+
+- name: Create a volume
+  docker_volume:
+    name: grafana-storage
+
+- name: Run grafana with docker
+  docker_container:
+    name: grafana
+    image: grafana/grafana:7.1.5
+    user: 1445
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    ports:
+     - "3000:3000"
+    restart: yes

@@ -10,7 +10,7 @@
     path: "{{item}}"
     state: directory
     mode: 0755
-    owner: 1444
+    owner: "1444"
   with_items:
   - /opt/prometheus/config
   - /opt/prometheus/data
@@ -31,3 +31,4 @@
       - /opt/prometheus/data:/prometheus
     ports:
      - "9090:9090"
+    restart: yes

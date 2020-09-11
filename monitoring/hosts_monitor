@@ -1,7 +1,4 @@
 [web]
-ci.treetracker.org
-dev.treetracker.org
-test.treetracker.org
 monitoring.treetracker.org
 
 [web:vars]

@@ -1,0 +1,7 @@
+---
+- name: Install grafana
+  hosts: all
+  become: yes
+  roles:
+   - docker
+   - grafana

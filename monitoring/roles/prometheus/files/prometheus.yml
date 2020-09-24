@@ -7,7 +7,17 @@ scrape_configs:
   - job_name: sites
     metrics_path: /metrics
     static_configs:
-      - targets: ["dev.treetracker.org:9100", "test.treetracker.org:9100"]
+      - targets: ["dev.treetracker.org:9100", "167.172.200.180:9100"]
+    relabel_configs:
+    # relabel for test
+    - source_labels: [__address__]
+      regex: 'dev.treetracker.org.*'
+      target_label: instance
+      replacement: "dev.treetracker.org"
+    - source_labels: [__address__]
+      regex: '167.172.200.180.*'
+      target_label: instance
+      replacement: "test.treetracker.org"
   - job_name: monitor
     metrics_path: /metrics
     static_configs:

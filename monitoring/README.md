@@ -11,4 +11,16 @@
 ### How do I see what's running in the cluster?
 
 You can use `helm list -n monitoring` to see what releases there are
-You can use `helm list 
+You can use `kubectl get pods -n monitoring` to see what's running in the monitoring namespace
+
+
+### How do I view the grafana dashboard
+
+In the future, we should probably set up ingress.
+For now, you can port-forward, e.g.
+```
+kubectl get pods -n monitoring | grep 'grafana' | cut -d" " -f1 | xargs -I{} kubectl port-forward -n monitoring {} 3000:3000
+```
+to see at localhost:3000 the grafana running within the cluster
+
+More info on how to access these things is listed [here](https://www.digitalocean.com/community/tutorials/how-to-set-up-digitalocean-kubernetes-cluster-monitoring-with-helm-and-prometheus-operator)

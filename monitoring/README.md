@@ -19,8 +19,14 @@ You can use `kubectl get pods -n monitoring` to see what's running in the monito
 In the future, we should probably set up ingress.
 For now, you can port-forward, e.g.
 ```
-kubectl get pods -n monitoring | grep 'grafana' | cut -d" " -f1 | xargs -I{} kubectl port-forward -n monitoring {} 3000:3000
+kubectl port-forward -n monitoring svc/prometheus-community-grafana 80:80
 ```
 to see at localhost:3000 the grafana running within the cluster
+
+To see grafana/alertmanager/prometheus
+```
+kubectl port-forward -n monitoring svc/prometheus-community-kube-alertmanager 9093:9093
+kubectl port-forward -n monitoring svc/prometheus-community-kube-prometheus 9090:9090
+```
 
 More info on how to access these things is listed [here](https://www.digitalocean.com/community/tutorials/how-to-set-up-digitalocean-kubernetes-cluster-monitoring-with-helm-and-prometheus-operator)

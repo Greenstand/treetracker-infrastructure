@@ -1,5 +1,0 @@
----
-dependencies: []
-
-galaxy_info:
-  description: Install Docker CE onto swarm nodes

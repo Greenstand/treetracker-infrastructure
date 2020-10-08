@@ -1,9 +1,0 @@
-- name: capture remote addr
-  set_fact:
-     remote_man_addr: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
-
-- name: Init swarm if not already done
-  docker_swarm:
-    state: present
-    advertise_addr: "{{ remote_man_addr }}"
-  register: swarm_info

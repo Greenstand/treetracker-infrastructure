@@ -1,8 +1,0 @@
----
-- name: Bootstrap swarm cluster for future ansible runs
-  hosts: swarm
-  remote_user: root
-
-  roles:
-    - common
-    - users

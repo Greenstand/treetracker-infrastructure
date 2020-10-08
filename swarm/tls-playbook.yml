@@ -1,6 +1,0 @@
----
-- hosts: swarm_single
-  remote_user: root
-  roles:
-    - tls
-    - reverse_proxy_service

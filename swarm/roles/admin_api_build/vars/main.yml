@@ -1,6 +1,0 @@
----
-build_dir: src/admin-api
-dockerfile: TreetrackerAdminApi.Dockerfile
-repo: ssh://git@github.com/Greenstand/treetracker-admin.git
-registry_url: ci.treetracker.org
-image_name: treetracker-admin-api

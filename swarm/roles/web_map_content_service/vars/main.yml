@@ -1,5 +1,0 @@
----
-image: ci.treetracker.org/treetracker-web-map-content:latest
-service: treetracker-web-map-content
-published_port: 8082
-internal_port: 80

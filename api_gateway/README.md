@@ -14,4 +14,4 @@ The playbooks within here require helm to run.
 
 Once you have the playbook run in the cluster, you can run `edgectl install` and follow the on screen prompts.
 
-`dev` -> `edgectl login elated-shannon-1206.edgestack.me`
+`dev` -> `edgectl login dev-k8s.treetracker.org`

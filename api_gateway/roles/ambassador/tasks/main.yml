@@ -1,0 +1,13 @@
+---
+- name: Add ambassador repository
+  community.kubernetes.helm_repository:
+    name: datawire
+    repo_url: https://www.getambassador.io
+
+- name: Install ambassador chart
+  community.kubernetes.helm:
+    name: ambassador
+    chart_ref: datawire/ambassador
+    chart_version: 6.5.9
+    release_namespace: ambassador
+    create_namespace: true

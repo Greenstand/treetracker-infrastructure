@@ -1,6 +1,20 @@
 # treetracker-infrastructure
-Our cloud infrastructure.
 
-# swarm folder
+Cloud infrastructure for the treetracker project
 
-To run these playbooks, most require the argument -e "version=deploy.1" or something to that effect, if doing a deployment. There are wrapper scripts that do so
+## Road Map
+
+Milestone 1 - Near Term:
+* Dockerize all microservices
+* Set up and standardize automatic semantic versioning on all microservices
+* Deploy all static web resources via CDN
+* Deploy all microservices into kubernetes
+* Mount all microservice APIs on Ambassador (API Gateway)
+
+Milestone 2 - Prepare Test Environment:
+* Deploy all services into test environment k8s
+* Tweak grafana/prometheus service
+* Deploy ELK stack docker created by @Mengchen into dev/test environments
+* Connect all microservices logging to ELK stack
+
+

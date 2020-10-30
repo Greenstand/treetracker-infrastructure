@@ -1,7 +1,0 @@
----
-- name: dependency provisioning
-  hosts: all
-  gather_facts: false
-  tasks:
-    - name: install python
-      raw: apt-get -y install python-minimal

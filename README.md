@@ -4,6 +4,8 @@ Cloud infrastructure for the treetracker project
 
 ## Road Map
 
+https://github.com/orgs/Greenstand/projects/9
+
 Milestone 1 - Near Term:
 * Dockerize all microservices
 * Set up and standardize automatic semantic versioning on all microservices

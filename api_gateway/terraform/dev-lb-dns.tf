@@ -1,6 +1,6 @@
 resource "digitalocean_domain" "ambassador-host" {
   name = "dev-k8s.treetracker.org"
-  ip_address = "138.197.233.41"
+  ip_address = "134.209.142.182"
 }
 
 resource "digitalocean_record" "CNAME-www" {

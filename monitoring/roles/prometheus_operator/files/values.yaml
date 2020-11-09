@@ -20,6 +20,9 @@ grafana:
     storageClassName: do-block-storage
     accessModes: ["ReadWriteOnce"]
     size: 5Gi
+  grafana.ini:
+    server:
+      root_url: https://%(domain)s:/grafana
 
 # Define persistent storage for Alertmanager (PVC)
 alertmanager:

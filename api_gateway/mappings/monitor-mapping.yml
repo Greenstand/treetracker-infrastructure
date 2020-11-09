@@ -1,0 +1,9 @@
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: grafana-backend
+  namespace: monitoring
+spec:
+  prefix: /grafana/
+  service: prometheus-community-grafana

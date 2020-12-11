@@ -9,3 +9,9 @@ resource "digitalocean_record" "CNAME-www" {
   name = "www"
   value = "@"
 }
+
+resource "digitalocean_domain" "ambassador-host-test" {
+  name = "test-k8s.treetracker.org"
+  ip_address = "157.230.74.182"
+}
+

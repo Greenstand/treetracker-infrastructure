@@ -10,6 +10,10 @@ resource "aws_iam_access_key" "cf_user_access_key" {
   user = aws_iam_user.cf_user.name
 }
 
+output "keyid" {
+  value = aws_iam_access_key.cf_user_access_key.id
+}
+
 output "secret" {
   value = aws_iam_access_key.cf_user_access_key.secret
 }
@@ -60,6 +64,21 @@ resource "aws_iam_user_policy" "cloudfront_user_policy" {
          "Effect":"Allow",
          "Action": "s3:*Object",
          "Resource":"arn:aws:s3:::treetracker-infrastructure-cdn/*"
+      },
+      {
+         "Effect": "Allow",
+         "Action": "s3:ListBucket",
+         "Resource": "arn:aws:s3:::treetracker-infrastructure-cdn"
+      },
+      {
+         "Effect":"Allow",
+         "Action": "s3:*Object",
+         "Resource":"arn:aws:s3:::dev.webmap.treetracker.org/*"
+      },
+      {
+         "Effect": "Allow",
+         "Action": "s3:ListBucket",
+         "Resource": "arn:aws:s3:::dev.webmap.treetracker.org"
       }
    ]
 }

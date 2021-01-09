@@ -3,7 +3,8 @@ Sealed secrets allow for developers to commit an encrypted version of their secr
 
 A SealedSecret CRD will have a link to a Secret so if a SealedSecret resource is updated/deleted, the corresponding Secret will be updated/deleted accordingly. Therefore operations should be performed on the SealedSecret CRD rather than on a Secret.
 
-Official documentation can be found at https://github.com/bitnami-labs/sealed-secrets.
+## Official Documentation
+https://github.com/bitnami-labs/sealed-secrets
 # Installing Sealed Secret Operator & Kubeseal
 ## Sealed Secret CRD & Controller
 `kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.13.1/controller.yaml`

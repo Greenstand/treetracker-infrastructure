@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ambassador-monitor
+  labels:
+    app: ambassador
+    release: prometheus-community
+spec:
+  namespaceSelector:
+    matchNames:
+    - ambassador
+  selector:
+    matchLabels:
+      service: ambassador-admin
+  endpoints:
+  - port: ambassador-admin

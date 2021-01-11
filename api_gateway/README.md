@@ -34,4 +34,4 @@ Once you have the playbook run in the cluster, you can run `edgectl install` and
 ### Adding monitoring to Prometheus
 Once Ambassador has been installed, we need to expose the /metrics path so that Prometheus can scrape metrics. We do this by creating a ServiceMonitor resource in the same namespace that Ambassador is running it. This tells Prometheus how to collect metrics from Ambassador. There is already a ServiceMonitor manifest file in this repo that can be used.
 
-`kubectl -n <ambassador_namespace> apply -f ambassador-service-monitor.yaml`
+`kubectl -n ambassador apply -f ambassador-service-monitor.yaml`

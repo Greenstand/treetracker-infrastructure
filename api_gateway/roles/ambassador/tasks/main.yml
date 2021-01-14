@@ -20,7 +20,7 @@
       kind: ServiceMonitor
       metadata:
         name: ambassador-monitor
-        namespace: 
+        namespace: ambassador
         labels:
           app: ambassador
           release: prometheus-community

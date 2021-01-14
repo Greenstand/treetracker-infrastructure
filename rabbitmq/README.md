@@ -12,6 +12,8 @@
     1. You can view the relevant contexts using kubectl config view | grep treetracker 2-4 can be done using ./monitoring/doctl_setup.sh CLUSTER_NAME, e.g. ./monitoring/doctl_setup.sh do-sfo2-dev-k8s-treetracker
 1. Deploy RabbitMQ operator `kubectl apply -f "https://github.com/rabbitmq/cluster-operator/releases/latest/download/cluster-operator.yml"`
 1. kubectl apply -f definition.yml
+1. Expose RabbitMQ metrics by deploying PodMonitor resource
+`kubectl apply -f rabbitmq-pod-monitor.yaml`
 
 #### Exposing RabbitMQ cluster for dev purposes
 expose-service.yaml contains a resource for making rabbitmq available to devs working outside of the cluster.  This shouldn't be used in test or production.

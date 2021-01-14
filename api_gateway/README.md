@@ -29,9 +29,4 @@ Once you have the playbook run in the cluster, you can run `edgectl install` and
     1. Switch to the context if not already switched, e.g. kubectl config set-context do-sfo2-dev-k8s-treetracker 
     1. You can view the relevant contexts using kubectl config view | grep treetracker 2-4 can be done using ./monitoring/doctl_setup.sh CLUSTER_NAME, e.g. ./monitoring/doctl_setup.sh do-sfo2-dev-k8s-treetracker
 1. Run ansible to install ambassador helm chart `ansible-playbook ambassador-playbook.yml`
-1. Ambassdor is deployed! 
-
-### Adding monitoring to Prometheus
-Once Ambassador has been installed, we need to expose the /metrics path so that Prometheus can scrape metrics. We do this by creating a ServiceMonitor resource in the same namespace that Ambassador is running it. This tells Prometheus how to collect metrics from Ambassador. There is already a ServiceMonitor manifest file in this repo that can be used.
-
-`kubectl -n ambassador apply -f ambassador-service-monitor.yaml`
+1. Ambassdor is deployed! Ambassador metrics are also exposed and are being scraped by Prometheus.

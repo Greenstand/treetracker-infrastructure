@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-external-2b2
+  annotations:
+    service.beta.kubernetes.io/do-loadbalancer-name: "rabbitmqexternaldevlb2b"
+    service.beta.kubernetes.io/do-loadbalancer-healthcheck-port: "15672"
+    service.beta.kubernetes.io/do-loadbalancer-healthcheck-protocol: "http"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 5672
+    name: rabbitmqcluster-sample-server
+  - port: 15672
+    name: rabbitmq-admin
+  selector:
+    app.kubernetes.io/name: rabbitmqcluster-sample

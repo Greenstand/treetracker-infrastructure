@@ -29,4 +29,4 @@ Once you have the playbook run in the cluster, you can run `edgectl install` and
     1. Switch to the context if not already switched, e.g. kubectl config set-context do-sfo2-dev-k8s-treetracker 
     1. You can view the relevant contexts using kubectl config view | grep treetracker 2-4 can be done using ./monitoring/doctl_setup.sh CLUSTER_NAME, e.g. ./monitoring/doctl_setup.sh do-sfo2-dev-k8s-treetracker
 1. Run ansible to install ambassador helm chart `ansible-playbook ambassador-playbook.yml`
-1. Ambassdor is deployed! 
+1. Ambassdor is deployed! Ambassador metrics are also exposed and are being scraped by Prometheus.

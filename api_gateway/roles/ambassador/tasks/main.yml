@@ -11,3 +11,25 @@
     chart_version: 6.5.9
     release_namespace: ambassador
     create_namespace: true
+
+- name: Install service monitor to expose ambassador metrics
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: monitoring.coreos.com/v1
+      kind: ServiceMonitor
+      metadata:
+        name: ambassador-monitor
+        namespace: ambassador
+        labels:
+          app: ambassador
+          release: prometheus-community
+      spec:
+        namespaceSelector:
+          matchNames:
+          - ambassador
+        selector:
+          matchLabels:
+            service: ambassador-admin
+        endpoints:
+        - port: ambassador-admin

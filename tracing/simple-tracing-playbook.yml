@@ -1,0 +1,8 @@
+---
+- name: Install jaeger all in one
+  hosts: localhost-py3
+  gather_facts: false
+  connection: local
+  roles:
+    - jaeger_operator
+    - simple_jaeger

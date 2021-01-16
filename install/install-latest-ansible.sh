@@ -6,3 +6,4 @@ sudo apt-get install node-gyp npm helm --yes
 sudo apt-get install python3-dev python3-pip python3-docker --yes
 pip3 install ansible docker --upgrade
 ansible-galaxy collection install community.kubernetes
+pip3 install --upgrade --user openshift

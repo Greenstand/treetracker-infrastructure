@@ -1,0 +1,12 @@
+---
+- name: Deploy a simple jaeger
+  community.kubernetes.k8s:
+    state: present
+    namespace: tracing
+    src: "{{ role_path }}/files/simple-jaeger.yaml"
+
+- name: Create UI mapping
+  community.kubernetes.k8s:
+    state: present
+    namespace: tracing
+    src: "{{ role_path }}/files/jaeger-ui-mapping.yaml"

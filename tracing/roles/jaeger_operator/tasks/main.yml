@@ -1,0 +1,13 @@
+---
+- name: Add default repository
+  community.kubernetes.helm_repository:
+    name: jaegertracing
+    repo_url: https://jaegertracing.github.io/helm-charts
+
+- name: Install jaeger operator
+  community.kubernetes.helm:
+    name: tracing
+    chart_ref: jaegertracing/jaeger-operator
+    chart_version: 2.18.3
+    release_namespace: tracing
+    create_namespace: true

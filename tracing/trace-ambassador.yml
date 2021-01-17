@@ -1,0 +1,7 @@
+---
+- name: Add tracing plugin for ambassador
+  hosts: localhost-py3
+  gather_facts: false
+  connection: local
+  roles:
+    - trace_ambassador

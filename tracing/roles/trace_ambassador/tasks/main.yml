@@ -1,0 +1,11 @@
+---
+- name: Add tracing plugin for ambassador
+  community.kubernetes.k8s:
+    state: present
+    namespace: ambassador
+    src: "{{ role_path }}/files/trace-ambassador.yaml"
+  register: tracing_plugin
+
+- name: Rolling restart if tracing plugin changed
+  shell: /bin/bash -c "kubectl -n ambassador rollout restart deployment ambassador"
+  when: tracing_plugin.changed

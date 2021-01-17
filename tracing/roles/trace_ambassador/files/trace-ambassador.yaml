@@ -1,0 +1,13 @@
+---
+apiVersion: getambassador.io/v2
+kind:  TracingService
+metadata:
+  name:  jaeger-tracing-service
+spec:
+  service: "jaeger-collector.tracing:9411"
+  driver: zipkin
+  config: {}
+  tag_headers:
+  - ":path"
+  sampling:
+    overall: 100

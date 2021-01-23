@@ -1,5 +1,5 @@
 ---
-- name: Install prom operator
+- name: Install ambassador operator
   hosts: localhost-py3
   gather_facts: false
   connection: local

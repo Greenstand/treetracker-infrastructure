@@ -1,9 +1,0 @@
----
-apiVersion: getambassador.io/v2
-kind: Mapping
-metadata:
-  name: webmap-be
-  namespace: development
-spec:
-  prefix: /
-  service: treetracker-webmap-api-ambassador-svc

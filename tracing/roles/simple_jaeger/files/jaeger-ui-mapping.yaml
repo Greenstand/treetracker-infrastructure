@@ -1,0 +1,10 @@
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: jaeger-ui
+  namespace: tracing
+spec:
+  prefix: /tracing/
+  rewrite: ""
+  service: jaeger-query:16686

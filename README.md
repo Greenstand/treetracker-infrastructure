@@ -20,3 +20,6 @@ Milestone 2 - Prepare Test Environment:
 * Connect all microservices logging to ELK stack
 
 
+## Deploying a New Environment
+1. Create a new k8s cluster (./kubernetes terraform)
+2. Deploy Ambassador API gateway into this environment

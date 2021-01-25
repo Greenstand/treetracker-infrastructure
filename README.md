@@ -23,3 +23,6 @@ Milestone 2 - Prepare Test Environment:
 ## Deploying a New Environment
 1. Create a new k8s cluster (./kubernetes terraform)
 2. Deploy Ambassador API gateway into this environment
+3. Deploy Monitoring - prometheus and grafana
+4. Deploy RabbitMQ operator
+5. Deploy Sealed Secrets CRD and Controller

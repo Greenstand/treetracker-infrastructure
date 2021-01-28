@@ -7,3 +7,16 @@ module "field_schema" {
 }
 
 
+module "wallet_schema" {
+  source = "./schemas/wallet"
+  providers = {
+     postgresql = postgresql.treetracker
+  }
+}
+
+module "treetracker_schema" {
+  source = "./schemas/treetracker"
+  providers = {
+     postgresql = postgresql.treetracker
+  }
+}

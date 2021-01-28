@@ -16,15 +16,15 @@ resource "postgresql_role" "service_user" {
 }
 
 
-resource "postgresql_grant" "wallet-microservice-user-usage" {
+resource "postgresql_grant" "microservice-user-usage" {
   database    = "treetracker"
   role        = "s_${var.schema}"
-  schema      = "wallet"
+  schema      = var.schema
   object_type = "schema"
   privileges  = ["USAGE"]
 }
 
-resource "postgresql_grant" "wallet-microservice-user" {
+resource "postgresql_grant" "microservice-user" {
   database    = "treetracker"
   role        = "s_${var.schema}"
   schema      = var.schema
@@ -45,7 +45,7 @@ resource "postgresql_role" "migration_user" {
 }
 
 
-resource "postgresql_grant" "wallet-microservice-migration-executer" {
+resource "postgresql_grant" "microservice-migration-executer" {
   database    = "treetracker"
   role        = "m_${var.schema}"
   schema      = var.schema

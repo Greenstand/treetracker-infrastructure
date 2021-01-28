@@ -1,5 +1,18 @@
 
-resource "postgresql_schema" "field_schema" {
-  name  = "field"
-  owner = "doadmin"
+
+
+module "microservice_schema" {
+  source = "./modules/microservice_schema"
+
+  for_each = toset([
+	      "field",
+              "wallet", 
+              "treetracker"
+	     ])
+  schema = each.key
+  providers = {
+     postgresql = postgresql.treetracker
+  }
 }
+
+

@@ -11,6 +11,16 @@
     chart_version: 6.5.9
     release_namespace: ambassador
     create_namespace: true
+    release_values:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: doks.digitalocean.com/node-pool
+                  operator: In
+                  values:
+                    - cloud-services-node-pool
 
 - name: Install service monitor to expose ambassador metrics
   community.kubernetes.k8s:
@@ -33,3 +43,4 @@
             service: ambassador-admin
         endpoints:
         - port: ambassador-admin
+   

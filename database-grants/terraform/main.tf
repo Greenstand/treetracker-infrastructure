@@ -20,3 +20,18 @@ module "treetracker_schema" {
      postgresql = postgresql.treetracker
   }
 }
+
+module "pipeline_schema" {
+  source = "./schemas/pipeline"
+  providers = {
+     postgresql = postgresql.data_pipeline
+  }
+}
+
+module "webmap_schema" {
+  source = "./schemas/webmap"
+  providers = {
+     postgresql = postgresql.treetracker
+  }
+}
+

@@ -1,6 +1,10 @@
 resource "postgresql_schema" "microservice_schema" {
   name  = var.schema
   owner = "doadmin"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "random_password" "s_password" {

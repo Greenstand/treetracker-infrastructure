@@ -78,3 +78,16 @@ resource "postgresql_role" "treetracker_manager" {
   login    = true
   password = random_password.treetracker_manager_password.result
 }
+
+resource "random_password" "token_trading_admin_password" {
+  length = 16
+  special = true
+  override_special = "_%@"
+}
+
+resource "postgresql_role" "token_trading_admin" {
+  provider = "postgresql.treetracker"
+  name     = "token_trading_admin"
+  login    = true
+  password = random_password.token_trading_admin_password.result
+}

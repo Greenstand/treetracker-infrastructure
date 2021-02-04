@@ -41,6 +41,11 @@ resource "digitalocean_database_firewall" "treetracker-database-fw" {
   }
 
   rule {
+    type  = "droplet"
+    value = "prod-batch-processor-20200703-1612148239333-s-1vcpu-2gb-nyc1-01"
+  }
+
+  rule {
     type  = "ip_addr"
     value = "157.230.2.227"
   }

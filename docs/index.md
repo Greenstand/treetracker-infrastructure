@@ -1,37 +1,35 @@
-## Welcome to GitHub Pages
+## Welcome to Treetracker Infrastructure
 
-You can use the [editor on GitHub](https://github.com/Greenstand/treetracker-infrastructure/edit/master/docs/index.md) to maintain and preview the content for your website in Markdown files.
+### Greenstand's Current Architecture
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+There are two ways most applications are deployed. The majority of our applications run currently on digital ocean droplets. New applications are being run on Digital Ocean's Managed Kubernetes.
 
-### Markdown
+#### The Current Setup
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+There is a managed postgresql database that most of our tree data is backed by.
 
-```markdown
-Syntax highlighted code block
+Tree images are uploaded to Digital Ocean's spaces. The various backend APIs are hosted on a handful of Digital Ocean droplets.
 
-# Header 1
-## Header 2
-### Header 3
+### The Application Platform
 
-- Bulleted
-- List
+The goal of the application platform is to have a relatively homogeneous set of services, i.e. services that are all:
+* Deployed into the DO Managed Kubernetes clusters via [kustomize](https://kustomize.io/)
+* Have roughly the same setup as far as how they are deployed/monitored/reached
 
-1. Numbered
-2. List
+For how services are reached (i.e. ingress)
+* A reverse proxy exists for our services controlled by [Ambassador](https://www.getambassador.io/)
+* DNS is set with terraform in our Digital Ocean account
 
-**Bold** and _Italic_ and `Code` text
+For how our services are monitored, monitoring is split among three pieces
+  * Prometheus + Grafana for metrics
+  * Jaeger for traces
+  * Elasticsearch + Kibana for logs
+* Kubeseal for secrets
 
-[Link](url) and ![Image](src)
-```
+#### A little more detail: why Kubernetes and what is it?
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Greenstand/treetracker-infrastructure/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+Kubernetes is the open source version of Google's container management infrastructure. It allows us to monitor services in a more generic/ cleaner way, and also deal with scaling and lifecycle issues at a level above the application. It also means we don't have to manage our own boxes (i.e. our own Digital Ocean droplets).
 
 ### Support or Contact
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+Want to reach out to the team? Come hit us up on our [slack channel](https://app.slack.com/client/T6WR1QS8J/CH79F6W8G)

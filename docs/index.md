@@ -14,6 +14,7 @@ Tree images are uploaded to Digital Ocean's spaces. The various backend APIs are
 
 The goal of the application platform is to have a relatively homogeneous set of services, i.e. services that are all:
 * Deployed into the DO Managed Kubernetes clusters via [kustomize](https://kustomize.io/)
+* Kubeseal for secrets
 * Have roughly the same setup as far as how they are deployed/monitored/reached
 
 For how services are reached (i.e. ingress)
@@ -21,10 +22,9 @@ For how services are reached (i.e. ingress)
 * DNS is set with terraform in our Digital Ocean account
 
 For how our services are monitored, monitoring is split among three pieces
-  * Prometheus + Grafana for metrics
-  * Jaeger for traces
-  * Elasticsearch + Kibana for logs
-* Kubeseal for secrets
+* Prometheus + Grafana for metrics
+* Jaeger for traces
+* Elasticsearch + Kibana for logs
 
 #### A little more detail: why Kubernetes and what is it?
 

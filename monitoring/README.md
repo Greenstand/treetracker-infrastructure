@@ -1,14 +1,6 @@
-### Authenticating to kubernetes clusters
+### How do I run these playbooks?
 
-1. Install doctl, `brew install doctl` on mac
-2. Use `doctl auth init` and pass your DO API key
-3. Save the kubeconfig relevant to the cluster, e.g. `doctl kubernetes cluster kubeconfig save dev-k8s-treetracker`
-4. Switch to the context if not already switched, e.g. `kubectl config set-context do-sfo2-dev-k8s-treetracker` You can view the relevant contexts using `kubectl config view | grep treetracker`
-2-4 can be done using `./monitoring/doctl_setup.sh CLUSTER_NAME`, e.g. `./monitoring/doctl_setup.sh dev-k8s-treetracker`
-5. Install helm 3 if not present, `brew install helm`
-6. You are now ready to run any helm command/ playbooks relevant to the repo
-
-
+You'll need to be authenticated to the clusters first, refer to the [README](../scripts/README.md) in the scripts folder to do so.
 ### How do I see what's running in the cluster?
 
 You can use `helm list -n monitoring` to see what releases there are
@@ -30,4 +22,9 @@ kubectl port-forward -n monitoring svc/prometheus-community-kube-alertmanager 90
 kubectl port-forward -n monitoring svc/prometheus-community-kube-prometheus 9090:9090
 ```
 
+There's also a mapping file for the URL https://HOSTNAME/grafana
+
 More info on how to access these things is listed [here](https://www.digitalocean.com/community/tutorials/how-to-set-up-digitalocean-kubernetes-cluster-monitoring-with-helm-and-prometheus-operator)
+
+
+### How do I view Kibana

@@ -1,0 +1,9 @@
+---
+- name: Install elasticsearch and kibana
+  hosts: localhost-py3
+  gather_facts: false
+  connection: local
+  # ansible_python_interpreter: /usr/bin/python3
+  roles:
+    - elasticsearch
+    - kibana

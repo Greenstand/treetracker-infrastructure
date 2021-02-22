@@ -7,3 +7,21 @@ metadata:
 spec:
   prefix: /grafana/
   service: prometheus-community-grafana
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: alertmanager-backend
+  namespace: monitoring
+spec:
+  prefix: /alertmanager/
+  service: prometheus-community-kube-alertmanager:9093
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: prometheus-backend
+  namespace: monitoring
+spec:
+  prefix: /prometheus/
+  service: prometheus-operated:9090

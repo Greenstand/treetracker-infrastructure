@@ -1,0 +1,23 @@
+---
+# Permit co-located instances for dev/test workflows
+antiAffinity: "soft"
+
+# Shrink default JVM heap.
+esJavaOpts: "-Xms512m -Xmx512m"
+
+# Allocate smaller chunks of memory per pod.
+resources:
+  requests:
+    cpu: "100m"
+    memory: "512M"
+  limits:
+    cpu: "1000m"
+    memory: "1000M"
+
+# Request smaller persistent volumes.
+volumeClaimTemplate:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: do-block-storage
+  resources:
+    requests:
+      size: 5Gi

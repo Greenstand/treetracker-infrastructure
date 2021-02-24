@@ -1,0 +1,16 @@
+---
+- name: Add elasticsearch repository
+  community.kubernetes.helm_repository:
+    name: elastic
+    repo_url: https://helm.elastic.co
+
+- name: Install elasticsearch
+  community.kubernetes.helm:
+    name: elasticsearch
+    chart_ref: elastic/elasticsearch
+    chart_version: 7.10.2
+    release_namespace: monitoring
+    create_namespace: true
+    values: "{{ lookup('file','values.yaml') | from_yaml }}"
+
+# TODO: Add prom metric exporter

@@ -26,7 +26,7 @@ resource "postgresql_role" "data_pipeline" {
 
 resource "postgresql_grant" "data-pipeline-public-table" {
   provider = "postgresql.data_pipeline"
-  database    = "treetracker"
+  database    = "data_pipeline"
   role        = "data_pipeline"
   schema      = "public"
   object_type = "table"
@@ -35,7 +35,7 @@ resource "postgresql_grant" "data-pipeline-public-table" {
 
 resource "postgresql_grant" "data-pipeline-public-sequence" {
   provider = "postgresql.data_pipeline"
-  database    = "treetracker"
+  database    = "data_pipeline"
   role        = "data_pipeline"
   schema      = "public"
   object_type = "sequence"

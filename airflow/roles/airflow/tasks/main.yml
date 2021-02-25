@@ -12,14 +12,27 @@
     release_namespace: airflow
     create_namespace: true
     release_values:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                - key: doks.digitalocean.com/node-pool
-                  operator: In
-                  values:
-                    - cloud-services-node-pool
+      airflow:
+        config:
+          AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"
+          #AIRFLOW__WEBSERVER__AUTHENTICATE: "True"
+          #AIRFLOW__WEBSERVER__AUTH_BACKEND: "airflow.contrib.auth.backends.password_auth"
+        extraPipPackages:
+          - "flask-bcrypt~=0.7.1"
+      web:
+        baseUrl: "http://dev-k8s.treetracker.org/airflow"
+    #ingress:
+    # enabled: true
+    #web:
+    #baseUrl: "http://dev.airflow.treetracker.org/"
+    #flower:
+    #urlPrefix: "/flower"
+    #NOTE: ingress is created, but need to use external-dns chart to make LB/DNS
 
-   
+
+- name: Create UI mapping for control panel
+  community.kubernetes.k8s:
+    state: present
+    namespace: airflow 
+    src: "{{ role_path }}/files/panel-mapping.yaml"
+

@@ -1,0 +1,68 @@
+---
+- name: Add airflow repository
+  community.kubernetes.helm_repository:
+    name: airflow-stable
+    repo_url: https://airflow-helm.github.io/charts
+
+- name: Install airflow chart
+  community.kubernetes.helm:
+    name: airflow
+    chart_ref: airflow-stable/airflow
+    chart_version: 7.16.0
+    release_namespace: airflow
+    create_namespace: true
+    release_values:
+      web:
+        baseUrl: "http://dev.airflow.treetracker.org/airflow/"
+      flower:
+        urlPrefix: "/airflow/flower"
+      ingress:
+        web:
+          path: "/airflow"
+        flower:
+          path: "/airflow/flower"
+
+
+      scheduler.affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: doks.digitalocean.com/node-pool
+                  operator: In
+                  values:
+                    - cloud-services-node-pool
+
+
+      web.affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: doks.digitalocean.com/node-pool
+                  operator: In
+                  values:
+                    - cloud-services-node-pool
+
+      workers.affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: doks.digitalocean.com/node-pool
+                  operator: In
+                  values:
+                    - cloud-services-node-pool
+
+      flower.affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: doks.digitalocean.com/node-pool
+                  operator: In
+                  values:
+                    - cloud-services-node-pool
+
+   
+   

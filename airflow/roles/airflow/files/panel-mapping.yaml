@@ -1,0 +1,15 @@
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: airflow-panel
+  namespace: airflow
+spec:
+  prefix: /airflow/
+  service: airflow-web:8080
+  rewrite: ""
+  #rewrite: /
+  #add_request_headers:
+  #  x-forwarded-proto:
+  #    value: "https"
+  #    append: False

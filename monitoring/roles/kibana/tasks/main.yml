@@ -1,10 +1,12 @@
 ---
-- name: Add elasticsearch repository
+- name: Add elastic repository
+  tags: [kibana]
   community.kubernetes.helm_repository:
     name: elastic
     repo_url: https://helm.elastic.co
 
 - name: Install kibana
+  tags: [kibana]
   community.kubernetes.helm:
     name: kibana
     chart_ref: elastic/kibana

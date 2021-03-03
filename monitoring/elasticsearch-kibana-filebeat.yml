@@ -1,5 +1,5 @@
 ---
-- name: Install elasticsearch and kibana
+- name: Install elasticsearch, kibana and filebeat
   hosts: localhost-py3
   gather_facts: false
   connection: local
@@ -7,3 +7,4 @@
   roles:
     - elasticsearch
     - kibana
+    - filebeat

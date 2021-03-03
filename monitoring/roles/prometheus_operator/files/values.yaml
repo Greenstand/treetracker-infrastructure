@@ -2,6 +2,7 @@
 # Define persistent storage for Prometheus (PVC)
 prometheus:
   prometheusSpec:
+    externalUrl: http://prometheus-community-kube-prometheus:9090/prometheus/
     storageSpec:
       volumeClaimTemplate:
         spec:
@@ -9,7 +10,7 @@ prometheus:
           storageClassName: do-block-storage
           resources:
             requests:
-              storage: 5Gi
+              storage: 20Gi
 
 # Define persistent storage for Grafana (PVC)
 grafana:
@@ -26,6 +27,7 @@ grafana:
 
 # Define persistent storage for Alertmanager (PVC)
 alertmanager:
+  externalUrl: http://prometheus-community-kube-alertmanager:9093/alertmanager/
   alertmanagerSpec:
     storage:
       volumeClaimTemplate:

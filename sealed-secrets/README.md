@@ -47,20 +47,27 @@ https://github.com/bitnami-labs/sealed-secrets/releases
 
 
 # Usage: Creating Sealed Secrets With Kubeseal
-## 1. Creating a temporary k8s secret to be encrypted
-`echo -n TEST | kubectl -n development create secret generic treetracker-test-secret --dry-run=client --from-file=jwt=/dev/stdin -o yaml >treetracker-test-secret.yaml`
+
+## Using our script:
+
+Run scripts/create-secret.sh to perform an interactive, automated sealed secret creation routine.  You will need kubectl access to the k8s cluster to successfully run this script.
+
+## Manually:
+
+### 1. Creating a temporary k8s secret to be encrypted
+`echo -n $SECRET | kubectl -n $NAMESPACE create secret generic $RESOURCE_NAME --dry-run=client --from-file=$KEY_NAME=/dev/stdin -o yaml >treetracker-new-secret.yaml`
 
 This will create a new file called **treetracker-test-secret.yaml** that will be used as input to Kubeseal.
 
 Remove any unnecessary metadata such as **creation timestamp, namespace**.
-## 2. Using Kubeseal to create a SealedSecret resource
+### 2. Using Kubeseal to create a SealedSecret resource
 `kubeseal -n development -o yaml <treetracker-test-secret.yaml >treetracker-sealed-secret.yaml`
 
 This will create a new file called **treetracker-sealed-secret.yaml** that can be safely committed to source control.
 
 Remove any unnecessary metadata such as **creation timestamp, namespace**.
 
-## 3. Deploy newly created SealedSecret
+### 3. Deploy newly created SealedSecret
 `kubectl -n development create -f treetracker-sealed-secret.yaml`
 
 You will now see a SealedSecret resource along with a Secret resource created.

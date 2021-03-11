@@ -1,15 +1,33 @@
 #! /bin/bash
 set -e
-kubectl config get-contexts
+
+while getopts r:k: flag
+do
+    case "${flag}" in
+        r) RESOURCE_NAME=${OPTARG};;
+        k) KEY_NAME=${OPTARG};;
+    esac
+done
+
 
 echo 'Namespace:'
 read NAMESPACE
 
 echo 'Secret resource name:'
-read RESOURCE_NAME
+if [ -z "$RESOURCE_NAME" ];
+then
+  read RESOURCE_NAME
+else
+  echo $RESOURCE_NAME
+fi
 
 echo 'Key name:'
-read KEY_NAME
+if [ -z "$KEY_NAME" ];
+then
+  read KEY_NAME
+else
+  echo $KEY_NAME
+fi
 
 echo 'Secret value:'
 read SECRET

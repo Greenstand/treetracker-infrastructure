@@ -5,5 +5,5 @@ metadata:
   name: kibana-backend
   namespace: monitoring
 spec:
-  prefix: /kibana/
+  prefix: /authed/kibana/
   service: kibana-kibana:5601

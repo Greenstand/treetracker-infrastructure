@@ -1,0 +1,10 @@
+# @TEMPLATE@
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: github-app
+data:
+  clientId: {{ .Values.clientId }}
+  clientSecret: {{ .Values.clientSecret }}

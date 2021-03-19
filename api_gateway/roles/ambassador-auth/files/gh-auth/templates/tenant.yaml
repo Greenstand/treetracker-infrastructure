@@ -1,0 +1,12 @@
+apiVersion: getambassador.io/v1beta2
+kind: Filter
+metadata:
+  name: keycloak
+spec:
+  OAuth2:
+    authorizationURL: https://{{ .Values.ambassadorIp }}/auth/realms/demo
+    clientURL: https://{{ .Values.ambassadorIp }}
+    audience: app
+    clientID: app
+    secret: {{ .Values.secret }}
+    insecureTLS: true

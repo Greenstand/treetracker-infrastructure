@@ -16,6 +16,7 @@
     values: "{{ lookup('file','values.yaml') | from_yaml }}"
 
 - name: Create UI mapping for logs
+  tags: [kibana]
   community.kubernetes.k8s:
     state: present
     namespace: monitoring

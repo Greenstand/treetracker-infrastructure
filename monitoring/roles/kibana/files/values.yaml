@@ -1,7 +1,7 @@
 kibanaConfig:
   kibana.yml: |
     server:
-      basePath: /kibana
+      basePath: /authed/kibana
 
 resources:
   requests:

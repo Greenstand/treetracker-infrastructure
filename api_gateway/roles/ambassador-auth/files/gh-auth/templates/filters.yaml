@@ -1,0 +1,12 @@
+---
+apiVersion: getambassador.io/v1beta2
+kind: FilterPolicy
+metadata:
+  name: auth-policy
+spec:
+  rules:
+    - host: "*"
+      path: /authed/*
+      public: false
+      filters:
+        - name: keycloak

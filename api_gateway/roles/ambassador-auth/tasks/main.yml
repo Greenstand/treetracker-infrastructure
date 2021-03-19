@@ -1,0 +1,12 @@
+---
+- name: Install local chart for auth
+  community.kubernetes.helm:
+    name: ambassador-auth
+    chart_ref: "{{ role_path }}/files/gh-auth"
+    release_namespace: ambassador
+    release_values:
+      clientId: "{{ clientId }}"
+      clientSecret: "{{ clientSecret }}"
+      ambassadorIp: "{{ ambassadorIp }}"
+      secret: "{{ secret }}"
+      keycloakPassword: "{{ keycloakPassword }}"

@@ -1,0 +1,8 @@
+apiVersion: getambassador.io/v2
+kind:  Mapping
+metadata:
+  name:  redirect
+spec:
+  prefix: /
+  service: map.treetracker.org
+  host_redirect: true

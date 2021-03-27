@@ -57,3 +57,12 @@ resource "postgresql_grant" "microservice-migration-executer" {
   privileges  = ["USAGE", "CREATE"]
 }
 
+
+resource "postgresql_grant" "microservice-migration-executer-tables" {
+  database    = "treetracker"
+  role        = "m_${var.schema}"
+  schema      = var.schema
+  object_type = "table"
+  privileges  = ["INSERT"]
+}
+

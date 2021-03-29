@@ -15,7 +15,7 @@ prometheus:
 # Define persistent storage for Grafana (PVC)
 grafana:
   # Set password for Grafana admin user
-  adminPassword: prometheus-operator
+  adminPassword: {{ adminPassword }}
   persistence:
     enabled: true
     storageClassName: do-block-storage
@@ -23,7 +23,17 @@ grafana:
     size: 5Gi
   grafana.ini:
     server:
-      root_url: https://%(domain)s:/grafana
+      root_url: https://{{ domain }}/grafana
+    auth.github:
+      enabled: true
+      allow_sign_up: true
+      scopes: user:email,read:org
+      auth_url: https://github.com/login/oauth/authorize
+      token_url: https://github.com/login/oauth/access_token
+      api_url: https://api.github.com/user
+      allowed_organizations: Greenstand
+      client_id: {{ clientId }}
+      client_secret: {{ clientSecret }}
 
 # Define persistent storage for Alertmanager (PVC)
 alertmanager:

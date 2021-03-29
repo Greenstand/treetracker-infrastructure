@@ -11,7 +11,7 @@
     chart_version: 9.4.4
     release_namespace: monitoring
     create_namespace: true
-    values: "{{ lookup('file','values.yaml') | from_yaml }}"
+    values: "{{ lookup('template','files/values.yaml') | from_yaml }}"
 
 - name: Create UI mapping for monitoring
   community.kubernetes.k8s:

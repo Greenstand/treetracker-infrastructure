@@ -63,12 +63,12 @@ resource "aws_iam_user_policy" "cloudfront_user_policy" {
       {
          "Effect":"Allow",
          "Action": "s3:*Object",
-         "Resource":"arn:aws:s3:::treetracker-infrastructure-cdn/*"
+         "Resource":"arn:aws:s3:::dev-admin.treetracker.org/*"
       },
       {
          "Effect": "Allow",
          "Action": "s3:ListBucket",
-         "Resource": "arn:aws:s3:::treetracker-infrastructure-cdn"
+         "Resource": "arn:aws:s3:::dev-admin.treetracker.org"
       },
       {
          "Effect":"Allow",

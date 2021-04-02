@@ -1,11 +1,29 @@
 ### How do I run these playbooks?
 
 You'll need to be authenticated to the clusters first, refer to the [README](../scripts/README.md) in the scripts folder to do so.
+
+#### Using decrypted values
+
+To encrypt/decrypt values, add the required password into `password_file` and run
+
+```
+ansible-vault decrypt dev-values.enc --vault-password-file password_file
+# or
+ansible-vault encrypt dev-values.enc --vault-password-file password_file
+```
+
+Don't commit decrypted values!
+
+And to run the playbook, use
+
+```
+ansible-playbook prom-operator-playbook.yml -e @dev-values.enc --vault-password-file password_file
+```
+
 ### How do I see what's running in the cluster?
 
 You can use `helm list -n monitoring` to see what releases there are
 You can use `kubectl get pods -n monitoring` to see what's running in the monitoring namespace
-
 
 ### How do I view the grafana dashboard
 
@@ -28,3 +46,5 @@ More info on how to access these things is listed [here](https://www.digitalocea
 
 
 ### How do I view Kibana
+
+Kibana is accessible on URL/kibana (e.g. dev-k8s.treetracker.org/kibana)

@@ -1,0 +1,19 @@
+---
+- name: Add bitnami repository
+  community.kubernetes.helm_repository:
+    name: bitnami
+    repo_url: https://charts.bitnami.com/bitnami
+
+- name: Install metrics server
+  community.kubernetes.helm:
+    name: metrics-server
+    chart_ref: bitnami/metrics-server
+    chart_version: 5.8.3
+    release_namespace: metrics-server
+    create_namespace: true
+    release_values:
+      extraArgs:
+        kubelet-insecure-tls: true
+        kubelet-preferred-address-types: InternalIP
+      apiService:
+        create: true

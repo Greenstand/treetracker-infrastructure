@@ -1,0 +1,7 @@
+---
+- name: Install metrics server for k8s
+  hosts: localhost-py3
+  gather_facts: false
+  connection: local
+  roles:
+   - metrics_server

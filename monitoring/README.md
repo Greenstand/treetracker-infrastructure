@@ -2,6 +2,15 @@
 
 You'll need to be authenticated to the clusters first, refer to the [README](../scripts/README.md) in the scripts folder to do so.
 
+Examples:
+
+```
+# Install the prom operator
+ansible-playbook prom-operator-playbook.yml -e @dev-values.enc --vault-password-file password_file
+
+ansible-playbook elasticsearch-kibana-filebeat.yml
+```
+
 #### Using decrypted values
 
 To encrypt/decrypt values, add the required password into `password_file` and run

@@ -1,0 +1,19 @@
+---
+- name: Add ambassador repository
+  community.kubernetes.helm_repository:
+    name: datawire
+    repo_url: https://www.getambassador.io
+
+- name: Install auth service secret
+  community.kubernetes.k8s:
+    state: present
+    namespace: ambassador
+    definition: "{{ lookup('template','files/basic-auth-secret.yml') | from_yaml }}"
+   
+
+- name: Install auth service and mapping
+  community.kubernetes.k8s:
+    state: present
+    namespace: ambassador
+    src: "{{ role_path }}/files/basic-auth-service.yml"
+

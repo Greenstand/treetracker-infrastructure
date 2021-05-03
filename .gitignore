@@ -3,4 +3,5 @@
 terraform.tfvars
 .terraform*
 *.swp
-password_file
+password_file*
+.vscode

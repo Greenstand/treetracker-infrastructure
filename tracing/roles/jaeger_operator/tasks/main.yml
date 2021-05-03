@@ -11,3 +11,9 @@
     chart_version: 2.18.3
     release_namespace: tracing
     create_namespace: true
+    release_values:
+      resources:
+        requests:
+          memory: "64Mi"
+        limits:
+          memory: "128Mi"

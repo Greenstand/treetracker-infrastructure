@@ -33,6 +33,14 @@
                   values:
                     - cloud-services-node-pool
 
+      scheduler
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
 
       web.affinity:
         nodeAffinity:
@@ -43,6 +51,15 @@
                   operator: In
                   values:
                     - cloud-services-node-pool
+         
+      web:
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
 
       workers.affinity:
         nodeAffinity:
@@ -54,6 +71,15 @@
                   values:
                     - cloud-services-node-pool
 
+      workers:
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+
       flower.affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -63,6 +89,15 @@
                   operator: In
                   values:
                     - cloud-services-node-pool
+
+      flower:
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
 
    
    

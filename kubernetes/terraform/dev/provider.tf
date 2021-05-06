@@ -11,9 +11,9 @@ terraform {
     
   }
 }
-data "digitalocean_kubernetes_cluster" "kubernetes-cluster" {
-  name = "dev-k8s-treetracker"
-}
+#data "digitalocean_kubernetes_cluster" "kubernetes-cluster" {
+#  name = "dev-k8s-treetracker"
+#}
 
 provider "kubernetes" {
   host             = data.digitalocean_kubernetes_cluster.kubernetes-cluster.endpoint

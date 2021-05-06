@@ -1,9 +1,11 @@
+#variable  "bucket_name" {}
+#variable  "key_name"{}
 
 terraform {
   # DigitalOcean uses the S3 spec.
   backend "s3" {
-    bucket = "var.bucket_name"
-    key    = "var.key_name"
+#    bucket = var.bucket_name
+#    key    = var.key_name
     endpoint = "https://sfo2.digitaloceanspaces.com"
     # DO uses the S3 format
     # eu-west-1 is used to pass TF validation

@@ -1,6 +1,4 @@
 variable "cluster_name" {}
-variable  "bucket_name" {}
-variable  "key_name"{}
 
 data "digitalocean_kubernetes_versions" "treetracker_kubernetes_version" {
   version_prefix = "1.19."

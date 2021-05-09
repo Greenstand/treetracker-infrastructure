@@ -21,6 +21,37 @@
           - "flask-bcrypt~=0.7.1"
       web:
         baseUrl: "http://dev-k8s.treetracker.org/airflow"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+      scheduler:
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+      workers:
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+      flower:
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
     #ingress:
     # enabled: true
     #web:
@@ -33,6 +64,6 @@
 - name: Create UI mapping for control panel
   community.kubernetes.k8s:
     state: present
-    namespace: airflow 
+    namespace: airflow
     src: "{{ role_path }}/files/panel-mapping.yaml"
 

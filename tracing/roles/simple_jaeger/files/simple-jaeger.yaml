@@ -12,3 +12,10 @@ spec:
         base-path: /tracing # Must match mapping file
   ingress:
     enabled: false # Use ambassador instead
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"

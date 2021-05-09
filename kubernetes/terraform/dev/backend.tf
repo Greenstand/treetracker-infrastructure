@@ -1,7 +1,8 @@
+
 terraform {
   # DigitalOcean uses the S3 spec.
   backend "s3" {
-    bucket = "treetracker-production-terraform"
+    # bucket = provided by backend-config.tfvars
     key    = "terraform-kubernetes.tfstate"
     endpoint = "https://sfo2.digitaloceanspaces.com"
     # DO uses the S3 format

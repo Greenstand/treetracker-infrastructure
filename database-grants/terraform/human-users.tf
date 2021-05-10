@@ -91,3 +91,19 @@ resource "postgresql_role" "token_trading_admin" {
   login    = true
   password = random_password.token_trading_admin_password.result
 }
+
+
+
+resource "random_password" "wallet_operator_password" {
+  length = 16
+  special = true
+  override_special = "_%@"
+}
+
+resource "postgresql_role" "wallet_operator_human" {
+  provider = "postgresql.treetracker"
+  name     = "wallet_operator"
+  login    = true
+  password = random_password.wallet_operator_password.result
+}
+

@@ -1,14 +1,16 @@
 #! /bin/bash
 set -e
 
-while getopts r:k: flag
+while getopts r:k:s: flag
 do
     case "${flag}" in
         r) RESOURCE_NAME=${OPTARG};;
         k) KEY_NAME=${OPTARG};;
+        s) SECRET_VALUE=${OPTARG};;
     esac
 done
 
+echo $SECRET_VALUE
 
 echo 'Namespace:'
 read NAMESPACE
@@ -30,7 +32,12 @@ else
 fi
 
 echo 'Secret value:'
-read SECRET
+if [ -z "$SECRET_VALUE" ];
+then
+  read SECRET_VALUE
+else
+  echo $SECRET_VALUE
+fi
 
 echo "echo -n $SECRET | kubectl -n $NAMESPACE create secret generic $RESOURCE_NAME --dry-run=client --from-file=$KEY_NAME=/dev/stdin -o yaml >$RESOURCE_NAME-raw-secret.yaml"
 

@@ -1,9 +1,9 @@
 # PGPool settings
 
-### To generate the config by kustomize
+### To generate the config by kustomize and apply to kubernates
 
 ```
-kubectl --kubeconfig=../dev-k8s-treetracker-kubeconfig.yaml kustomize deployment/overlays/development/
+kubectl --kubeconfig=../dev-k8s-treetracker-kubeconfig.yaml kustomize deployment/overlays/development/ | kubectl apply --kubeconfig=../dev-k8s-treetracker-kubeconfig.yaml -f -
 ```
 
 ### To test connect to the db

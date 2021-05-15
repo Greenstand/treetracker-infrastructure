@@ -1,0 +1,11 @@
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: pgpool-be-api
+  namespace: pgpool
+spec:
+  cors:
+    cors:
+    origins: 
+    - '*'

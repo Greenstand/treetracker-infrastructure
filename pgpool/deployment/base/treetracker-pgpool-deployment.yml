@@ -1,0 +1,55 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "treetracker-pgpool"
+  namespace: "pgpool"
+  labels:
+    app: "treetracker-pgpool"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "treetracker-pgpool"
+  template:
+    metadata:
+      labels:
+        app: "treetracker-pgpool"
+    spec:
+      containers:
+      - name: "treetracker-pgpool"
+        image: pgpool/pgpool:4.2.2
+        env:
+        - name: POSTGRES_USERNAME
+          value: "xxxx"
+#          valueFrom:
+#            secretKeyRef:
+#              name: hippo-postgres-secret
+#              key: username
+        - name: POSTGRES_PASSWORD
+          value: "xxxxx"
+#          valueFrom:
+#            secretKeyRef:
+#              name: hippo-postgres-secret
+#              key: password
+        volumeMounts:
+        - name: pgpool-config
+          mountPath: /config
+#      - name: pgpool-stats
+#        image: pgpool/pgpool2_exporter:1.0
+#        env:
+#        - name: POSTGRES_USERNAME
+#          valueFrom:
+#            secretKeyRef:
+#              name: hippo-postgres-secret
+#              key: username
+#        - name: POSTGRES_PASSWORD
+#          valueFrom:
+#            secretKeyRef:
+#              name: hippo-postgres-secret
+#              key: password
+#        - name: PGPOOL_SERVICE
+#          value: "localhost"
+      volumes:
+      - name: pgpool-config
+        configMap:
+          name: pgpool-config

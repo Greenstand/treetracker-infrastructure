@@ -1,0 +1,6 @@
+resources:
+- pgpool_configmap.yaml
+- treetracker-pgpool-deployment.yml
+- treetracker-pgpool-mapping.yml
+- treetracker-pgpool-service.yml
+- namespace.yaml

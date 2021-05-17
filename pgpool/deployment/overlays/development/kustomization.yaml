@@ -1,4 +1,2 @@
 bases:
   - ../../base
-patchesStrategicMerge:
-  - treetracker-pgpool-mapping.yml

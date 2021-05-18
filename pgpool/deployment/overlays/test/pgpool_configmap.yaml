@@ -31,6 +31,13 @@ data:
     load_balance_mode = on
     ssl = on
     failover_on_backend_error = off
+    memory_cache_enabled = on
+    memqcache_method = 'shmem'
+    memqcache_total_size = 1024MB
+    memqcache_max_num_cache = 10000
+    memqcache_expire = 14400
+    memqcache_auto_cache_invalidation = off
+    memqcache_cache_block_size = 1MB
   pool_hba.conf: |-
     local   all         all                               trust
     host    all         all         127.0.0.1/32          trust

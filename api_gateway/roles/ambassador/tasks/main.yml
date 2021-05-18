@@ -4,23 +4,33 @@
     name: datawire
     repo_url: https://www.getambassador.io
 
+- name: Update repository
+  command: helm repo update
+
 - name: Install ambassador chart
   community.kubernetes.helm:
     name: ambassador
     chart_ref: datawire/ambassador
-    chart_version: 6.5.9
+    chart_version: 6.7.8
     release_namespace: ambassador
     create_namespace: true
     release_values:
+      resources:
+        requests:
+          memory: "200Mi"
+          cpu: "250m"
+        limits:
+          memory: "500Mi"
+          cpu: "500m"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                - key: doks.digitalocean.com/node-pool
-                  operator: In
-                  values:
-                    - cloud-services-node-pool
+                  - key: doks.digitalocean.com/node-pool
+                    operator: In
+                    values:
+                      - cloud-services-node-pool
 
 - name: Install service monitor to expose ambassador metrics
   community.kubernetes.k8s:
@@ -37,10 +47,9 @@
       spec:
         namespaceSelector:
           matchNames:
-          - ambassador
+            - ambassador
         selector:
           matchLabels:
             service: ambassador-admin
         endpoints:
-        - port: ambassador-admin
-   
+          - port: ambassador-admin

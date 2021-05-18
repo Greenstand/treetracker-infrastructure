@@ -39,9 +39,9 @@ else
   echo $SECRET_VALUE
 fi
 
-echo "echo -n $SECRET | kubectl -n $NAMESPACE create secret generic $RESOURCE_NAME --dry-run=client --from-file=$KEY_NAME=/dev/stdin -o yaml >$RESOURCE_NAME-raw-secret.yaml"
+echo "echo -n $SECRET_VALUE | kubectl -n $NAMESPACE create secret generic $RESOURCE_NAME --dry-run=client --from-file=$KEY_NAME=/dev/stdin -o yaml >$RESOURCE_NAME-raw-secret.yaml"
 
-echo -n $SECRET | kubectl -n $NAMESPACE create secret generic $RESOURCE_NAME --dry-run=client --from-file=$KEY_NAME=/dev/stdin -o yaml > $RESOURCE_NAME-raw-secret.yaml
+echo -n $SECRET_VALUE | kubectl -n $NAMESPACE create secret generic $RESOURCE_NAME --dry-run=client --from-file=$KEY_NAME=/dev/stdin -o yaml > $RESOURCE_NAME-raw-secret.yaml
 
 kubectl config get-contexts
 

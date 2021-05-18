@@ -3,3 +3,4 @@ resources:
 - treetracker-pgpool-deployment.yml
 - treetracker-pgpool-service.yml
 - namespace.yaml
+- cronjob.yaml

@@ -1,0 +1,33 @@
+apiVersion: "batch/v1beta1"
+kind: "CronJob"
+metadata:
+  name: "tile-pre-request"
+  namespace: "pgpool"
+  labels:
+    app: "treetracker-pgpool"
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: "tile-pre-request-container"
+            image: radial/busyboxplus:curl
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -c
+            - |
+              curl -s -o /dev/null https://test-k8s.treetracker.org/tiles/2/1/1.png && echo "SUCCESSFULLY VISITED AT `date`"
+              curl -s -o /dev/null https://test-k8s.treetracker.org/tiles/3/1/1.png && echo "SUCCESSFULLY VISITED AT `date`"
+              curl -s -o /dev/null https://test-k8s.treetracker.org/tiles/4/1/1.png && echo "SUCCESSFULLY VISITED AT `date`"
+              curl -s -o /dev/null https://test-k8s.treetracker.org/tiles/5/1/1.png && echo "SUCCESSFULLY VISITED AT `date`"
+              curl -s -o /dev/null https://test-k8s.treetracker.org/tiles/2/1/1.png && echo "SUCCESSFULLY VISITED AT `date`"
+              curl -s -o /dev/null https://test-k8s.treetracker.org/tiles/6/1/1.png && echo "SUCCESSFULLY VISITED AT `date`"
+              curl -s -o /dev/null https://dev-k8s.treetracker.org/tiles/2/1/1.png && echo "SUCCESSFULLY VISITED AT `date`"
+              curl -s -o /dev/null https://dev-k8s.treetracker.org/tiles/3/1/1.png && echo "SUCCESSFULLY VISITED AT `date`"
+              curl -s -o /dev/null https://dev-k8s.treetracker.org/tiles/4/1/1.png && echo "SUCCESSFULLY VISITED AT `date`"
+              curl -s -o /dev/null https://dev-k8s.treetracker.org/tiles/5/1/1.png && echo "SUCCESSFULLY VISITED AT `date`"
+              curl -s -o /dev/null https://dev-k8s.treetracker.org/tiles/6/1/1.png && echo "SUCCESSFULLY VISITED AT `date`"
+          restartPolicy: OnFailure

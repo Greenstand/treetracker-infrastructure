@@ -1,0 +1,71 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ambassador-auth
+  namespace: ambassador
+spec:
+  type: ClusterIP
+  ports:
+    - name: http-api
+      port: 80
+      targetPort: http-api
+  selector:
+    app: ambassador-auth-httpbasic
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ambassador-auth-httpbasic
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: ambassador-auth-httpbasic
+  template:
+    metadata:
+      labels:
+        app: ambassador-auth-httpbasic
+    spec:
+      containers:
+        - name: ambassador-auth-httpbasic
+          image: quay.io/datawire/ambassador-auth-httpbasic:0.1.1
+          ports:
+            - name: http-api
+              containerPort: 5000
+          volumeMounts:
+            - name: ambassador-auth-httpbasic
+              mountPath: /var/lib/ambassador/auth-httpbasic
+              readOnly: true
+      volumes:
+        - name: ambassador-auth-httpbasic
+          secret:
+            secretName: ambassador-auth-httpbasic
+            items:
+              - key: users.yaml
+                path: users.yaml
+---
+apiVersion: getambassador.io/v2
+kind: Filter
+metadata:
+  name: basic-auth
+spec:
+  External:
+    auth_service: "ambassador-auth:80"
+    allowed_request_headers:
+    - "x-qotm-session"
+    allowed_authorization_headers:
+    - "x-qotm-session"
+---
+apiVersion: getambassador.io/v2
+kind: FilterPolicy
+metadata:
+  name: authentication
+spec:
+  rules:
+  - host: "*"
+    path: /extauth/*
+    filters:
+    - name: basic-auth

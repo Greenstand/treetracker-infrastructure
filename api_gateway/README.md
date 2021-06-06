@@ -39,6 +39,11 @@ Once you have the playbook run in the cluster, you can run `edgectl install` and
     1. click through
     1. add the host you configured in the last step and get an ssl certificate
 
+### Adding authentication using basic auth
+
+* There is a file to produce the required yaml, `produce_yaml_from_pw.py` that will give you a base64-ed value which is an admin username and requires a supplied password
+* Once given, you can take this base64 value and use `ansible-vault` or `sealed-secrets` to seal it, so it can be used in the cluster.
+  * For ansible-vault for dev, for example, do `ansible-vault encrypt dev-values.enc --vault-password-file password_file` to encrypt a new file
 
 #### Notes
 1. You can view the relevant contexts using kubectl config view | grep treetracker 2-4 can be done using ./monitoring/doctl_setup.sh CLUSTER_NAME, e.g. ./monitoring/doctl_setup.sh do-sfo2-dev-k8s-treetracker

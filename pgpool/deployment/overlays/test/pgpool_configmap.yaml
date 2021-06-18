@@ -14,7 +14,7 @@ data:
     pcp_listen_addresses = '*'
     pcp_port = 9898
     pcp_socket_dir = '/var/run/pgpool'
-    backend_hostname0 = '165.227.56.72'
+    backend_hostname0 = 'db-postgresql-sfo2-00546-do-user-1067699-0.b.db.ondigitalocean.com'
     backend_port0 = 25060
     backend_weight0 = 1
     backend_flag0 = 'ALWAYS_PRIMARY|DISALLOW_TO_FAILOVER'

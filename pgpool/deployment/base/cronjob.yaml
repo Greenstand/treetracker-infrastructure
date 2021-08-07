@@ -6,7 +6,8 @@ metadata:
   labels:
     app: "treetracker-pgpool"
 spec:
-  schedule: "*/5 * * * *"
+  #schedule: "*/5 * * * *"
+  schedule: "0 0 1 1 *"
   jobTemplate:
     spec:
       template:

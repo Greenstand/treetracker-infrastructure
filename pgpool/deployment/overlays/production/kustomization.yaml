@@ -1,4 +1,5 @@
 bases:
   - ../../base
 patchesStrategicMerge:
-  - treetracker-webmap-api-mapping.yml
+  - cronjob.yaml
+  - pgpool_configmap.yaml

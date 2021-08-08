@@ -28,7 +28,6 @@
         user: doadmin
         passwordSecret: "airflow-database-connection"
         passwordSecretKey: "database-password"
-
         # use this for any extra connection-string settings, e.g. ?sslmode=disable
         properties: ""
       airflow:
@@ -36,8 +35,18 @@
           AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"
           #AIRFLOW__WEBSERVER__AUTHENTICATE: "True"
           #AIRFLOW__WEBSERVER__AUTH_BACKEND: "airflow.contrib.auth.backends.password_auth"
+          AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: "60"
         extraPipPackages:
           - "flask-bcrypt~=0.7.1"
+      dags:
+        gitSync:
+          enabled: true
+          # TO-DO: replace with repo for Greenstand dags
+          repo: "https://github.com/Greenstand/treetracker-infrastructure.git"
+          branch: "master"
+          revision: "HEAD"
+          syncWait: "60"
+
       web:
         baseUrl: "http://dev-k8s.treetracker.org/airflow"
         resources:

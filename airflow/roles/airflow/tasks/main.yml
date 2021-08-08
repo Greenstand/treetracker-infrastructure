@@ -4,14 +4,33 @@
     name: airflow-stable
     repo_url: https://airflow-helm.github.io/charts
 
+- name: Create secret for database connection
+  community.kubernetes.k8s:
+    state: present
+    namespace: airflow
+    src: "{{ role_path }}/files/airflow-database-sealed-secret.yaml"
+
 - name: Install airflow chart
   community.kubernetes.helm:
     name: airflow
     chart_ref: airflow-stable/airflow
-    chart_version: 7.16.0
+    chart_version: 8.4.1
     release_namespace: airflow
     create_namespace: true
     release_values:
+      postgresql:
+        enabled: false
+      externalDatabase:
+        type: postgres
+        host: db-postgresql-sfo2-nextgen-do-user-1067699-0.db.ondigitalocean.com
+        port: 25060
+        database: treetracker_dev
+        user: doadmin
+        passwordSecret: "airflow-database-connection"
+        passwordSecretKey: "database-password"
+
+        # use this for any extra connection-string settings, e.g. ?sslmode=disable
+        properties: ""
       airflow:
         config:
           AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"

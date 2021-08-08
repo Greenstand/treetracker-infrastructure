@@ -35,16 +35,17 @@
           AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"
           #AIRFLOW__WEBSERVER__AUTHENTICATE: "True"
           #AIRFLOW__WEBSERVER__AUTH_BACKEND: "airflow.contrib.auth.backends.password_auth"
+          # How often (in seconds) to scan the DAGs directory for new files
           AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: "60"
         extraPipPackages:
           - "flask-bcrypt~=0.7.1"
       dags:
         gitSync:
           enabled: true
-          # TO-DO: replace with repo for Greenstand dags
-          repo: "https://github.com/Greenstand/treetracker-infrastructure.git"
+          repo: "https://github.com/Greenstand/treetracker-airflow-dags.git"
           branch: "master"
           revision: "HEAD"
+          # How often (in seconds) the side car will sync files from dag git repo
           syncWait: "60"
 
       web:

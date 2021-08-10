@@ -4,11 +4,26 @@
     name: airflow-stable
     repo_url: https://airflow-helm.github.io/charts
 
+# create in line sealed secret since ansible variables don't propagate  all the way to the k8s manifests
 - name: Create secret for database connection
   community.kubernetes.k8s:
     state: present
     namespace: airflow
-    src: "{{ role_path }}/files/airflow-database-sealed-secret.yaml"
+    definition:
+      apiVersion: bitnami.com/v1alpha1
+      kind: SealedSecret
+      metadata:
+        creationTimestamp: null
+        name: airflow-database-connection
+        namespace: airflow
+      spec:
+        encryptedData:
+          database-password: "{{ database_sealed_secret }}"
+        template:
+          metadata:
+            creationTimestamp: null
+            name: airflow-database-connection
+            namespace: airflow
 
 - name: Install airflow chart
   community.kubernetes.helm:
@@ -22,10 +37,10 @@
         enabled: false
       externalDatabase:
         type: postgres
-        host: db-postgresql-sfo2-nextgen-do-user-1067699-0.db.ondigitalocean.com
-        port: 25060
-        database: treetracker_dev
-        user: doadmin
+        host: "{{ postgres_db_host }}"
+        port: "{{ postgres_db_port }}"
+        database: "{{ postgres_db_name }}"
+        user: "{{ postgres_db_user }}"
         passwordSecret: "airflow-database-connection"
         passwordSecretKey: "database-password"
         # use this for any extra connection-string settings, e.g. ?sslmode=disable
@@ -49,7 +64,7 @@
           syncWait: "60"
 
       web:
-        baseUrl: "http://dev-k8s.treetracker.org/airflow"
+        baseUrl: "{{ airflow_base_url }}"
         resources:
           requests:
             memory: "128Mi"

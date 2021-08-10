@@ -4,23 +4,67 @@
     name: airflow-stable
     repo_url: https://airflow-helm.github.io/charts
 
+# create in line sealed secret since ansible variables don't propagate  all the way to the k8s manifests
+- name: Create secret for database connection
+  community.kubernetes.k8s:
+    state: present
+    namespace: airflow
+    definition:
+      apiVersion: bitnami.com/v1alpha1
+      kind: SealedSecret
+      metadata:
+        creationTimestamp: null
+        name: airflow-database-connection
+        namespace: airflow
+      spec:
+        encryptedData:
+          database-password: "{{ database_sealed_secret }}"
+        template:
+          metadata:
+            creationTimestamp: null
+            name: airflow-database-connection
+            namespace: airflow
+
 - name: Install airflow chart
   community.kubernetes.helm:
     name: airflow
     chart_ref: airflow-stable/airflow
-    chart_version: 7.16.0
+    chart_version: 8.4.1
     release_namespace: airflow
     create_namespace: true
     release_values:
+      postgresql:
+        enabled: false
+      externalDatabase:
+        type: postgres
+        host: "{{ postgres_db_host }}"
+        port: "{{ postgres_db_port }}"
+        database: "{{ postgres_db_name }}"
+        user: "{{ postgres_db_user }}"
+        passwordSecret: "airflow-database-connection"
+        passwordSecretKey: "database-password"
+        # use this for any extra connection-string settings, e.g. ?sslmode=disable
+        properties: ""
       airflow:
         config:
           AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"
           #AIRFLOW__WEBSERVER__AUTHENTICATE: "True"
           #AIRFLOW__WEBSERVER__AUTH_BACKEND: "airflow.contrib.auth.backends.password_auth"
+          # How often (in seconds) to scan the DAGs directory for new files
+          AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: "60"
         extraPipPackages:
           - "flask-bcrypt~=0.7.1"
+      dags:
+        gitSync:
+          enabled: true
+          repo: "https://github.com/Greenstand/treetracker-airflow-dags.git"
+          branch: "master"
+          revision: "HEAD"
+          # How often (in seconds) the side car will sync files from dag git repo
+          syncWait: "60"
+
       web:
-        baseUrl: "http://dev-k8s.treetracker.org/airflow"
+        baseUrl: "{{ airflow_base_url }}"
         resources:
           requests:
             memory: "128Mi"

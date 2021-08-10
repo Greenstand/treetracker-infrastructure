@@ -39,7 +39,7 @@ data:
     memqcache_auto_cache_invalidation = off
     memqcache_cache_block_size = 1MB
     log_min_messages = 'DEBUG5'
-    cache_safe_memqcache_table_list = 'active_tree_region'
+    cache_safe_memqcache_table_list = 'active_tree_region,organization_children'
   pool_hba.conf: |-
     local   all         all                               trust
     host    all         all         127.0.0.1/32          trust

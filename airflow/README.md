@@ -9,7 +9,7 @@
 1. Use `doctl auth init` and pass your DO API key
 1. Save the kubeconfig relevant to the cluster, e.g. `doctl kubernetes cluster kubeconfig save dev-k8s-treetracker`
     1. Switch to the context if not already switched, e.g. kubectl config set-context do-sfo2-dev-k8s-treetracker 
-1. Run ansible to install helm chart `ansible-playbook airflow-playbook.yml`
+1. Run ansible to install helm chart `ansible-playbook airflow-playbook.yml -i environments/development`. Note the specific environment you are running against. In this particular command, you are running against the **development** environment.
 
 
 #### Notes

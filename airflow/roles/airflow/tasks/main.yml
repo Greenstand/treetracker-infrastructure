@@ -52,6 +52,7 @@
           #AIRFLOW__WEBSERVER__AUTH_BACKEND: "airflow.contrib.auth.backends.password_auth"
           # How often (in seconds) to scan the DAGs directory for new files
           AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: "60"
+          AIRFLOW__WEBSERVER__BASE_URL: "{{ airflow_base_url }}"
         extraPipPackages:
           - "flask-bcrypt~=0.7.1"
       dags:
@@ -64,7 +65,6 @@
           syncWait: "60"
 
       web:
-        baseUrl: "{{ airflow_base_url }}"
         resources:
           requests:
             memory: "128Mi"

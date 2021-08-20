@@ -34,6 +34,8 @@ spec:
         volumeMounts:
         - name: pgpool-config
           mountPath: /config
+        - name: oiddir
+          mountPath: /var/log/pgpool
 #      - name: pgpool-stats
 #        image: pgpool/pgpool2_exporter:1.0
 #        env:
@@ -53,3 +55,5 @@ spec:
       - name: pgpool-config
         configMap:
           name: pgpool-config
+      - name: oiddir
+        emptyDir: {}

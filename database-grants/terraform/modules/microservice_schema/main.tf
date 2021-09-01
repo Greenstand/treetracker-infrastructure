@@ -63,6 +63,6 @@ resource "postgresql_grant" "microservice-migration-executer-tables" {
   role        = "m_${var.schema}"
   schema      = var.schema
   object_type = "table"
-  privileges  = ["INSERT"]
+  privileges  = ["INSERT", "SELECT"]
 }
 

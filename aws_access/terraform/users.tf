@@ -18,15 +18,6 @@ output "secret" {
   value = aws_iam_access_key.cf_user_access_key.secret
 }
 
-resource "aws_s3_bucket" "cloudfront_cdn_state_bucket" {
-  bucket = "treetracker-infrastructure-cdn"
-  acl    = "private"
-
-  tags = {
-    type = "terraform"
-  }
-}
-
 resource "aws_iam_user_policy" "cloudfront_user_policy" {
   name = "cf_user_policy"
   user = aws_iam_user.cf_user.name

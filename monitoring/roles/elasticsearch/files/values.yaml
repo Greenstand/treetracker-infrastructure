@@ -5,6 +5,9 @@ antiAffinity: "soft"
 # Shrink default JVM heap.
 esJavaOpts: "-Xms512m -Xmx512m"
 
+# Don't require green
+clusterHealthCheckParams: "wait_for_status=yellow&timeout=1s"
+
 # Allocate smaller chunks of memory per pod.
 resources:
   requests:
@@ -20,4 +23,4 @@ volumeClaimTemplate:
   storageClassName: do-block-storage
   resources:
     requests:
-      size: 5Gi
+      size: 35Gi

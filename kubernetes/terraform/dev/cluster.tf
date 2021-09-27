@@ -34,3 +34,13 @@ resource "digitalocean_kubernetes_node_pool" "cloud-services-node-pool" {
 
 }
 
+resource "digitalocean_kubernetes_node_pool" "monitoring-node-pool" {
+  cluster_id =  digitalocean_kubernetes_cluster.kubernetes-cluster.id
+
+  name       = "monitoring-node-pool"
+  size       = "s-2vcpu-4gb"
+  node_count = 3
+  tags       = ["monitoring-node-pool"]
+
+}
+

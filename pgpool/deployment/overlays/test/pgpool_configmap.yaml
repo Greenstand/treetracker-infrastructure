@@ -4,7 +4,6 @@ metadata:
   name: pgpool-config
   labels:
     app: pgpool-config
-#    backend_hostname0 = 'db-postgresql-sfo2-nextgen-do-user-1067699-0.db.ondigitalocean.com'
   namespace: "pgpool"
 data:
   pgpool.conf: |-

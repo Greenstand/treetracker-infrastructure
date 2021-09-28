@@ -33,7 +33,7 @@ data:
     failover_on_backend_error = off
     memory_cache_enabled = on
     memqcache_method = 'shmem'
-    memqcache_total_size = 1024MB
+    memqcache_total_size = 512MB
     memqcache_max_num_cache = 10000
     memqcache_expire = 14400
     memqcache_auto_cache_invalidation = off

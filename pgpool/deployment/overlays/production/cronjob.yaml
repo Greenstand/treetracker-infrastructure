@@ -7,7 +7,7 @@ metadata:
     app: "treetracker-pgpool"
 spec:
   concurrencyPolicy: Forbid
-  schedule: "*/10 * * * *"
+  schedule: "*/5 * * * *"
   jobTemplate:
     spec:
       backoffLimit: 0
@@ -40,6 +40,11 @@ spec:
               request 2 15
               request 2 15 map_name=freetown
               request 2 15 map_name=TheHaitiTreeProject
+              request 2 15 map_name=addis
+              request 2 15 map_name=echo
+              request 2 15 map_name=fairtree
+              request 2 15 map_name=SustainablyRun
+              request 2 15 map_name=KijaniForestry
               request 2 15 wallet=SustainablyRun
               request 2 15 wallet=FreetownCityCouncil
               request 2 15 wallet=JonasPhilanthropiesFairtreeSamburu

@@ -21,8 +21,8 @@ data:
     sr_check_period = 0
     enable_pool_hba = off
     backend_clustering_mode = 'raw'
-    num_init_children = 4
-    max_pool = 4
+    num_init_children = 40
+    max_pool = 2
     child_life_time = 300
     child_max_connections = 0
     connection_life_time = 0
@@ -40,7 +40,8 @@ data:
     memqcache_cache_block_size = 1MB
     log_min_messages = 'DEBUG5'
     cache_safe_memqcache_table_list = 'active_tree_region,organization_children'
-    reserved_connections = 1
+    reserved_connections = 0
+    listen_backlog_multiplier = 3
   pool_hba.conf: |-
     local   all         all                               trust
     host    all         all         127.0.0.1/32          trust

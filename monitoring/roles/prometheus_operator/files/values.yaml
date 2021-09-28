@@ -1,5 +1,9 @@
+
 # From https://www.digitalocean.com/community/tutorials/how-to-set-up-digitalocean-kubernetes-cluster-monitoring-with-helm-and-prometheus-operator
 # Define persistent storage for Prometheus (PVC)
+prometheusOperator:
+  admissionWebhooks:
+    enabled: false
 prometheus:
   prometheusSpec:
     externalUrl: http://prometheus-community-kube-prometheus:9090/prometheus/

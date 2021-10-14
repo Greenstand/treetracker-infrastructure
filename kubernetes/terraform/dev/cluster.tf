@@ -18,11 +18,22 @@ resource "digitalocean_kubernetes_cluster" "kubernetes-cluster" {
   node_pool {
     name       = "default-node-pool"
     size       = "s-2vcpu-4gb"
-    node_count = 10
+    node_count = 1
     tags       = ["default-node", "treetracker-database-access"]
   }
 
 }
+
+resource "digitalocean_kubernetes_node_pool" "microservices-node-pool" {
+  cluster_id =  digitalocean_kubernetes_cluster.kubernetes-cluster.id
+
+  name       = "microservices-node-pool"
+  size       = "s-2vcpu-4gb"
+  node_count = 3
+  tags       = ["microservices-node", "treetracker-database-access"]
+
+}
+
 
 resource "digitalocean_kubernetes_node_pool" "cloud-services-node-pool" {
   cluster_id =  digitalocean_kubernetes_cluster.kubernetes-cluster.id
@@ -40,7 +51,7 @@ resource "digitalocean_kubernetes_node_pool" "monitoring-node-pool" {
   name       = "monitoring-node-pool"
   size       = "s-2vcpu-4gb"
   node_count = 3
-  tags       = ["monitoring-node"]
+  tags       = ["monitoring-node", "treetracker-database-access"]
 
 }
 

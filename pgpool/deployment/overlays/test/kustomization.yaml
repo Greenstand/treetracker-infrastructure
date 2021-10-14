@@ -1,0 +1,5 @@
+bases:
+  - ../../base
+patchesStrategicMerge:
+  - cronjob.yaml
+  - pgpool_configmap.yaml

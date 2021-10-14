@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: treetracker-pgpool-service
+  annotations:
+  labels:
+    app: treetracker-pgpool
+    name: treetracker-pgpool-service
+  namespace: pgpool
+spec:
+  ports:
+  - name: treetracker-pgpool
+    port: 9999
+    protocol: TCP
+    targetPort: 9999
+  selector:
+    app: treetracker-pgpool

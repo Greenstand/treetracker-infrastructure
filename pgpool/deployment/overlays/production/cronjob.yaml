@@ -27,7 +27,7 @@ spec:
               request(){
                 for(( i=$1; i<=$2; i++));
                 do
-                  url="https://${SUBDOMAIN}.treetracker.org/tiles/${i}/1/1.png"
+                  url="http://treetracker-tile-server.tile-server.svc.cluster.local/${i}/1/1.png"
                   if [ ! -z $3 ];
                   then
                     url="${url}?$3"

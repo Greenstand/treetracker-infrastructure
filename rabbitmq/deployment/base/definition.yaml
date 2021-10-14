@@ -20,4 +20,3 @@ spec:
             operator: In
             values:
             - cloud-services-node-pool
-~

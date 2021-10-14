@@ -11,3 +11,13 @@ spec:
     limits:
       cpu: 1000m
       memory: 2Gi
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: doks.digitalocean.com/node-pool
+            operator: In
+            values:
+            - cloud-services-node-pool
+~

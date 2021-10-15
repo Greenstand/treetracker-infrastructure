@@ -26,7 +26,7 @@ resource "aws_iam_user_policy" "bulk_data_consumer_prod_policy" {
       "Sid": "Terraform0",
       "Effect": "Allow",
       "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::treetracker-prod-batch-uploads/*"
+      "Resource": "arn:aws:s3:::treetracker-production-batch-uploads/*"
     },
     {
       "Sid": "Terraform1",
@@ -35,7 +35,7 @@ resource "aws_iam_user_policy" "bulk_data_consumer_prod_policy" {
         "sqs:DeleteMessage",
       "sqs:ReceiveMessage"
       ],
-      "Resource": "arn:aws:sqs:eu-central-1:053061259712:treetracker-prod-queue"
+      "Resource": "arn:aws:sqs:eu-central-1:053061259712:treetracker-production-queue"
     }
   ]
 }

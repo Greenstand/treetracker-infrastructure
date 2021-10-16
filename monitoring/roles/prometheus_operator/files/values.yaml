@@ -15,6 +15,15 @@ prometheus:
           resources:
             requests:
               storage: 20Gi
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: doks.digitalocean.com/node-pool
+              operator: In
+              values:
+              - monitoring-node-pool
 
 # Define persistent storage for Grafana (PVC)
 grafana:
@@ -38,6 +47,15 @@ grafana:
       allowed_organizations: Greenstand
       client_id: {{ clientId }}
       client_secret: {{ clientSecret }}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: doks.digitalocean.com/node-pool
+            operator: In
+            values:
+            - monitoring-node-pool
 
 # Define persistent storage for Alertmanager (PVC)
 alertmanager:
@@ -51,6 +69,15 @@ alertmanager:
           resources:
             requests:
               storage: 5Gi
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: doks.digitalocean.com/node-pool
+              operator: In
+              values:
+              - monitoring-node-pool
 
 # Change default node-exporter port
 prometheus-node-exporter:

@@ -37,7 +37,7 @@ spec:
               - key: doks.digitalocean.com/node-pool
                 operator: In
                 values:
-                - monitoring-node-pool
+                - cloud-services-node-pool
       containers:
         - name: ambassador-auth-httpbasic
           image: quay.io/datawire/ambassador-auth-httpbasic:0.1.1

@@ -1,0 +1,6 @@
+serviceMonitor:
+  enabled: true
+  labels:
+    release: prometheus-community
+es:
+  uri: http://elasticsearch-master:9200

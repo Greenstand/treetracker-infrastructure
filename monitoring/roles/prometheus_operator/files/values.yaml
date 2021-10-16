@@ -4,6 +4,15 @@
 prometheusOperator:
   admissionWebhooks:
     enabled: false
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: doks.digitalocean.com/node-pool
+            operator: In
+            values:
+            - monitoring-node-pool
 prometheus:
   prometheusSpec:
     externalUrl: http://prometheus-community-kube-prometheus:9090/prometheus/

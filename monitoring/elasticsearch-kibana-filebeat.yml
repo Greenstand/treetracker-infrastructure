@@ -8,3 +8,4 @@
     - elasticsearch
     - kibana
     - filebeat
+    - curator

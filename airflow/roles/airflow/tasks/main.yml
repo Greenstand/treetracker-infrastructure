@@ -25,6 +25,17 @@
             name: airflow-database-connection
             namespace: airflow
 
+- set_fact:
+    affinity: &affinity
+      nodeAffinity: 
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+              - key: doks.digitalocean.com/node-pool
+                operator: In
+                values:
+                  - cloud-services-node-pool
+
 - name: Install airflow chart
   community.kubernetes.helm:
     name: airflow
@@ -55,6 +66,8 @@
           AIRFLOW__WEBSERVER__BASE_URL: "{{ airflow_base_url }}"
         extraPipPackages:
           - "flask-bcrypt~=0.7.1"
+        sync:
+          affinity: *affinity
       dags:
         gitSync:
           enabled: true
@@ -63,7 +76,9 @@
           revision: "HEAD"
           # How often (in seconds) the side car will sync files from dag git repo
           syncWait: "60"
-
+      redis:
+        master:
+          affinity: *affinity
       web:
         resources:
           requests:
@@ -72,6 +87,7 @@
           limits:
             memory: "1Gi"
             cpu: "1000m"
+        affinity: *affinity
       scheduler:
         resources:
           requests:
@@ -80,6 +96,7 @@
           limits:
             memory: "1Gi"
             cpu: "1000m"
+        affinity: *affinity
       workers:
         resources:
           requests:
@@ -88,6 +105,7 @@
           limits:
             memory: "1Gi"
             cpu: "1000m"
+        affinity: *affinity
       flower:
         resources:
           requests:
@@ -96,6 +114,8 @@
           limits:
             memory: "1Gi"
             cpu: "1000m"
+        affinity: *affinity
+
     #ingress:
     # enabled: true
     #web:

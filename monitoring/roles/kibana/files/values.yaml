@@ -10,3 +10,13 @@ resources:
   limits:
     cpu: "1000m"
     memory: "1000M"
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: doks.digitalocean.com/node-pool
+          operator: In
+          values:
+          - monitoring-node-pool

@@ -80,7 +80,7 @@
           limits:
             memory: "1Gi"
             cpu: "1000m"
-        nodeAffinity:
+        nodeAffinity: &nodeAffinity
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
@@ -96,14 +96,7 @@
           limits:
             memory: "1Gi"
             cpu: "1000m"
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                - key: doks.digitalocean.com/node-pool
-                  operator: In
-                  values:
-                    - cloud-services-node-pool
+        nodeAffinity: *nodeAffinity
       flower:
         resources:
           requests:
@@ -112,14 +105,7 @@
           limits:
             memory: "1Gi"
             cpu: "1000m"
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                - key: doks.digitalocean.com/node-pool
-                  operator: In
-                  values:
-                    - cloud-services-node-pool
+        nodeAffinity: *nodeAffinity
     #ingress:
     # enabled: true
     #web:

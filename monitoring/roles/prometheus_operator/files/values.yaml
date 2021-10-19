@@ -63,7 +63,7 @@ alertmanager:
           resources:
             requests:
               storage: 5Gi
-    affinity: *nodeAffinityq
+    affinity: *nodeAffinity
 
 # Change default node-exporter port
 prometheus-node-exporter:

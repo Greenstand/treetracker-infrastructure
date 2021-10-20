@@ -13,7 +13,7 @@ prometheusOperator:
             operator: In
             values:
             - monitoring-node-pool
-
+            
 prometheus:
   prometheusSpec:
     externalUrl: http://prometheus-community-kube-prometheus:9090/prometheus/
@@ -24,8 +24,15 @@ prometheus:
           storageClassName: do-block-storage
           resources:
             requests:
-              storage: 20Gi
+              storage: 40Gi
     affinity: *nodeAffinity
+
+kubeApiServer:
+  serviceMonitor:
+    metricRelabelings:
+    - sourceLabels: [__name__]
+      regex: (apiserver_request_duration_seconds_bucket)
+      action: drop
 
 # Define persistent storage for Grafana (PVC)
 grafana:

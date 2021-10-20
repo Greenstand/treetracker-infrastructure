@@ -29,6 +29,15 @@ spec:
       labels:
         app: ambassador-auth-httpbasic
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: doks.digitalocean.com/node-pool
+                operator: In
+                values:
+                - cloud-services-node-pool
       containers:
         - name: ambassador-auth-httpbasic
           image: quay.io/datawire/ambassador-auth-httpbasic:0.1.1

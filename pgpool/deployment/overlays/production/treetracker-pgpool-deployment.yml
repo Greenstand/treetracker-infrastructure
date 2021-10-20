@@ -1,0 +1,41 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "treetracker-pgpool"
+  namespace: "pgpool"
+  labels:
+    app: "treetracker-pgpool"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "treetracker-pgpool"
+  template:
+    metadata:
+      labels:
+        app: "treetracker-pgpool"
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: doks.digitalocean.com/node-pool
+                  operator: In
+                  values:
+                    - microservices-node-pool
+      containers:
+      - name: "treetracker-pgpool"
+        image: pgpool/pgpool:4.2.2
+        env:
+        volumeMounts:
+        - name: pgpool-config
+          mountPath: /config
+        - name: oiddir
+          mountPath: /var/log/pgpool
+      volumes:
+      - name: pgpool-config
+        configMap:
+          name: pgpool-config
+      - name: oiddir
+        emptyDir: {}

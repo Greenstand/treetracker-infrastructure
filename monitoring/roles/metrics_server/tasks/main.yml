@@ -17,3 +17,12 @@
         kubelet-preferred-address-types: InternalIP
       apiService:
         create: true
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: doks.digitalocean.com/node-pool
+                operator: In
+                values:
+                - monitoring-node-pool

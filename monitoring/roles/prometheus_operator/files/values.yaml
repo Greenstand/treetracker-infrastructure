@@ -4,12 +4,16 @@
 prometheusOperator:
   admissionWebhooks:
     enabled: false
-kubeApiServer:
-  serviceMonitor:
-    metricRelabelings:
-    - sourceLabels: [__name__]
-      regex: (apiserver_request_duration_seconds_bucket)
-      action: drop
+  affinity: &nodeAffinity
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: doks.digitalocean.com/node-pool
+            operator: In
+            values:
+            - monitoring-node-pool
+            
 prometheus:
   prometheusSpec:
     externalUrl: http://prometheus-community-kube-prometheus:9090/prometheus/
@@ -21,6 +25,14 @@ prometheus:
           resources:
             requests:
               storage: 40Gi
+    affinity: *nodeAffinity
+
+kubeApiServer:
+  serviceMonitor:
+    metricRelabelings:
+    - sourceLabels: [__name__]
+      regex: (apiserver_request_duration_seconds_bucket)
+      action: drop
 
 # Define persistent storage for Grafana (PVC)
 grafana:
@@ -44,6 +56,7 @@ grafana:
       allowed_organizations: Greenstand
       client_id: {{ clientId }}
       client_secret: {{ clientSecret }}
+  affinity: *nodeAffinity
 
 # Define persistent storage for Alertmanager (PVC)
 alertmanager:
@@ -57,6 +70,7 @@ alertmanager:
           resources:
             requests:
               storage: 5Gi
+    affinity: *nodeAffinity
 
 # Change default node-exporter port
 prometheus-node-exporter:

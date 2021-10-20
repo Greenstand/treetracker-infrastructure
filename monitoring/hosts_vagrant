@@ -2,7 +2,6 @@
 127.0.0.1
 
 [web:vars]
-ansible_python_interpreter=/usr/bin/python3
 ansible_port=2222
 ansible_user=vagrant
 ansible_private_key_file="../local-vagrant/.vagrant/machines/default/virtualbox/private_key"

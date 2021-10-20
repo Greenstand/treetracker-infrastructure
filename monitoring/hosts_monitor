@@ -2,5 +2,5 @@
 monitoring.treetracker.org
 
 [web:vars]
-ansible_python_interpreter=/usr/bin/python3
 ansible_user=root
+ansible_python_interpreter=/usr/local/opt/python@3.9/bin/python3.9

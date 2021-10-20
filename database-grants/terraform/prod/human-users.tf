@@ -6,7 +6,7 @@ resource "random_password" "accountant_password" {
 }
 
 resource "postgresql_role" "accountant_human" {
-  provider = "postgresql.treetracker"
+  provider = postgresql.treetracker
   name     = "accountant"
   login    = true
   password = random_password.accountant_password.result

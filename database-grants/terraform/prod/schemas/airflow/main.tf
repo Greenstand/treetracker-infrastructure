@@ -17,6 +17,7 @@ resource "postgresql_role" "service_user" {
   name     = "s_airflow"
   login    = true
   password = random_password.s_password.result
+  search_path = [ "airflow" ]
 }
 
 

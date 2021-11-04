@@ -72,7 +72,7 @@
         gitSync:
           enabled: true
           repo: "https://github.com/Greenstand/treetracker-airflow-dags.git"
-          branch: "master"
+          branch: "{{ deployment_branch }}"
           revision: "HEAD"
           # How often (in seconds) the side car will sync files from dag git repo
           syncWait: "60"

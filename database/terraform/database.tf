@@ -16,7 +16,6 @@ resource "digitalocean_database_cluster" "treetracker-postgres-cluster" {
 #  value = "@"
 #}
 
-
 resource "digitalocean_database_firewall" "treetracker-database-fw" {
   cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
 
@@ -59,11 +58,7 @@ resource "digitalocean_database_firewall" "treetracker-database-fw" {
     type  = "ip_addr"
     value = "69.209.22.114"
   }
-
-
 }
-
-
 
 resource "digitalocean_database_replica" "treetracker-postgres-read-replica" {
   cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
@@ -81,8 +76,6 @@ resource "digitalocean_database_replica" "treetracker-postgres-read-replica" {
 #  }
 #}
 
-
-
 resource "digitalocean_database_db" "treetracker-database" {
   cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
   name       = "treetracker"
@@ -93,5 +86,7 @@ resource "digitalocean_database_db" "data-pipeline-database" {
   name       = "data_pipeline"
 }
 
-
-
+resource "digitalocean_database_db" "ckan-database" {
+  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
+  name       = "ckan"
+}

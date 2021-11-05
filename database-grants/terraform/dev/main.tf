@@ -4,3 +4,10 @@ module "airflow_schema" {
      postgresql = postgresql.treetracker
   }
 }
+
+module "treetracker_schema" {
+  source = "./schemas/treetracker"
+  providers = {
+     postgresql = postgresql.treetracker
+  }
+}

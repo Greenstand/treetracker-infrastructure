@@ -17,6 +17,7 @@ resource "postgresql_role" "service_user" {
   name     = "s_${var.schema}"
   login    = true
   password = random_password.s_password.result
+  search_path = [ "${var.schema}" ]
 }
 
 
@@ -46,6 +47,7 @@ resource "postgresql_role" "migration_user" {
   name     = "m_${var.schema}"
   login    = true
   password = random_password.m_password.result
+  search_path = [ "${var.schema}" ]
 }
 
 

@@ -2,10 +2,6 @@ variable "host" {
   type = string
 }
 
-variable "port" {
-  type = number
-}
-
 variable "password" {
   type = string
 }
@@ -24,7 +20,7 @@ provider "postgresql" {
   database        = "treetracker"
 
   host            = var.host
-  port            = var.port
+  port            = 25060
   username        = "doadmin"
   password        = var.password
   sslmode         = "require"
@@ -37,7 +33,7 @@ provider "postgresql" {
   database        = "data_pipeline"
 
   host            = var.host
-  port            = var.port
+  port            = 25060
   username        = "doadmin"
   password        = var.password 
   sslmode         = "require"

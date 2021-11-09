@@ -1,9 +1,0 @@
----
-apiVersion: getambassador.io/v2
-kind: Mapping
-metadata:
-  name: ckan
-  namespace: ckan
-spec:
-  prefix: /ckan/
-  service: ckan

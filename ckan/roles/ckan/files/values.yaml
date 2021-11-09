@@ -16,7 +16,7 @@ ckan:
   siteTitle: "Greenstand CKAN"
   psql:
     initialize: true
-    masterUser: {{ ckanDbHost }}
+    masterUser: {{ ckanDbUser }}
     masterPassword: {{ ckanDbPassword }}
     masterDatabase: ckan
   db:
@@ -53,10 +53,9 @@ datapusher:
   affinity: 
     nodeAffinity: *nodeAffinity
 
-# resources:
-#   limits:
-#     cpu: 100m
-#     memory: 128Mi
-#   requests:
-#     cpu: 100m
-#     memory: 128Mi
+imagePullSecrets:
+  - name: docker-greenstand-secret
+
+service:
+  type: LoadBalancer
+  port: 5000

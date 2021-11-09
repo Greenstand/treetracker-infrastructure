@@ -59,3 +59,11 @@ imagePullSecrets:
 service:
   type: LoadBalancer
   port: 5000
+
+resources:
+  limits:
+    cpu: 1
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 512Mi

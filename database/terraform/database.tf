@@ -90,3 +90,8 @@ resource "digitalocean_database_db" "ckan-database" {
   cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
   name       = "ckan"
 }
+
+resource "digitalocean_database_db" "ckan-datastore-database" {
+  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
+  name       = "ckan_datastore"
+}

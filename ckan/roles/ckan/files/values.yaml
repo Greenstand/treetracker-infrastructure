@@ -12,6 +12,7 @@ nodeAffinity: &nodeAffinity
         - cloud-services-node-pool
 
 ckan:
+  siteUrl: {{ ckanSiteUrl }}
   sysadminPassword: {{ ckanAdminPassword }}
   siteTitle: "Greenstand CKAN"
   psql:
@@ -33,6 +34,11 @@ ckan:
     RoDbName: ckan_datastore
     RoDbUser: {{ ckanDbUser }}
     RoDbPassword: {{ ckanDbPassword }}
+  smtp:
+    server: {{ smtpServer }}
+    user: {{ smtpUser }}
+    password: {{ smtpPassword }}
+    mailFrom: {{ smtpUser }}
 
 redis:
   master:

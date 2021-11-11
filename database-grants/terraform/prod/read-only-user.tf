@@ -209,3 +209,29 @@ resource "postgresql_grant" "readonlyyuser_sequence_webmap" {
   privileges  = ["SELECT"]
 }
 
+resource "postgresql_grant" "readonlyyuser_usage_airflow" {
+  provider = "postgresql.treetracker"
+  database    = "treetracker"
+  role        = "readonlyuser"
+  schema      = "airflow"
+  object_type = "schema"
+  privileges  = ["USAGE"]
+}
+
+resource "postgresql_grant" "readonlyyuser_select_airflow" {
+  provider = "postgresql.treetracker"
+  database    = "treetracker"
+  role        = "readonlyuser"
+  schema      = "airflow"
+  object_type = "table"
+  privileges  = ["SELECT"]
+}
+
+resource "postgresql_grant" "readonlyyuser_sequence_airflow" {
+  provider = "postgresql.treetracker"
+  database    = "treetracker"
+  role        = "readonlyuser"
+  schema      = "airflow"
+  object_type = "sequence"
+  privileges  = ["SELECT"]
+}

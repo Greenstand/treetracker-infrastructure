@@ -1,8 +1,0 @@
----
-apiVersion: getambassador.io/v2
-kind:  TCPMapping
-metadata:
-  name:  rabbitmq
-spec:
-  port: 5672
-  service: rabbitmqcluster-main.rabbitmq-cluster:5672

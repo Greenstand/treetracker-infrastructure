@@ -21,6 +21,13 @@ module "treetracker_schema" {
   }
 }
 
+module "earnings_schema" {
+  source = "./schemas/earnings"
+  providers = {
+     postgresql = postgresql.treetracker
+  }
+}
+
 module "webmap_schema" {
   source = "./schemas/webmap"
   providers = {

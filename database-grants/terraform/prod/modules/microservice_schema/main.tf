@@ -17,9 +17,8 @@ resource "postgresql_role" "service_user" {
   name     = "s_${var.schema}"
   login    = true
   password = random_password.s_password.result
-  search_path = [ "${var.schema}", "postgis" ]
+  search_path = [ "${var.schema}", "postgis", "public" ]
 }
-
 
 resource "postgresql_grant" "microservice-user-usage" {
   database    = "treetracker"
@@ -47,7 +46,7 @@ resource "postgresql_role" "migration_user" {
   name     = "m_${var.schema}"
   login    = true
   password = random_password.m_password.result
-  search_path = [ "${var.schema}", "postgis" ]
+  search_path = [ "${var.schema}", "postgis", "public" ]
 }
 
 
@@ -68,3 +67,10 @@ resource "postgresql_grant" "microservice-migration-executer-tables" {
   privileges  = ["INSERT", "SELECT"]
 }
 
+# resource "postgresql_grant" "microservice-migration-executer-public" {
+#  database    = "treetracker"
+#  role        = "m_${var.schema}"
+#  schema      = "public"
+#  object_type = "schema"
+#  privileges  = ["USAGE"]
+# }

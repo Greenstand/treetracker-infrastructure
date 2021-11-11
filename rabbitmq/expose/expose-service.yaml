@@ -10,8 +10,8 @@ spec:
   type: LoadBalancer
   ports:
   - port: 5672
-    name: rabbitmqcluster-sample-server
+    name: rabbitmqcluster-main
   - port: 15672
     name: rabbitmq-admin
   selector:
-    app.kubernetes.io/name: rabbitmqcluster-main.rabbitmq-cluster
+    app.kubernetes.io/name: rabbitmqcluster-main

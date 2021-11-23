@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: ckan-postgres
+subsets:
+  - addresses:
+      - ip: 138.68.8.193
+    ports:
+      - port: 25060

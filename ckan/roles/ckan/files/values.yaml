@@ -1,0 +1,75 @@
+postgresql:
+  enabled: false
+  pgPass: {{ ckanDbPassword }}
+
+nodeAffinity: &nodeAffinity
+  requiredDuringSchedulingIgnoredDuringExecution:
+    nodeSelectorTerms:
+    - matchExpressions:
+      - key: doks.digitalocean.com/node-pool
+        operator: In
+        values:
+        - cloud-services-node-pool
+
+ckan:
+  siteUrl: {{ ckanSiteUrl }}
+  sysadminPassword: {{ ckanAdminPassword }}
+  siteTitle: "Greenstand CKAN"
+  psql:
+    initialize: true
+    masterUser: {{ ckanDbUser }}
+    masterPassword: {{ ckanDbPassword }}
+    masterDatabase: ckan
+  db:
+    ckanDbUrl: {{ ckanDbHost }}
+    ckanDbName: ckan
+    ckanDbUser: {{ ckanDbUser }}
+    ckanDbPassword: {{ ckanDbPassword }}
+  datastore:
+    RwDbUrl: {{ ckanDbHost }}
+    RwDbName: ckan_datastore
+    RwDbUser: {{ ckanDbUser }}
+    RwDbPassword: {{ ckanDbPassword }}
+    RoDbUrl: {{ ckanDbHost }}
+    RoDbName: ckan_datastore
+    RoDbUser: {{ ckanDbUser }}
+    RoDbPassword: {{ ckanDbPassword }}
+  smtp:
+    server: {{ smtpServer }}
+    user: {{ smtpUser }}
+    password: {{ smtpPassword }}
+    mailFrom: {{ smtpUser }}
+
+redis:
+  master:
+    affinity: 
+      nodeAffinity: *nodeAffinity
+
+solr:
+  affinity: 
+    nodeAffinity: *nodeAffinity
+  zookeeper:
+    affinity: 
+      nodeAffinity: *nodeAffinity
+
+affinity: 
+  nodeAffinity: *nodeAffinity
+
+datapusher:
+  affinity: 
+    nodeAffinity: *nodeAffinity
+
+imagePullSecrets:
+  - name: docker-greenstand-secret
+
+service:
+  type: LoadBalancer
+  port: 5000
+
+resources:
+  limits:
+    cpu: 1
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 512Mi

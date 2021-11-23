@@ -1,0 +1,7 @@
+---
+- name: Install ckan
+  hosts: localhost-py3
+  gather_facts: false
+  connection: local
+  roles:
+    - ckan

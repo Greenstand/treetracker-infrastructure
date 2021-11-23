@@ -68,6 +68,18 @@
           - "flask-bcrypt~=0.7.1"
         sync:
           affinity: *affinity
+        users:
+          - username: admin
+            password: ${ADMIN_PASSWORD}
+            role: Admin
+            email: admin@greenstand.org
+            firstName: admin
+            lastName: admin
+        usersTemplates:
+          ADMIN_PASSWORD:
+            kind: secret
+            name: airflow-admin-credentials
+            key: password
       dags:
         gitSync:
           enabled: true

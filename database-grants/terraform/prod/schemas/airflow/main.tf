@@ -34,7 +34,7 @@ resource "postgresql_grant" "table-service-user" {
   role        = "s_airflow"
   schema      = "airflow"
   object_type = "table"
-  privileges  = ["SELECT", "INSERT", "UPDATE"]
+  privileges  = ["SELECT", "INSERT", "UPDATE", "DELETE"]
 }
 
 resource "postgresql_grant" "sequence-service-user" {

@@ -35,6 +35,13 @@ module "webmap_schema" {
   }
 }
 
+module "reporting_schema" {
+  source = "./schemas/reporting"
+  providers = {
+     postgresql = postgresql.treetracker
+  }
+}
+
 module "airflow_schema" {
   source = "./schemas/airflow"
   providers = {

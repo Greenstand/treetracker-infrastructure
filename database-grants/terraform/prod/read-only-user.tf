@@ -235,3 +235,59 @@ resource "postgresql_grant" "readonlyyuser_sequence_airflow" {
   object_type = "sequence"
   privileges  = ["SELECT"]
 }
+
+resource "postgresql_grant" "readonlyyuser_usage_reporting" {
+  provider = "postgresql.treetracker"
+  database    = "treetracker"
+  role        = "readonlyuser"
+  schema      = "reporting"
+  object_type = "schema"
+  privileges  = ["USAGE"]
+}
+
+resource "postgresql_grant" "readonlyyuser_select_reporting" {
+  provider = "postgresql.treetracker"
+  database    = "treetracker"
+  role        = "readonlyuser"
+  schema      = "reporting"
+  object_type = "table"
+  privileges  = ["SELECT"]
+}
+
+resource "postgresql_grant" "readonlyyuser_sequence_reporting" {
+  provider = "postgresql.treetracker"
+  database    = "treetracker"
+  role        = "readonlyuser"
+  schema      = "reporting"
+  object_type = "sequence"
+  privileges  = ["SELECT"]
+}
+
+
+resource "postgresql_grant" "readonlyyuser_usage_earnings" {
+  provider = "postgresql.treetracker"
+  database    = "treetracker"
+  role        = "readonlyuser"
+  schema      = "earnings"
+  object_type = "schema"
+  privileges  = ["USAGE"]
+}
+
+resource "postgresql_grant" "readonlyyuser_select_earnings" {
+  provider = "postgresql.treetracker"
+  database    = "treetracker"
+  role        = "readonlyuser"
+  schema      = "earnings"
+  object_type = "table"
+  privileges  = ["SELECT"]
+}
+
+resource "postgresql_grant" "readonlyyuser_sequence_earnings" {
+  provider = "postgresql.treetracker"
+  database    = "treetracker"
+  role        = "readonlyuser"
+  schema      = "earnings"
+  object_type = "sequence"
+  privileges  = ["SELECT"]
+}
+

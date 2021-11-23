@@ -4,7 +4,7 @@
     name: airflow-stable
     repo_url: https://airflow-helm.github.io/charts
 
-# create in line sealed secret since ansible variables don't propagate  all the way to the k8s manifests
+# create in line sealed secret since ansible variables don't propagate all the way to the k8s manifests
 - name: Create secret for database connection
   community.kubernetes.k8s:
     state: present
@@ -152,10 +152,8 @@
     #urlPrefix: "/flower"
     #NOTE: ingress is created, but need to use external-dns chart to make LB/DNS
 
-
 - name: Create UI mapping for control panel
   community.kubernetes.k8s:
     state: present
     namespace: airflow
     src: "{{ role_path }}/files/panel-mapping.yaml"
-

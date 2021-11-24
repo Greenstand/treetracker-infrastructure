@@ -4,7 +4,7 @@
     name: airflow-stable
     repo_url: https://airflow-helm.github.io/charts
 
-# create in line sealed secret since ansible variables don't propagate  all the way to the k8s manifests
+# create in line sealed secret since ansible variables don't propagate all the way to the k8s manifests
 - name: Create secret for database connection
   community.kubernetes.k8s:
     state: present
@@ -13,7 +13,6 @@
       apiVersion: bitnami.com/v1alpha1
       kind: SealedSecret
       metadata:
-        creationTimestamp: null
         name: airflow-database-connection
         namespace: airflow
       spec:
@@ -21,8 +20,25 @@
           database-password: "{{ database_sealed_secret }}"
         template:
           metadata:
-            creationTimestamp: null
             name: airflow-database-connection
+            namespace: airflow
+
+- name: Create secret for airflow admin user
+  community.kubernetes.k8s:
+    state: present
+    namespace: airflow
+    definition:
+      apiVersion: bitnami.com/v1alpha1
+      kind: SealedSecret
+      metadata:
+        name: airflow-admin-credentials
+        namespace: airflow
+      spec:
+        encryptedData:
+          password: "{{ airflow_admin_sealed_password }}"
+        template:
+          metadata:
+            name: airflow-admin-credentials
             namespace: airflow
 
 - set_fact:
@@ -68,6 +84,18 @@
           - "flask-bcrypt~=0.7.1"
         sync:
           affinity: *affinity
+        users:
+          - username: admin
+            password: ${ADMIN_PASSWORD}
+            role: Admin
+            email: admin@greenstand.org
+            firstName: admin
+            lastName: admin
+        usersTemplates:
+          ADMIN_PASSWORD:
+            kind: secret
+            name: airflow-admin-credentials
+            key: password
       dags:
         gitSync:
           enabled: true
@@ -124,10 +152,8 @@
     #urlPrefix: "/flower"
     #NOTE: ingress is created, but need to use external-dns chart to make LB/DNS
 
-
 - name: Create UI mapping for control panel
   community.kubernetes.k8s:
     state: present
     namespace: airflow
     src: "{{ role_path }}/files/panel-mapping.yaml"
-

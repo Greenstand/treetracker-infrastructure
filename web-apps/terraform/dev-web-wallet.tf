@@ -1,5 +1,5 @@
-module "test-web-map" {
+module "dev-web-wallet" {
   source  = "github.com/Greenstand/terraform-aws-staticwebsite"
-  domain = "test.webmap.treetracker.org"
+  domain = "dev.wallet.treetracker.org"
   error_document = "index.html"
 }

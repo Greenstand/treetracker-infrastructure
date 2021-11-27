@@ -13,3 +13,4 @@
     chart_version: v2.6.1
     release_namespace: kube-system
     create_namespace: true
+    values: "{{ lookup('template','files/values.yaml') | from_yaml }}"

@@ -1,0 +1,15 @@
+---
+- name: Add sealed secrets web repository
+  tags: [sealed-secrets-web]
+  community.kubernetes.helm_repository:
+    name: bakito
+    repo_url: https://bakito.github.io/helm-charts
+
+- name: Install sealed secrets web
+  tags: [sealed-secrets-web]
+  community.kubernetes.helm:
+    name: sealed-secrets-web
+    chart_ref: bakito/sealed-secrets-web
+    chart_version: v2.6.1
+    release_namespace: kube-system
+    create_namespace: true

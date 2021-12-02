@@ -56,12 +56,21 @@
   community.kubernetes.helm:
     name: airflow
     chart_ref: airflow-stable/airflow
-    chart_version: 8.4.1
+    chart_version: 8.5.2
     release_namespace: airflow
     create_namespace: true
     release_values:
       postgresql:
         enabled: false
+      pgbouncer:
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        affinity: *affinity
       externalDatabase:
         type: postgres
         host: "{{ postgres_db_host }}"
@@ -96,6 +105,15 @@
             kind: secret
             name: airflow-admin-credentials
             key: password
+        dbMigrations:
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          affinity: *affinity
       dags:
         gitSync:
           enabled: true
@@ -143,7 +161,6 @@
             memory: "1Gi"
             cpu: "1000m"
         affinity: *affinity
-
     #ingress:
     # enabled: true
     #web:

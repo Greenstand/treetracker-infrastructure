@@ -17,7 +17,7 @@ terraform {
 
 provider "postgresql" {
   alias    = "treetracker"
-  database        = "treetracker_dev"
+  database        = "treetracker"
 
   host            = var.host
   port            = 25060

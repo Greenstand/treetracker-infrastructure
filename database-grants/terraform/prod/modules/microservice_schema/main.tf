@@ -17,7 +17,7 @@ resource "postgresql_role" "service_user" {
   name     = "s_${var.schema}"
   login    = true
   password = random_password.s_password.result
-  search_path = [ "${var.schema}", "postgis", "public" ]
+  search_path = [ "${var.schema}", "public" ]
 }
 
 resource "postgresql_grant" "microservice-user-usage" {
@@ -36,6 +36,14 @@ resource "postgresql_grant" "microservice-user" {
   privileges  = ["SELECT", "INSERT", "UPDATE"]
 }
 
+resource "postgresql_grant" "microservice-user-sequence" {
+  database    = "treetracker"
+  role        = "s_${var.schema}"
+  schema      = var.schema
+  object_type = "sequence"
+  privileges  = ["USAGE", "SELECT"]
+}
+
 resource "random_password" "m_password" {
   length = 16
   special = true
@@ -46,7 +54,7 @@ resource "postgresql_role" "migration_user" {
   name     = "m_${var.schema}"
   login    = true
   password = random_password.m_password.result
-  search_path = [ "${var.schema}", "postgis", "public" ]
+  search_path = [ "${var.schema}", "public" ]
 }
 
 
@@ -66,6 +74,15 @@ resource "postgresql_grant" "microservice-migration-executer-tables" {
   object_type = "table"
   privileges  = ["INSERT", "SELECT"]
 }
+
+resource "postgresql_grant" "microservice-migration-executor-sequence" {
+  database    = "treetracker"
+  role        = "m_${var.schema}"
+  schema      = var.schema
+  object_type = "sequence"
+  privileges  = ["USAGE", "SELECT"]
+}
+
 
 # resource "postgresql_grant" "microservice-migration-executer-public" {
 #  database    = "treetracker"

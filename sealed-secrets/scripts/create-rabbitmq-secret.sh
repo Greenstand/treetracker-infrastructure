@@ -8,9 +8,9 @@ read USERNAME
 echo 'Password:'
 read PASSWORD
 
-echo 'Cluster Name: rabbitmqcluser-main'
+echo 'Cluster Name: rabbitmqcluster-main.rabbitmq-cluster'
 
-CONNECTION_STRING=amqp://$USERNAME:$PASSWORD@rabbitmqcluster-main
+CONNECTION_STRING=amqp://$USERNAME:$PASSWORD@rabbitmqcluster-main.rabbitmq-cluster
 echo $CONNECTION_STRING
 
 ${__dir}/create-secret.sh -r rabbitmq-connection -k messageQueue -s $CONNECTION_STRING

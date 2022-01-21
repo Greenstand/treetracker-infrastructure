@@ -22,7 +22,7 @@
   community.kubernetes.helm:
     name: ckan
     chart_ref: keitaro-charts/ckan
-    chart_version: 1.0.1
+    chart_version: 1.0.2
     release_namespace: ckan
     create_namespace: true
     values: "{{ lookup('template','files/values.yaml') | from_yaml }}"  

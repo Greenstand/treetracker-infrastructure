@@ -17,7 +17,7 @@ resource "postgresql_role" "service_user" {
   name     = "s_${var.schema}"
   login    = true
   password = random_password.s_password.result
-  search_path = [ "${var.schema}", "public" ]
+  search_path = [ var.schema, "public" ]
 }
 
 resource "postgresql_grant" "microservice-user-usage" {
@@ -28,12 +28,32 @@ resource "postgresql_grant" "microservice-user-usage" {
   privileges  = ["USAGE"]
 }
 
+resource "postgresql_default_privileges" "microservice-user-default" {
+  database = "treetracker"
+  role     = "s_${var.schema}"
+  schema      = var.schema
+
+  owner       = "doadmin"
+  object_type = "table"
+  privileges  = var.service_user_table_grants
+}
+
+resource "postgresql_default_privileges" "microservice-user-default-sequence" {
+  database = "treetracker"
+  role     = "s_${var.schema}"
+  schema      = var.schema
+
+  owner       = "doadmin"
+  object_type = "sequence"
+  privileges  = ["USAGE", "SELECT"]
+}
+
 resource "postgresql_grant" "microservice-user" {
   database    = "treetracker"
   role        = "s_${var.schema}"
   schema      = var.schema
   object_type = "table"
-  privileges  = ["SELECT", "INSERT", "UPDATE"]
+  privileges  = var.service_user_table_grants
 }
 
 resource "postgresql_grant" "microservice-user-sequence" {
@@ -72,7 +92,7 @@ resource "postgresql_grant" "microservice-migration-executer-tables" {
   role        = "m_${var.schema}"
   schema      = var.schema
   object_type = "table"
-  privileges  = ["INSERT", "SELECT"]
+  privileges  = ["INSERT", "SELECT", "REFERENCES", "UPDATE"]
 }
 
 resource "postgresql_grant" "microservice-migration-executor-sequence" {
@@ -83,11 +103,3 @@ resource "postgresql_grant" "microservice-migration-executor-sequence" {
   privileges  = ["USAGE", "SELECT"]
 }
 
-
-# resource "postgresql_grant" "microservice-migration-executer-public" {
-#  database    = "treetracker"
-#  role        = "m_${var.schema}"
-#  schema      = "public"
-#  object_type = "schema"
-#  privileges  = ["USAGE"]
-# }

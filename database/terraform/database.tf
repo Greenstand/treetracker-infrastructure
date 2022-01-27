@@ -30,21 +30,6 @@ resource "digitalocean_database_firewall" "treetracker-database-fw" {
   }
 
   rule {
-    type  = "droplet"
-    value = "prod-core-services-20200703-01-1612148248329-s-4vcpu-8gb-nyc1-01"
-  }
-
-  rule {
-    type  = "droplet"
-    value = "prod-legacy-core-services-1612148271925-s-2vcpu-4gb-nyc1-01"
-  }
-
-  rule {
-    type  = "droplet"
-    value = "prod-batch-processor-20200703-1612148239333-s-1vcpu-2gb-nyc1-01"
-  }
-
-  rule {
     type  = "ip_addr"
     value = "157.230.2.227"
   }
@@ -95,3 +80,9 @@ resource "digitalocean_database_db" "ckan-datastore-database" {
   cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
   name       = "ckan_datastore"
 }
+
+resource "digitalocean_database_db" "world-bank-backup-database" {
+  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
+  name       = "world_bank_backup"
+}
+

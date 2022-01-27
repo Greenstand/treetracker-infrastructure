@@ -1,0 +1,25 @@
+#!/bin/bash
+set -e
+
+echo $1
+PREFIX=$1
+
+echo 'Doctl Context:'
+read CONTEXT
+
+echo 'Schema:'
+read SCHEMA
+
+doctl auth switch --context $CONTEXT
+doctl databases list
+
+echo 'Database Id:'
+read DATABASE_ID
+
+USER=$PREFIX_$SCHEMA
+PASSWORD=`doctl databases user get $DATABASE_ID $USER --format Password --no-header`
+_URI=`doctl databases get $DATABASE_ID --format URI --no-header`
+HOST=`echo $_URI | sed 's/.*@\(.*\):.*/\1/'`
+#echo $HOST
+#echo $HOST
+URI="postgresql://m_treetracker:$PASSWORD@$HOST:25060/treetracker?ssl=no-verify&schema=$SCHEMA"

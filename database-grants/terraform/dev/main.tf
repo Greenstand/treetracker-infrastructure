@@ -11,3 +11,11 @@ module "treetracker_schema" {
      postgresql = postgresql.treetracker
   }
 }
+
+module "webmap_schema" {
+  source = "./schemas/webmap"
+  providers = {
+     postgresql = postgresql.treetracker
+  }
+}
+

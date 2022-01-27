@@ -19,7 +19,7 @@ resource "random_password" "token_issuer_password" {
 }
 
 resource "postgresql_role" "token_issuer_human" {
-  provider = "postgresql.treetracker"
+  provider = postgresql.treetracker
   name     = "token_issuer"
   login    = true
   password = random_password.token_issuer_password.result
@@ -34,7 +34,7 @@ resource "random_password" "treetracker_admin_password" {
 }
 
 resource "postgresql_role" "treetracker_admin" {
-  provider = "postgresql.treetracker"
+  provider = postgresql.treetracker
   name     = "treetracker_admin"
   login    = true
   password = random_password.treetracker_admin_password.result
@@ -47,7 +47,7 @@ resource "random_password" "treetracker_analyst_password" {
 }
 
 resource "postgresql_role" "treetracker_analyst" {
-  provider = "postgresql.treetracker"
+  provider = postgresql.treetracker
   name     = "treetracker_analyst"
   login    = true
   password = random_password.treetracker_analyst_password.result
@@ -60,7 +60,7 @@ resource "random_password" "treetracker_manager_password" {
 }
 
 resource "postgresql_role" "treetracker_manager" {
-  provider = "postgresql.treetracker"
+  provider = postgresql.treetracker
   name     = "treetracker_manager"
   login    = true
   password = random_password.treetracker_manager_password.result
@@ -73,7 +73,7 @@ resource "random_password" "token_trading_admin_password" {
 }
 
 resource "postgresql_role" "token_trading_admin" {
-  provider = "postgresql.treetracker"
+  provider = postgresql.treetracker
   name     = "token_trading_admin"
   login    = true
   password = random_password.token_trading_admin_password.result
@@ -88,7 +88,7 @@ resource "random_password" "wallet_operator_password" {
 }
 
 resource "postgresql_role" "wallet_operator_human" {
-  provider = "postgresql.treetracker"
+  provider = postgresql.treetracker
   name     = "wallet_operator"
   login    = true
   password = random_password.wallet_operator_password.result

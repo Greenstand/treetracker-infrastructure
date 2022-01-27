@@ -22,4 +22,4 @@ _URI=`doctl databases get $DATABASE_ID --format URI --no-header`
 HOST=`echo $_URI | sed 's/.*@\(.*\):.*/\1/'`
 #echo $HOST
 #echo $HOST
-URI="postgresql://m_treetracker:$PASSWORD@$HOST:25060/treetracker?ssl=no-verify&schema=$SCHEMA"
+URI="postgresql://$USER:$PASSWORD@$HOST:25060/treetracker?ssl=no-verify&schema=$SCHEMA"

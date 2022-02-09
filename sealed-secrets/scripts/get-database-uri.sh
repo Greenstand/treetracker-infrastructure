@@ -16,7 +16,8 @@ doctl databases list
 echo 'Database Id:'
 read DATABASE_ID
 
-USER=$PREFIX_$SCHEMA
+USER=$PREFIX$SCHEMA
+echo $USER
 PASSWORD=`doctl databases user get $DATABASE_ID $USER --format Password --no-header`
 _URI=`doctl databases get $DATABASE_ID --format URI --no-header`
 HOST=`echo $_URI | sed 's/.*@\(.*\):.*/\1/'`

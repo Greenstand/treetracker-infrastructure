@@ -19,3 +19,10 @@ module "webmap_schema" {
   }
 }
 
+module "stakeholder_schema" {
+  source = "./schemas/stakeholder"
+  providers = {
+     postgresql = postgresql.treetracker
+  }
+}
+

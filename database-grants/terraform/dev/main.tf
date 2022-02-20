@@ -26,3 +26,23 @@ module "stakeholder_schema" {
   }
 }
 
+module "earnings_schema" {
+  source = "./schemas/earnings"
+  providers = {
+     postgresql = postgresql.treetracker
+  }
+}
+
+module "regions_schema" {
+  source = "./schemas/regions"
+  providers = {
+     postgresql = postgresql.treetracker
+  }
+}
+
+module "messaging_schema" {
+  source = "./schemas/messaging"
+  providers = {
+     postgresql = postgresql.treetracker
+  }
+}

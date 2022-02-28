@@ -21,7 +21,7 @@ resource "postgresql_role" "service_user" {
 }
 
 resource "postgresql_grant" "microservice-user-usage" {
-  database    = "treetracker"
+  database    = var.database
   role        = "s_${var.schema}"
   schema      = var.schema
   object_type = "schema"
@@ -29,27 +29,27 @@ resource "postgresql_grant" "microservice-user-usage" {
 }
 
 resource "postgresql_default_privileges" "microservice-user-default" {
-  database = "treetracker"
+  database = var.database
   role     = "s_${var.schema}"
   schema      = var.schema
 
-  owner       = "doadmin"
+  owner       = "m_${var.schema}"
   object_type = "table"
   privileges  = var.service_user_table_grants
 }
 
 resource "postgresql_default_privileges" "microservice-user-default-sequence" {
-  database = "treetracker"
+  database = var.database
   role     = "s_${var.schema}"
   schema      = var.schema
 
-  owner       = "doadmin"
+  owner       = "m_${var.schema}"
   object_type = "sequence"
   privileges  = ["USAGE", "SELECT"]
 }
 
 resource "postgresql_grant" "microservice-user" {
-  database    = "treetracker"
+  database    = var.database
   role        = "s_${var.schema}"
   schema      = var.schema
   object_type = "table"
@@ -57,7 +57,7 @@ resource "postgresql_grant" "microservice-user" {
 }
 
 resource "postgresql_grant" "microservice-user-sequence" {
-  database    = "treetracker"
+  database    = var.database
   role        = "s_${var.schema}"
   schema      = var.schema
   object_type = "sequence"
@@ -79,7 +79,7 @@ resource "postgresql_role" "migration_user" {
 
 
 resource "postgresql_grant" "microservice-migration-executer" {
-  database    = "treetracker"
+  database    = var.database
   role        = "m_${var.schema}"
   schema      = var.schema
   object_type = "schema"
@@ -88,7 +88,7 @@ resource "postgresql_grant" "microservice-migration-executer" {
 
 
 resource "postgresql_grant" "microservice-migration-executer-tables" {
-  database    = "treetracker"
+  database    = var.database
   role        = "m_${var.schema}"
   schema      = var.schema
   object_type = "table"
@@ -96,10 +96,11 @@ resource "postgresql_grant" "microservice-migration-executer-tables" {
 }
 
 resource "postgresql_grant" "microservice-migration-executor-sequence" {
-  database    = "treetracker"
+  database    = var.database
   role        = "m_${var.schema}"
   schema      = var.schema
   object_type = "sequence"
   privileges  = ["USAGE", "SELECT"]
 }
+
 

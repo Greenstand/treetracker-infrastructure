@@ -324,3 +324,26 @@ resource "postgresql_default_privileges" "read_only_reporting_tables" {
   object_type = "table"
   privileges  = ["SELECT"]
 }
+
+resource "postgresql_default_privileges" "read_only_earnings_tables" {
+  provider = postgresql.treetracker
+  role     = "readonlyuser"
+  database = "treetracker"
+  schema = "earnings"
+
+  owner       = "doadmin"
+  object_type = "table"
+  privileges  = ["SELECT"]
+}
+
+resource "postgresql_default_privileges" "read_only_messaging_tables" {
+  provider = postgresql.treetracker
+  role     = "readonlyuser"
+  database = "treetracker"
+  schema = "messaging"
+
+  owner       = "doadmin"
+  object_type = "table"
+  privileges  = ["SELECT"]
+}
+

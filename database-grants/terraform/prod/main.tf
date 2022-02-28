@@ -49,3 +49,10 @@ module "airflow_schema" {
   }
 }
 
+module "messaging_schema" {
+  source = "./schemas/messaging"
+  providers = {
+     postgresql = postgresql.treetracker
+  }
+}
+

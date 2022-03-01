@@ -1,6 +1,6 @@
 
-module "field_schema" {
-  source = "./schemas/field"
+module "field_data_schema" {
+  source = "./schemas/field_data"
   providers = {
      postgresql = postgresql.treetracker
   }

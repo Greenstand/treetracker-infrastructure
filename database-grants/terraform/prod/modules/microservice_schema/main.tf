@@ -104,3 +104,27 @@ resource "postgresql_grant" "microservice-migration-executor-sequence" {
 }
 
 
+resource "postgresql_grant" "readonlyuser-schema" {
+  database    = var.database 
+  role        = "readonlyuser"
+  schema      = var.schema
+  object_type = "schema"
+  privileges  = ["USAGE"]
+}
+
+resource "postgresql_grant" "readonlyuser-tables" {
+  database    = var.database 
+  role        = "readonlyuser"
+  schema      = var.schema
+  object_type = "table"
+  privileges  = ["SELECT"]
+}
+
+resource "postgresql_grant" "readonlyuser-sequence" {
+  database    = var.database
+  role        = "readonlyuser"
+  schema      = var.schema
+  object_type = "sequence"
+  privileges  = ["USAGE", "SELECT"]
+}
+

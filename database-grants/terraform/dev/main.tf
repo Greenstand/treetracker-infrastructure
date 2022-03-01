@@ -46,3 +46,10 @@ module "messaging_schema" {
      postgresql = postgresql.treetracker
   }
 }
+
+module "field_data_schema" {
+  source = "./schemas/field_data"
+  providers = {
+     postgresql = postgresql.treetracker
+  }
+}

@@ -27,6 +27,15 @@ resource "aws_iam_user_policy" "bulk_data_tester_test_policy" {
       "Effect": "Allow",
       "Action": "s3:PutObject",
       "Resource": "arn:aws:s3:::treetracker-test-batch-uploads/*"
+    },
+    {
+      "Sid": "Terraform1",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ], 
+      "Resource": "arn:aws:s3:::treetracker-production-batch-uploads/*"
     }
   ]
 }

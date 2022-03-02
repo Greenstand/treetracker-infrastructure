@@ -13,4 +13,10 @@ resource "postgresql_grant" "legacy_field_data_access" {
   privileges  = ["SELECT", "INSERT"]
 }
 
-
+resource "postgresql_grant" "legacy_field_data_access_sequence" {
+  database    = "treetracker"
+  role        = "s_field_data"
+  schema      = "public"
+  object_type = "sequence"
+  privileges  = ["SELECT", "USAGE"]
+}

@@ -53,3 +53,10 @@ module "field_data_schema" {
      postgresql = postgresql.treetracker
   }
 }
+
+module "query_schema" {
+  source = "./schemas/query"
+  providers = {
+     postgresql = postgresql.treetracker
+  }
+}

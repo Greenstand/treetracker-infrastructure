@@ -74,7 +74,7 @@ resource "postgresql_role" "migration_user" {
   name     = "m_${var.schema}"
   login    = true
   password = random_password.m_password.result
-  search_path = [ "${var.schema}", "public" ]
+  search_path = [ var.schema, "public" ]
 }
 
 

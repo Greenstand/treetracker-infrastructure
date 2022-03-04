@@ -29,13 +29,26 @@ resource "aws_iam_user_policy" "bulk_data_tester_test_policy" {
       "Resource": "arn:aws:s3:::treetracker-test-batch-uploads/*"
     },
     {
+      "Sid": "Terraform01",
+      "Effect": "Allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::treetracker-dev-batch-uploads/*"
+    },
+    {
       "Sid": "Terraform1",
       "Effect": "Allow",
       "Action": [
-        "s3:GetObject",
-        "s3:ListBucket"
+        "s3:GetObject"
       ], 
       "Resource": "arn:aws:s3:::treetracker-production-batch-uploads/*"
+    },
+    {
+      "Sid": "Terraform2",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket"
+      ], 
+      "Resource": "arn:aws:s3:::treetracker-production-batch-uploads"
     }
   ]
 }

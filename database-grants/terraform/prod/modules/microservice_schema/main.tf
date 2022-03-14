@@ -112,6 +112,14 @@ resource "postgresql_grant" "readonlyuser-schema" {
   privileges  = ["USAGE"]
 }
 
+resource "postgresql_grant" "readonlyuser-tables" {
+  database    = var.database
+  role        = "readonlyuser"
+  schema      = var.schema
+  object_type = "table"
+  privileges  = ["SELECT"]
+}
+
 resource "postgresql_default_privileges" "readonlyuser-default-tables" {
   database = var.database
   role     = "readonlyuser"

@@ -1,0 +1,16 @@
+---
+- name: Add loki repository repository
+  tags: [loki]
+  community.kubernetes.helm_repository:
+    name: grafana
+    repo_url: https://grafana.github.io/helm-charts
+
+- name: Install loki stack
+  tags: [loki]
+  community.kubernetes.helm:
+    name: loki
+    chart_ref: grafana/loki-stack
+    chart_version: 2.5.1
+    release_namespace: loki
+    create_namespace: true
+    values: "{{ lookup('file','values.yaml') | from_yaml }}"

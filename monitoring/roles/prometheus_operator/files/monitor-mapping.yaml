@@ -6,7 +6,7 @@ metadata:
   namespace: monitoring
 spec:
   prefix: /grafana/
-  service: prometheus-community-grafana
+  service: prom-grafana
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -15,7 +15,7 @@ metadata:
   namespace: monitoring
 spec:
   prefix: /alertmanager/
-  service: prometheus-community-kube-alertmanager:9093
+  service: prom-kube-prometheus-stack-alertmanager:9093
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -24,4 +24,4 @@ metadata:
   namespace: monitoring
 spec:
   prefix: /prometheus/
-  service: prometheus-operated:9090
+  service: prom-kube-prometheus-stack-prometheus:9090

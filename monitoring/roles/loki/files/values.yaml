@@ -1,5 +1,5 @@
 # Taken from https://raw.githubusercontent.com/digitalocean/Kubernetes-Starter-Kit-Developers/main/05-setup-loki-stack/assets/manifests/loki-stack-values-v2.5.1.yaml
-loki: 
+loki:
   enabled: true
   # ======================== REMOTE STORAGE SETUP FOR DO SPACES ==============================
   # Uncomment the configuration below, to enable remote storage setup for `DO Spaces`
@@ -29,7 +29,7 @@ loki:
     enabled: true
     storageClassName: do-block-storage
     accessModes: ["ReadWriteOnce"]
-    size: 5Gi
+    size: 50Gi
 
 
 promtail:

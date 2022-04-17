@@ -11,6 +11,6 @@
     name: loki
     chart_ref: grafana/loki-stack
     chart_version: 2.5.1
-    release_namespace: loki
+    release_namespace: monitoring
     create_namespace: true
     values: "{{ lookup('file','values.yaml') | from_yaml }}"

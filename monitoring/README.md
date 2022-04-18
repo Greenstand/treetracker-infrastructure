@@ -67,3 +67,7 @@ Kibana is accessible on URL/kibana (e.g. dev-k8s.treetracker.org/kibana)
 kubectl delete crd prometheuses.monitoring.coreos.com prometheusrules.monitoring.coreos.com alertmanagers.monitoring.coreos.com alertmanagerconfigs.monitoring.coreos.com
 ```
 1. Rerun the first command
+1. Cleanup any old pvcs instead of migrating
+```
+kubectl delete pvc prometheus-prometheus-community-kube-prometheus-db-prometheus-prometheus-community-kube-prometheus-0 alertmanager-prometheus-community-kube-alertmanager-db-alertmanager-prometheus-community-kube-alertmanager-0`
+```

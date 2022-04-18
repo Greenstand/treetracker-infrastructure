@@ -1,6 +1,15 @@
 # Taken from https://raw.githubusercontent.com/digitalocean/Kubernetes-Starter-Kit-Developers/main/05-setup-loki-stack/assets/manifests/loki-stack-values-v2.5.1.yaml
 loki:
   enabled: true
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: doks.digitalocean.com/node-pool
+            operator: In
+            values:
+            - monitoring-node-pool
   # ======================== REMOTE STORAGE SETUP FOR DO SPACES ==============================
   # Uncomment the configuration below, to enable remote storage setup for `DO Spaces`
   # Make sure to replace the <> placeholders for the `aws` subsection accordingly

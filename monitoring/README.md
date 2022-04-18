@@ -57,3 +57,17 @@ More info on how to access these things is listed [here](https://www.digitalocea
 ### How do I view Kibana
 
 Kibana is accessible on URL/kibana (e.g. dev-k8s.treetracker.org/kibana)
+
+
+### Migrating from the older grafana to the newer version
+
+1. Run `ansible-playbook prom-operator-playbook.yml -e @<env>-values.enc --vault-password-file password_file`
+1. If an error appears, next run
+```bash
+kubectl delete crd prometheuses.monitoring.coreos.com prometheusrules.monitoring.coreos.com alertmanagers.monitoring.coreos.com alertmanagerconfigs.monitoring.coreos.com
+```
+1. Rerun the first command
+1. Cleanup any old pvcs instead of migrating
+```
+kubectl delete --namespace=monitoring pvc prometheus-prometheus-community-kube-prometheus-db-prometheus-prometheus-community-kube-prometheus-0 alertmanager-prometheus-community-kube-alertmanager-db-alertmanager-prometheus-community-kube-alertmanager-0
+```

@@ -4,4 +4,4 @@
   gather_facts: false
   connection: local
   roles:
-    - prometheus_operator
+    - loki

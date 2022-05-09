@@ -51,6 +51,8 @@ grafana:
       root_url: https://{{ domain }}/grafana
     users:
       viewers_can_edit: true
+    dataproxy:
+      timeout: 120
     auth.github:
       enabled: true
       allow_sign_up: true

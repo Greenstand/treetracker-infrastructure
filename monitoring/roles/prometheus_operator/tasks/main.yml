@@ -25,6 +25,7 @@
     values: "{{ lookup('template','files/values.yaml') | from_yaml }}"
 
 - name: Create UI mapping for monitoring
+  tags : [mapping]
   community.kubernetes.k8s:
     state: present
     namespace: monitoring

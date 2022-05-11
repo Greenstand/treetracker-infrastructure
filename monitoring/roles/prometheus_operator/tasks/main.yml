@@ -4,17 +4,6 @@
     name: prometheus-community
     repo_url: https://prometheus-community.github.io/helm-charts
 
-- name: Uninstall old prometheus operator
-  community.kubernetes.helm:
-    name: prometheus-community
-    chart_ref: prometheus-community/kube-prometheus-stack
-    chart_version: 9.4.4
-    state: absent
-    release_namespace: monitoring
-    wait: true
-
-# If you get an install error below, run
-# kubectl delete crd prometheuses.monitoring.coreos.com prometheusrules.monitoring.coreos.com alertmanagers.monitoring.coreos.com alertmanagerconfigs.monitoring.coreos.com
 - name: Install prometheus kubestack
   community.kubernetes.helm:
     name: prom

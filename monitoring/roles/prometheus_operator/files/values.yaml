@@ -18,7 +18,7 @@ prometheusOperator:
 
 prometheus:
   prometheusSpec:
-    externalUrl: http://prometheus-community-kube-prometheus:9090/prometheus/
+    externalUrl: https://{{ domain }}/prometheus/
     storageSpec:
       volumeClaimTemplate:
         spec:
@@ -67,8 +67,8 @@ grafana:
 
 # Define persistent storage for Alertmanager (PVC)
 alertmanager:
-  externalUrl: http://prometheus-community-kube-alertmanager:9093/alertmanager/
   alertmanagerSpec:
+    externalUrl: https://{{ domain }}/alertmanager/
     storage:
       volumeClaimTemplate:
         spec:
@@ -78,6 +78,40 @@ alertmanager:
             requests:
               storage: 5Gi
     affinity: *nodeAffinity
+  config:
+    global:
+      resolve_timeout: 5m
+      slack_api_url: {{ slack_url }}
+    route:
+      group_by: ['job']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+      routes:
+      - match:
+          alertname: Watchdog
+        receiver: 'null'
+      - match:
+        receiver: 'slack'
+        continue: true
+    receivers:
+    - name: 'null'
+    - name: 'slack'
+      slack_configs:
+      - channel: {{ slack_channel }}
+        send_resolved: false
+        {% raw %}
+        title: '[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] Monitoring Event Notification'
+        text: >-
+         {{ range .Alerts }}
+            *Alert:* {{ .Annotations.summary }} - `{{ .Labels.severity }}`
+            *Description:* {{ .Annotations.description }}
+            *Graph:* <{{ .GeneratorURL }}|:chart_with_upwards_trend:> *Runbook:* <{{ .Annotations.runbook }}|:spiral_note_pad:>
+            *Details:*
+            {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+            {{ end }}
+          {{ end }}
+        {% endraw %}
 
 # Change default node-exporter port
 prometheus-node-exporter:

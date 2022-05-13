@@ -1,8 +1,0 @@
-apiVersion: getambassador.io/v2
-kind: Mapping
-metadata:
-  name: kibana-backend
-  namespace: monitoring
-spec:
-  prefix: /extauth/kibana/
-  service: kibana-kibana:5601

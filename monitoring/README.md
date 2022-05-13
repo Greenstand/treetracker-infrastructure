@@ -71,3 +71,6 @@ kubectl delete crd prometheuses.monitoring.coreos.com prometheusrules.monitoring
 ```
 kubectl delete --namespace=monitoring pvc prometheus-prometheus-community-kube-prometheus-db-prometheus-prometheus-community-kube-prometheus-0 alertmanager-prometheus-community-kube-alertmanager-db-alertmanager-prometheus-community-kube-alertmanager-0
 ```
+
+### Cleaning up the old elasticsearch/kibana/filebeat install
+Run `./roles/elasticsearch/cleanup.sh`

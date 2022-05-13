@@ -38,7 +38,7 @@ loki:
     enabled: true
     storageClassName: do-block-storage
     accessModes: ["ReadWriteOnce"]
-    size: 50Gi
+    size: 100Gi
 
 
 promtail:

@@ -68,7 +68,21 @@ resource "postgresql_grant" "query_regions_tables" {
   privileges  = ["SELECT"]
 }
 
+resource "postgresql_grant" "query_public_schema" {
+  database    = "treetracker"
+  role        = "s_query"
+  schema      = "public"
+  object_type = "schema"
+  privileges  = ["USAGE"]
+}
 
+resource "postgresql_grant" "query_public_function" {
+  database    = "treetracker"
+  role        = "s_query"
+  schema      = "public"
+  object_type = "function"
+  privileges  = ["EXECUTE"]
+}
 
 
 

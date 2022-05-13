@@ -7,6 +7,7 @@ metadata:
 spec:
   prefix: /grafana/
   service: prom-grafana
+  timeout_ms: 60000
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -25,3 +26,4 @@ metadata:
 spec:
   prefix: /prometheus/
   service: prom-kube-prometheus-stack-prometheus:9090
+  timeout_ms: 60000

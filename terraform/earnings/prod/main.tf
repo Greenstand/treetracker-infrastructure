@@ -1,5 +1,22 @@
+variable "aws_region" {
+  type = string
+}
+
+variable "aws_bucket_name" {
+  type = string
+}
+
+output "print-bucket" {
+  value = var.aws_bucket_name
+}
+
+output "print-region" {
+  value = var.aws_region
+}
+
 resource "aws_s3_bucket" "payments_upload_bucket" {
-  bucket = "payments-batch-upload"
+  bucket = var.aws_bucket_name
+  region = var.aws_region
 }
 
 resource "aws_iam_user" "payments_upload_bucket_user" {

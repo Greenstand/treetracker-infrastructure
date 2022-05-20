@@ -43,7 +43,7 @@
 
 - set_fact:
     affinity: &affinity
-      nodeAffinity: 
+      nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
             - matchExpressions:
@@ -128,10 +128,10 @@
       web:
         resources:
           requests:
-            memory: "128Mi"
-            cpu: "100m"
+            memory: 1Gi
+            cpu: "500m"
           limits:
-            memory: "1Gi"
+            memory: 2Gi
             cpu: "1000m"
         affinity: *affinity
       scheduler:
@@ -146,10 +146,10 @@
       workers:
         resources:
           requests:
-            memory: "128Mi"
-            cpu: "100m"
+            memory: "2Gi"
+            cpu: "500m"
           limits:
-            memory: "1Gi"
+            memory: "4Gi"
             cpu: "1000m"
         affinity: *affinity
       flower:

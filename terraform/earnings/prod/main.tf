@@ -6,6 +6,10 @@ variable "aws_bucket_name" {
   type = string
 }
 
+variable "payments_upload_user" {
+  type = string
+}
+
 output "print-bucket" {
   value = var.aws_bucket_name
 }
@@ -20,7 +24,7 @@ resource "aws_s3_bucket" "payments_upload_bucket" {
 }
 
 resource "aws_iam_user" "payments_upload_bucket_user" {
-  name = "Payments-Upload-User"
+  name =  var.payments_upload_user
 }
 
 resource "aws_iam_access_key" "payments_upload_bucket_user_access_key" {

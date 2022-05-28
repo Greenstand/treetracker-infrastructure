@@ -37,6 +37,7 @@ output "payments_upload_bucket_user_keyid" {
 
 output "payments_upload_bucket_user_secret" {
   value = aws_iam_access_key.payments_upload_bucket_user_access_key.secret
+  sensitive = true
 }
 
 resource "aws_iam_user_policy" "payments_upload_bucket_user_policy" {

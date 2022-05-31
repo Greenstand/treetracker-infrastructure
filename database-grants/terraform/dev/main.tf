@@ -60,3 +60,10 @@ module "query_schema" {
      postgresql = postgresql.treetracker
   }
 }
+
+module "reporting_schema" {
+  source = "./schemas/reporting"
+  providers = {
+     postgresql = postgresql.treetracker
+  }
+}

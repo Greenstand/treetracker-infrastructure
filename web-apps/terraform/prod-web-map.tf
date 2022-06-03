@@ -1,8 +1,8 @@
 module "prod-web-map" {
-  source  = "github.com/Greenstand/terraform-aws-staticwebsite"
-  domain = "webmap.treetracker.org"
+  source         = "github.com/Greenstand/terraform-aws-staticwebsite"
+  domain         = "webmap.treetracker.org"
   error_document = "index.html"
-  routing_rules = <<EOF
+  routing_rules  = <<EOF
 [{
   "Condition" : {
     "KeyPrefixEquals" : "finorx-"

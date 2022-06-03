@@ -1,8 +1,8 @@
 terraform {
   # DigitalOcean uses the S3 spec.
   backend "s3" {
-    bucket = "greenstandtf"
-    key    = "terraform-herbarium-site.tfstate"
+    bucket   = "greenstandtf"
+    key      = "terraform-herbarium-site.tfstate"
     endpoint = "https://sfo2.digitaloceanspaces.com"
     # DO uses the S3 format
     # eu-west-1 is used to pass TF validation

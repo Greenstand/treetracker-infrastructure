@@ -1,6 +1,6 @@
 resource "random_password" "treetracker_password" {
-  length = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "_%@"
 }
 
@@ -12,8 +12,8 @@ resource "postgresql_role" "treetracker" {
 }
 
 resource "random_password" "data_pipeline_password" {
-  length = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "_%@"
 }
 
@@ -25,7 +25,7 @@ resource "postgresql_role" "data_pipeline" {
 }
 
 resource "postgresql_grant" "data-pipeline-public-table" {
-  provider = "postgresql.data_pipeline"
+  provider    = "postgresql.data_pipeline"
   database    = "data_pipeline"
   role        = "data_pipeline"
   schema      = "public"
@@ -34,7 +34,7 @@ resource "postgresql_grant" "data-pipeline-public-table" {
 }
 
 resource "postgresql_grant" "data-pipeline-public-sequence" {
-  provider = "postgresql.data_pipeline"
+  provider    = "postgresql.data_pipeline"
   database    = "data_pipeline"
   role        = "data_pipeline"
   schema      = "public"

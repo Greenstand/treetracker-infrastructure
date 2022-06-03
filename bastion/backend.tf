@@ -1,8 +1,8 @@
 terraform {
   # DigitalOcean uses the S3 spec.
   backend "s3" {
-    bucket = "treetracker-production-terraform"
-    key    = "terraform-bastion.tfstate"
+    bucket   = "treetracker-production-terraform"
+    key      = "terraform-bastion.tfstate"
     endpoint = "https://sfo2.digitaloceanspaces.com"
     # DO uses the S3 format
     # eu-west-1 is used to pass TF validation

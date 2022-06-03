@@ -5,10 +5,10 @@ provider "digitalocean" {
 terraform {
   required_providers {
     digitalocean = {
-      source = "digitalocean/digitalocean"
+      source  = "digitalocean/digitalocean"
       version = "1.22.2"
     }
-    
+
   }
 }
 #data "digitalocean_kubernetes_cluster" "kubernetes-cluster" {
@@ -16,8 +16,8 @@ terraform {
 #}
 
 provider "kubernetes" {
-  host             = data.digitalocean_kubernetes_cluster.kubernetes-cluster.endpoint
-  token            = data.digitalocean_kubernetes_cluster.kubernetes-cluster.kube_config[0].token
+  host  = data.digitalocean_kubernetes_cluster.kubernetes-cluster.endpoint
+  token = data.digitalocean_kubernetes_cluster.kubernetes-cluster.kube_config[0].token
   cluster_ca_certificate = base64decode(
     data.digitalocean_kubernetes_cluster.kuberntes-cluster.kube_config[0].cluster_ca_certificate
   )

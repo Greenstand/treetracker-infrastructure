@@ -1,6 +1,6 @@
 resource "random_password" "readonlyuser_password" {
-  length = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "_%@"
 }
 
@@ -12,7 +12,7 @@ resource "postgresql_role" "readonlyuser_human" {
 }
 
 resource "postgresql_grant" "readonlyyuser_select_field" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "field"
@@ -21,7 +21,7 @@ resource "postgresql_grant" "readonlyyuser_select_field" {
 }
 
 resource "postgresql_grant" "readonlyyuser_usage_field" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "field"
@@ -30,7 +30,7 @@ resource "postgresql_grant" "readonlyyuser_usage_field" {
 }
 
 resource "postgresql_grant" "readonlyyuser_sequence_field" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "field"
@@ -39,7 +39,7 @@ resource "postgresql_grant" "readonlyyuser_sequence_field" {
 }
 
 resource "postgresql_grant" "readonlyyuser_select_public" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "public"
@@ -48,7 +48,7 @@ resource "postgresql_grant" "readonlyyuser_select_public" {
 }
 
 resource "postgresql_grant" "readonlyyuser_sequence_public" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "public"
@@ -57,7 +57,7 @@ resource "postgresql_grant" "readonlyyuser_sequence_public" {
 }
 
 resource "postgresql_grant" "readonlyyuser_usage_import" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "import"
@@ -66,7 +66,7 @@ resource "postgresql_grant" "readonlyyuser_usage_import" {
 }
 
 resource "postgresql_grant" "readonlyyuser_select_import" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "import"
@@ -75,7 +75,7 @@ resource "postgresql_grant" "readonlyyuser_select_import" {
 }
 
 resource "postgresql_grant" "readonlyyuser_sequence_import" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "import"
@@ -84,7 +84,7 @@ resource "postgresql_grant" "readonlyyuser_sequence_import" {
 }
 
 resource "postgresql_grant" "readonlyyuser_usage_operations" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "operations"
@@ -93,7 +93,7 @@ resource "postgresql_grant" "readonlyyuser_usage_operations" {
 }
 
 resource "postgresql_grant" "readonlyyuser_select_operations" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "operations"
@@ -102,7 +102,7 @@ resource "postgresql_grant" "readonlyyuser_select_operations" {
 }
 
 resource "postgresql_grant" "readonlyyuser_sequence_operations" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "operations"
@@ -111,7 +111,7 @@ resource "postgresql_grant" "readonlyyuser_sequence_operations" {
 }
 
 resource "postgresql_grant" "readonlyyuser_usage_token_management" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "token_management"
@@ -120,7 +120,7 @@ resource "postgresql_grant" "readonlyyuser_usage_token_management" {
 }
 
 resource "postgresql_grant" "readonlyyuser_select_token_management" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "token_management"
@@ -129,7 +129,7 @@ resource "postgresql_grant" "readonlyyuser_select_token_management" {
 }
 
 resource "postgresql_grant" "readonlyyuser_select_sequence_management" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "token_management"
@@ -138,7 +138,7 @@ resource "postgresql_grant" "readonlyyuser_select_sequence_management" {
 }
 
 resource "postgresql_grant" "readonlyyuser_usage_treetracker" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "treetracker"
@@ -147,7 +147,7 @@ resource "postgresql_grant" "readonlyyuser_usage_treetracker" {
 }
 
 resource "postgresql_grant" "readonlyyuser_select_treetracker" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "treetracker"
@@ -156,7 +156,7 @@ resource "postgresql_grant" "readonlyyuser_select_treetracker" {
 }
 
 resource "postgresql_grant" "readonlyyuser_sequence_treetracker" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "treetracker"
@@ -165,7 +165,7 @@ resource "postgresql_grant" "readonlyyuser_sequence_treetracker" {
 }
 
 resource "postgresql_grant" "readonlyyuser_usage_wallet" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "wallet"
@@ -174,7 +174,7 @@ resource "postgresql_grant" "readonlyyuser_usage_wallet" {
 }
 
 resource "postgresql_grant" "readonlyyuser_select_wallet" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "wallet"
@@ -183,7 +183,7 @@ resource "postgresql_grant" "readonlyyuser_select_wallet" {
 }
 
 resource "postgresql_grant" "readonlyyuser_sequence_wallet" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "wallet"
@@ -192,7 +192,7 @@ resource "postgresql_grant" "readonlyyuser_sequence_wallet" {
 }
 
 resource "postgresql_grant" "readonlyyuser_usage_webmap" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "webmap"
@@ -201,7 +201,7 @@ resource "postgresql_grant" "readonlyyuser_usage_webmap" {
 }
 
 resource "postgresql_grant" "readonlyyuser_sequence_webmap" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "webmap"
@@ -210,7 +210,7 @@ resource "postgresql_grant" "readonlyyuser_sequence_webmap" {
 }
 
 resource "postgresql_grant" "readonlyyuser_usage_airflow" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "airflow"
@@ -219,7 +219,7 @@ resource "postgresql_grant" "readonlyyuser_usage_airflow" {
 }
 
 resource "postgresql_grant" "readonlyyuser_select_airflow" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "airflow"
@@ -228,7 +228,7 @@ resource "postgresql_grant" "readonlyyuser_select_airflow" {
 }
 
 resource "postgresql_grant" "readonlyyuser_sequence_airflow" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "airflow"
@@ -237,7 +237,7 @@ resource "postgresql_grant" "readonlyyuser_sequence_airflow" {
 }
 
 resource "postgresql_grant" "readonlyyuser_usage_reporting" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "reporting"
@@ -246,7 +246,7 @@ resource "postgresql_grant" "readonlyyuser_usage_reporting" {
 }
 
 resource "postgresql_grant" "readonlyyuser_select_reporting" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "reporting"
@@ -255,7 +255,7 @@ resource "postgresql_grant" "readonlyyuser_select_reporting" {
 }
 
 resource "postgresql_grant" "readonlyyuser_sequence_reporting" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "reporting"
@@ -265,7 +265,7 @@ resource "postgresql_grant" "readonlyyuser_sequence_reporting" {
 
 
 resource "postgresql_grant" "readonlyuser_usage_earnings" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "earnings"
@@ -274,7 +274,7 @@ resource "postgresql_grant" "readonlyuser_usage_earnings" {
 }
 
 resource "postgresql_grant" "readonlyuser_select_earnings" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "earnings"
@@ -283,7 +283,7 @@ resource "postgresql_grant" "readonlyuser_select_earnings" {
 }
 
 resource "postgresql_grant" "readonlyuser_sequence_earnings" {
-  provider = "postgresql.treetracker"
+  provider    = "postgresql.treetracker"
   database    = "treetracker"
   role        = "readonlyuser"
   schema      = "earnings"
@@ -296,7 +296,7 @@ resource "postgresql_default_privileges" "read_only_public" {
   provider = postgresql.treetracker
   role     = "readonlyuser"
   database = "treetracker"
-  schema = "public"
+  schema   = "public"
 
   owner       = "doadmin"
   object_type = "table"
@@ -307,7 +307,7 @@ resource "postgresql_default_privileges" "read_only_reporting_sequence" {
   provider = postgresql.treetracker
   role     = "readonlyuser"
   database = "treetracker"
-  schema = "reporting"
+  schema   = "reporting"
 
   owner       = "doadmin"
   object_type = "sequence"
@@ -318,7 +318,7 @@ resource "postgresql_default_privileges" "read_only_reporting_tables" {
   provider = postgresql.treetracker
   role     = "readonlyuser"
   database = "treetracker"
-  schema = "reporting"
+  schema   = "reporting"
 
   owner       = "doadmin"
   object_type = "table"
@@ -329,7 +329,7 @@ resource "postgresql_default_privileges" "read_only_earnings_tables" {
   provider = postgresql.treetracker
   role     = "readonlyuser"
   database = "treetracker"
-  schema = "earnings"
+  schema   = "earnings"
 
   owner       = "doadmin"
   object_type = "table"
@@ -340,7 +340,7 @@ resource "postgresql_default_privileges" "read_only_messaging_tables" {
   provider = postgresql.treetracker
   role     = "readonlyuser"
   database = "treetracker"
-  schema = "messaging"
+  schema   = "messaging"
 
   owner       = "doadmin"
   object_type = "table"

@@ -5,13 +5,13 @@ data "digitalocean_kubernetes_versions" "treetracker_kubernetes_version" {
 }
 
 resource "digitalocean_kubernetes_cluster" "kubernetes-cluster" {
-  name   = var.cluster_name
+  name = var.cluster_name
 
   lifecycle {
     prevent_destroy = true
   }
 
-  region = "sfo2"
+  region       = "sfo2"
   auto_upgrade = true
   version      = data.digitalocean_kubernetes_versions.treetracker_kubernetes_version.latest_version
 
@@ -25,7 +25,7 @@ resource "digitalocean_kubernetes_cluster" "kubernetes-cluster" {
 }
 
 resource "digitalocean_kubernetes_node_pool" "microservices-node-pool" {
-  cluster_id =  digitalocean_kubernetes_cluster.kubernetes-cluster.id
+  cluster_id = digitalocean_kubernetes_cluster.kubernetes-cluster.id
 
   name       = "microservices-node-pool"
   size       = "s-2vcpu-4gb"
@@ -36,7 +36,7 @@ resource "digitalocean_kubernetes_node_pool" "microservices-node-pool" {
 
 
 resource "digitalocean_kubernetes_node_pool" "cloud-services-node-pool" {
-  cluster_id =  digitalocean_kubernetes_cluster.kubernetes-cluster.id
+  cluster_id = digitalocean_kubernetes_cluster.kubernetes-cluster.id
 
   name       = "cloud-services-node-pool"
   size       = "s-2vcpu-4gb"
@@ -46,7 +46,7 @@ resource "digitalocean_kubernetes_node_pool" "cloud-services-node-pool" {
 }
 
 resource "digitalocean_kubernetes_node_pool" "monitoring-node-pool" {
-  cluster_id =  digitalocean_kubernetes_cluster.kubernetes-cluster.id
+  cluster_id = digitalocean_kubernetes_cluster.kubernetes-cluster.id
 
   name       = "monitoring-node-pool"
   size       = "s-2vcpu-4gb"

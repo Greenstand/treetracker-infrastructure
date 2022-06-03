@@ -8,15 +8,15 @@
 #}
 
 resource "digitalocean_domain" "ambassador-host" {
-  name = "dev-k8s.treetracker.org"
+  name       = "dev-k8s.treetracker.org"
   ip_address = "134.209.142.182"
 }
 
 resource "digitalocean_record" "CNAME-www" {
   domain = digitalocean_domain.ambassador-host.name
-  type = "CNAME"
-  name = "www"
-  value = "@"
+  type   = "CNAME"
+  name   = "www"
+  value  = "@"
 }
 
 
@@ -25,12 +25,12 @@ resource "digitalocean_record" "CNAME-www" {
 # all dns is managed here
 
 resource "digitalocean_domain" "ambassador-host-test" {
-  name = "test-k8s.treetracker.org"
+  name       = "test-k8s.treetracker.org"
   ip_address = "157.230.74.182"
 }
 
 resource "digitalocean_domain" "ambassador-host-prod" {
-  name = "prod-k8s.treetracker.org"
+  name       = "prod-k8s.treetracker.org"
   ip_address = "167.172.12.67"
 }
 

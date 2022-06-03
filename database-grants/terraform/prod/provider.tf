@@ -13,7 +13,7 @@ variable "password" {
 terraform {
   required_providers {
     postgresql = {
-      source = "cyrilgdn/postgresql"
+      source  = "cyrilgdn/postgresql"
       version = "1.11.0"
     }
   }
@@ -21,7 +21,7 @@ terraform {
 
 provider "postgresql" {
   alias    = "treetracker"
-  database        = "treetracker"
+  database = "treetracker"
 
   host            = var.host
   port            = var.port
@@ -34,12 +34,12 @@ provider "postgresql" {
 
 provider "postgresql" {
   alias    = "data_pipeline"
-  database        = "data_pipeline"
+  database = "data_pipeline"
 
   host            = var.host
   port            = var.port
   username        = "doadmin"
-  password        = var.password 
+  password        = var.password
   sslmode         = "require"
   connect_timeout = 15
   superuser       = false

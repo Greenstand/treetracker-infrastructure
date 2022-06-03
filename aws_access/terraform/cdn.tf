@@ -26,7 +26,7 @@ resource "aws_cloudfront_distribution" "default" {
   }
 
   enabled             = true
-  is_ipv6_enabled     = true
+  is_ipv6_enabled     = false
   default_root_object = "index.html"
 
   viewer_certificate {

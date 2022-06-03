@@ -1,3 +1,4 @@
+ # Bucket serving the API images
 data "aws_s3_bucket" "default" {
   bucket = "treetracker-dev-images"
 }

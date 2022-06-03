@@ -5,7 +5,7 @@ on:
   pull_request:
   push:
     branches:
-      - master
+      - precommit-config
 
 jobs:
   pre-commit:

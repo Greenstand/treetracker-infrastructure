@@ -1,11 +1,6 @@
- # Bucket serving the API images
+# Bucket serving the API images
 data "aws_s3_bucket" "default" {
   bucket = "treetracker-dev-images"
-}
-
-resource "aws_s3_bucket_acl" "default" {
-  bucket = aws_s3_bucket.default.id
-  acl    = "public-read"
 }
 
 resource "aws_cloudfront_distribution" "default" {
@@ -29,6 +24,20 @@ resource "aws_cloudfront_distribution" "default" {
   enabled             = true
   is_ipv6_enabled     = false
   default_root_object = "index.html"
+
+  # To define
+  ordered_cache_behavior = [
+    # {
+    #   path_pattern           = "/static/*"
+    #   target_origin_id       = "s3_one"
+    #   viewer_protocol_policy = "redirect-to-https"
+
+    #   allowed_methods = ["GET", "HEAD", "OPTIONS"]
+    #   cached_methods  = ["GET", "HEAD"]
+    #   compress        = true
+    #   query_string    = true
+    # }
+  ]
 
   viewer_certificate {
     acm_certificate_arn = aws_acm_certificate.default.arn

@@ -128,11 +128,11 @@
       web:
         resources:
           requests:
-            memory: 1Gi
+            memory: 2Gi
             cpu: "500m"
           limits:
-            memory: 2Gi
-            cpu: "1000m"
+            memory: 4Gi
+            cpu: "2000m"
         affinity: *affinity
       scheduler:
         resources:

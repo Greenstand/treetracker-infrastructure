@@ -76,3 +76,10 @@ module "regions_schema" {
     postgresql = postgresql.treetracker
   }
 }
+
+module "contracts_schema" {
+  source = "./schemas/contracts"
+  providers = {
+     postgresql = postgresql.treetracker
+  }
+}

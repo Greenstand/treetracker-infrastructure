@@ -1,9 +1,30 @@
+variable "aws_region" {
+  type = string
+}
+
+variable "aws_bucket_name" {
+  type = string
+}
+
+variable "payments_upload_user" {
+  type = string
+}
+
+output "print-bucket" {
+  value = var.aws_bucket_name
+}
+
+output "print-region" {
+  value = var.aws_region
+}
+
 resource "aws_s3_bucket" "payments_upload_bucket" {
-  bucket = "payments-batch-upload"
+  bucket = var.aws_bucket_name
+  region = var.aws_region
 }
 
 resource "aws_iam_user" "payments_upload_bucket_user" {
-  name = "Payments-Upload-User"
+  name =  var.payments_upload_user
 }
 
 resource "aws_iam_access_key" "payments_upload_bucket_user_access_key" {
@@ -16,6 +37,7 @@ output "payments_upload_bucket_user_keyid" {
 
 output "payments_upload_bucket_user_secret" {
   value = aws_iam_access_key.payments_upload_bucket_user_access_key.secret
+  sensitive = true
 }
 
 resource "aws_iam_user_policy" "payments_upload_bucket_user_policy" {

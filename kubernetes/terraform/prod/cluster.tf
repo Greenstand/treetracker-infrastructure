@@ -1,7 +1,7 @@
 variable "cluster_name" {}
 
 data "digitalocean_kubernetes_versions" "treetracker_kubernetes_version" {
-  version_prefix = "1.19."
+  version_prefix = "1.21."
 }
 
 resource "digitalocean_kubernetes_cluster" "kubernetes-cluster" {
@@ -39,7 +39,7 @@ resource "digitalocean_kubernetes_node_pool" "cloud-services-node-pool" {
 
   name       = "cloud-services-node-pool"
   size       = "s-2vcpu-4gb"
-  node_count = 5
+  node_count = 6
   tags       = ["cloud-services-node", "treetracker-database-access"]
 
 }

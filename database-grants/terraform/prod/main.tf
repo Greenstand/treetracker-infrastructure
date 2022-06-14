@@ -80,6 +80,6 @@ module "regions_schema" {
 module "contracts_schema" {
   source = "./schemas/contracts"
   providers = {
-     postgresql = postgresql.treetracker
+    postgresql = postgresql.treetracker
   }
 }

@@ -8,16 +8,16 @@ resource "postgresql_schema" "microservice_schema" {
 }
 
 resource "random_password" "s_password" {
-  length = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "_%@"
 }
 
 resource "postgresql_role" "service_user" {
-  name     = "s_airflow"
-  login    = true
-  password = random_password.s_password.result
-  search_path = [ "airflow" ]
+  name        = "s_airflow"
+  login       = true
+  password    = random_password.s_password.result
+  search_path = ["airflow"]
 }
 
 

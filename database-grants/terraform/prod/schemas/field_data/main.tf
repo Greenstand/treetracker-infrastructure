@@ -9,8 +9,8 @@ resource "postgresql_grant" "legacy_field_data_access" {
   role        = "s_field_data"
   schema      = "public"
   object_type = "table"
-#  objects     = ["trees", "planter_registrations", "planter"]
-  privileges  = ["SELECT", "INSERT"]
+  #  objects     = ["trees", "planter_registrations", "planter"]
+  privileges = ["SELECT", "INSERT"]
 }
 
 resource "postgresql_grant" "legacy_field_data_access_sequence" {

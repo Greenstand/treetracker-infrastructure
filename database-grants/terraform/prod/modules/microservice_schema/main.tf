@@ -8,16 +8,16 @@ resource "postgresql_schema" "microservice_schema" {
 }
 
 resource "random_password" "s_password" {
-  length = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "_%@"
 }
 
 resource "postgresql_role" "service_user" {
-  name     = "s_${var.schema}"
-  login    = true
-  password = random_password.s_password.result
-  search_path = [ var.schema, "public" ]
+  name        = "s_${var.schema}"
+  login       = true
+  password    = random_password.s_password.result
+  search_path = [var.schema, "public"]
 }
 
 resource "postgresql_grant" "microservice-user-usage" {
@@ -31,7 +31,7 @@ resource "postgresql_grant" "microservice-user-usage" {
 resource "postgresql_default_privileges" "microservice-user-default" {
   database = var.database
   role     = "s_${var.schema}"
-  schema      = var.schema
+  schema   = var.schema
 
   owner       = "m_${var.schema}"
   object_type = "table"
@@ -41,7 +41,7 @@ resource "postgresql_default_privileges" "microservice-user-default" {
 resource "postgresql_default_privileges" "microservice-user-default-sequence" {
   database = var.database
   role     = "s_${var.schema}"
-  schema      = var.schema
+  schema   = var.schema
 
   owner       = "m_${var.schema}"
   object_type = "sequence"
@@ -65,16 +65,16 @@ resource "postgresql_grant" "microservice-user-sequence" {
 }
 
 resource "random_password" "m_password" {
-  length = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "_%@"
 }
 
 resource "postgresql_role" "migration_user" {
-  name     = "m_${var.schema}"
-  login    = true
-  password = random_password.m_password.result
-  search_path = [ var.schema, "public" ]
+  name        = "m_${var.schema}"
+  login       = true
+  password    = random_password.m_password.result
+  search_path = [var.schema, "public"]
 }
 
 
@@ -105,7 +105,7 @@ resource "postgresql_grant" "microservice-migration-executor-sequence" {
 
 
 resource "postgresql_grant" "readonlyuser-schema" {
-  database    = var.database 
+  database    = var.database
   role        = "readonlyuser"
   schema      = var.schema
   object_type = "schema"
@@ -123,7 +123,7 @@ resource "postgresql_grant" "readonlyuser-tables" {
 resource "postgresql_default_privileges" "readonlyuser-default-tables" {
   database = var.database
   role     = "readonlyuser"
-  schema      = var.schema
+  schema   = var.schema
 
   owner       = "m_${var.schema}"
   object_type = "table"

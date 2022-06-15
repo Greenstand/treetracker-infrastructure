@@ -24,7 +24,7 @@ resource "aws_s3_bucket" "payments_upload_bucket" {
 }
 
 resource "aws_iam_user" "payments_upload_bucket_user" {
-  name =  var.payments_upload_user
+  name = var.payments_upload_user
 }
 
 resource "aws_iam_access_key" "payments_upload_bucket_user_access_key" {
@@ -36,7 +36,7 @@ output "payments_upload_bucket_user_keyid" {
 }
 
 output "payments_upload_bucket_user_secret" {
-  value = aws_iam_access_key.payments_upload_bucket_user_access_key.secret
+  value     = aws_iam_access_key.payments_upload_bucket_user_access_key.secret
   sensitive = true
 }
 

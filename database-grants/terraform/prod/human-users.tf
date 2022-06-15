@@ -1,7 +1,7 @@
 
 resource "random_password" "accountant_password" {
-  length = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "_%@"
 }
 
@@ -13,8 +13,8 @@ resource "postgresql_role" "accountant_human" {
 }
 
 resource "random_password" "token_issuer_password" {
-  length = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "_%@"
 }
 
@@ -28,8 +28,8 @@ resource "postgresql_role" "token_issuer_human" {
 
 
 resource "random_password" "treetracker_admin_password" {
-  length = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "_%@"
 }
 
@@ -41,8 +41,8 @@ resource "postgresql_role" "treetracker_admin" {
 }
 
 resource "random_password" "treetracker_analyst_password" {
-  length = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "_%@"
 }
 
@@ -54,8 +54,8 @@ resource "postgresql_role" "treetracker_analyst" {
 }
 
 resource "random_password" "treetracker_manager_password" {
-  length = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "_%@"
 }
 
@@ -67,8 +67,8 @@ resource "postgresql_role" "treetracker_manager" {
 }
 
 resource "random_password" "token_trading_admin_password" {
-  length = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "_%@"
 }
 
@@ -82,8 +82,8 @@ resource "postgresql_role" "token_trading_admin" {
 
 
 resource "random_password" "wallet_operator_password" {
-  length = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "_%@"
 }
 

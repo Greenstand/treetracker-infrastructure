@@ -30,6 +30,9 @@ resource "digitalocean_kubernetes_node_pool" "microservices-node-pool" {
   name       = "microservices-node-pool"
   size       = "s-2vcpu-4gb"
   node_count = 3
+  auto_scale = true
+  min_nodes  = 3
+  max_nodes  = 6
   tags       = ["microservices-node", "treetracker-database-access"]
 
 }
@@ -41,6 +44,9 @@ resource "digitalocean_kubernetes_node_pool" "cloud-services-node-pool" {
   name       = "cloud-services-node-pool"
   size       = "s-2vcpu-4gb"
   node_count = 4
+  auto_scale = true
+  min_nodes  = 4
+  max_nodes  = 6
   tags       = ["cloud-services-node", "treetracker-database-access"]
 
 }
@@ -51,6 +57,9 @@ resource "digitalocean_kubernetes_node_pool" "monitoring-node-pool" {
   name       = "monitoring-node-pool"
   size       = "s-2vcpu-4gb"
   node_count = 3
+  auto_scale = true
+  min_nodes  = 3
+  max_nodes  = 6
   tags       = ["monitoring-node", "treetracker-database-access"]
 
 }

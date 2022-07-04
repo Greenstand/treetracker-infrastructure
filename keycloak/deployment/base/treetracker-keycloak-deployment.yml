@@ -32,6 +32,8 @@ spec:
             #value: "true"
             #- name: KC_HOSTNAME_PATH
             #value: "auth"
+        - name: KC_LOG_LEVEL
+          value: "debug"
         ports:
         - name: http
           containerPort: 8080

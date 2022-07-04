@@ -8,3 +8,4 @@ spec:
   prefix: /auth/
   service: treetracker-keycloak-service
   rewrite: /auth/
+  timeout_ms: 60000

@@ -3,7 +3,7 @@ resource "digitalocean_database_cluster" "treetracker-postgres-cluster" {
   name       = "treetracker-cluster"
   engine     = "pg"
   version    = "11"
-  size       = "db-s-2vcpu-4gb"
+  size       = "db-s-4vcpu-8gb"
   region     = "nyc1"
   node_count = 2
 }

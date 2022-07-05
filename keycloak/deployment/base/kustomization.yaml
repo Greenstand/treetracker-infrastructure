@@ -1,0 +1,5 @@
+resources:
+- treetracker-keycloak-deployment.yml
+- treetracker-keycloak-service.yml
+- namespace.yaml
+- mapping.yaml

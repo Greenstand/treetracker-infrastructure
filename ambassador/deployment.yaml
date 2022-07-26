@@ -90,9 +90,16 @@ metadata:
 spec:
   rules:
     - host: "*"
-      path: /backend/
+      path: /app/*
       filters:
         - name: auth-filter ## Enter the Filter name from above
           arguments:
             scope:
-            - "offline_access"
+             "offline_access"
+    - host: "*"
+      path: /api/*
+      filters:
+        - name: auth-filter ## Enter the Filter name from above
+          arguments:
+            scope:
+             "offline_access"

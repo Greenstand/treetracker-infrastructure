@@ -1,7 +1,7 @@
 variable "cluster_name" {}
 
 data "digitalocean_kubernetes_versions" "treetracker_kubernetes_version" {
-  version_prefix = "1.20."
+  version_prefix = "1.22."
 }
 
 resource "digitalocean_kubernetes_cluster" "kubernetes-cluster" {

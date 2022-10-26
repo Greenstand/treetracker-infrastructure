@@ -29,6 +29,22 @@ resource "postgresql_grant" "stakeholder_table" {
   privileges  = ["SELECT"]
 }
 
+resource "postgresql_grant" "regions_schema" {
+  database    = "treetracker"
+  role        = "s_reporting"
+  schema      = "regions"
+  object_type = "schema"
+  privileges  = ["USAGE"]
+}
+
+resource "postgresql_grant" "region_table" {
+  database    = "treetracker"
+  role        = "s_reporting"
+  schema      = "regions"
+  object_type = "table"
+  privileges  = ["SELECT"]
+}
+
 
 
 

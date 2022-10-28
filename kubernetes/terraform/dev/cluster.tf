@@ -29,7 +29,7 @@ resource "digitalocean_kubernetes_node_pool" "microservices-node-pool" {
 
   name       = "microservices-node-pool"
   size       = "s-2vcpu-4gb"
-  node_count = 3
+  node_count = 1
   tags       = ["microservices-node", "treetracker-database-access"]
 
 }
@@ -50,7 +50,7 @@ resource "digitalocean_kubernetes_node_pool" "monitoring-node-pool" {
 
   name       = "monitoring-node-pool"
   size       = "s-2vcpu-4gb"
-  node_count = 3
+  node_count = 1
   tags       = ["monitoring-node", "treetracker-database-access"]
 
 }

@@ -8,7 +8,7 @@ resource "postgresql_grant" "legacy_field_data_access" {
   role        = "s_treetracker"
   schema      = "public"
   object_type = "table"
-  privileges = ["SELECT", "INSERT"]
+  privileges  = ["SELECT", "INSERT"]
 }
 
 resource "postgresql_grant" "legacy_field_data_access_sequence" {

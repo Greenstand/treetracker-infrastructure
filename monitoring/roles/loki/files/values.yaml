@@ -13,6 +13,8 @@ loki:
   config:
     compactor:
       retention_enabled: true
+      retention_delete_delay: 2h
+      retention_delete_worker_count: 150
     limits_config:
       retention_period: 168h # 7 days
       reject_old_samples: true
@@ -48,7 +50,13 @@ loki:
     enabled: true
     storageClassName: do-block-storage
     accessModes: ["ReadWriteOnce"]
-    size: 100Gi
+    size: 115Gi
+  extraVolumes:
+  - name: temp
+    emptyDir: {}
+  extraVolumeMounts:
+  - name: temp
+    mountPath: /tmp
 
 
 promtail:

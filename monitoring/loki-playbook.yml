@@ -1,6 +1,6 @@
 ---
 - name: Install prom operator
-  hosts: localhost-py3
+  hosts: localhost
   gather_facts: false
   connection: local
   roles:

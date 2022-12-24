@@ -11,7 +11,6 @@ resource "aws_cloudfront_distribution" "images_cdn" {
     }
   }
   
-
   enabled             = true
   is_ipv6_enabled     = true
   comment             = "Some comment"

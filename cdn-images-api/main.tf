@@ -8,15 +8,13 @@ resource "aws_cloudfront_distribution" "images_cdn" {
         origin_protocol_policy = "http-only"
         origin_ssl_protocols   = ["TLSv1", "TLSv1.1", "TLSv1.2"]
       }
+      
     } 
   }
   
-  
-
   enabled         = true
   is_ipv6_enabled = true
   
-
   default_cache_behavior {
     target_origin_id       = "optimizer"
     viewer_protocol_policy = "allow-all"

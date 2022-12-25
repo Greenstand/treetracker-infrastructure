@@ -1,6 +1,6 @@
 resource "aws_cloudfront_distribution" "images_cdn" {
   origin {
-    optimizer{
+    optimizer {
       domain_name = "images-api.treetracker.org"
       custom_origin_config {
         http_port              = "80"

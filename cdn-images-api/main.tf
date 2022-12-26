@@ -1,7 +1,7 @@
 resource "aws_cloudfront_distribution" "images_cdn" {
   optimizer {
     origin {
-      domain_name = images-api.treetracker.org
+      domain_name = "dev-k8s.treetracker.org"
       custom_origin_config {
         http_port              = "80"
         https_port             = "443"
@@ -14,7 +14,7 @@ resource "aws_cloudfront_distribution" "images_cdn" {
 
   enabled             = true
   is_ipv6_enabled     = true
-  comment             = "Some comment"
+  comment             = "Caching optimized images"
   default_root_object = "index.html"
 
 
@@ -34,7 +34,7 @@ resource "aws_cloudfront_distribution" "images_cdn" {
 
   # Cache behavior with precedence 0
   ordered_cache_behavior {
-    path_pattern     = "/*"
+    path_pattern     = "/images/*"
     target_origin_id = "optimizer"
 
     allowed_methods = ["GET", "HEAD", "OPTIONS"]

@@ -101,13 +101,13 @@
             firstName: admin
             lastName: admin
           - username: user
-            password: user
+            password: ${USER_PASSWORD}
             role: User
             email: user@greenstand.org
             firstName: user
             lastName: user
           - username: viewer
-            password: viewer
+            password: ${VIEWER_PASSWORD}
             role: Viewer
             email: viewer@greenstand.org
             firstName: viewer
@@ -116,6 +116,14 @@
           ADMIN_PASSWORD:
             kind: secret
             name: airflow-admin-credentials
+            key: password
+          USER_PASSWORD:
+            kind: secret
+            name: airflow-user-credentials
+            key: password
+          VIEWER_PASSWORD:
+            kind: secret
+            name: airflow-viewer-credentials
             key: password
         dbMigrations:
           resources:

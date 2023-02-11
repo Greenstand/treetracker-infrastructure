@@ -43,10 +43,17 @@ http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kube
 
 #### Connect and install helm chart using ansible
 1. Use `doctl auth init` and pass your access token if you haven't already
-2. Save the kubeconfig relevant to the cluster, e.g. `doctl kubernetes cluster kubeconfig save dev-k8s-treetracker`
-- Switch to the context if not already switched, e.g. `kubectl config set-context do-sfo2-dev-k8s-treetracker --namespace=airflow` 
-3. Run ansible to install helm chart `ansible-playbook airflow-playbook.yml -i environments/development`. Note the specific environment you are running against. In this particular command, you are running against the **development** environment.
-- This instruction deploys any changes the airflow-web, airflow-worker, airflow-sync-user, etc. pods on the (dev) k8s cluster
+2. Save the kubeconfig relevant to the cluster:
+- `doctl kubernetes cluster kubeconfig save dev-k8s-treetracker`
+3. Switch to the context if not already switched:
+- `kubectl config set-context do-sfo2-dev-k8s-treetracker --namespace=airflow` 
+3. Run ansible to install helm chart:
+- Fork this repo.
+- Clone the fork to your local system.
+  - `git clone git@github.com:{your github profile name}/treetracker-infrastructure.git`
+- `cd ~/Greenstand/git/treetracker-infrastructure/airflow`
+- `ansible-playbook airflow-playbook.yml -i environments/development`
+Note the specific environment you are running against. In this particular command, you are running against the **development** environment. This instruction deploys any changes the airflow-web, airflow-worker, airflow-sync-user, etc. pods on the (dev) k8s cluster
 
 #### Notes
 1. You can view the relevant contexts using kubectl config view | grep treetracker 2-4 can be done using ./monitoring/doctl_setup.sh CLUSTER_NAME, e.g. ./monitoring/doctl_setup.sh do-sfo2-dev-k8s-treetracker

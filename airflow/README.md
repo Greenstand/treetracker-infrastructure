@@ -22,7 +22,7 @@ The below instructions are for macOS:
 2. Install helm 3
 - `brew install helm`
 3. Install ansible
-- `sudo python -m pip install --user ansible`
+- `sudo pip install --user ansible`
 - `ansible-galaxy collection install community.kubernetes`
 
 To access the dev Kubernetes cluster UI, first get an access token to the dev Kubernetes cluster by asking in the Greenstand automations-working-group Slack channel. Then:

@@ -51,6 +51,7 @@ http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kube
 3. Run ansible to install helm chart:
 - Fork this repo.
 - Clone the fork to your local system.
+  - `cd ~/Greenstand/git/`
   - `git clone git@github.com:{your github profile name}/treetracker-infrastructure.git`
 - `cd ~/Greenstand/git/treetracker-infrastructure/airflow`
 - `ansible-playbook airflow-playbook.yml -i environments/development`

@@ -62,4 +62,4 @@ Note the specific environment you are running against. In this particular comman
 1. You can view the relevant contexts using kubectl config view | grep treetracker 2-4 can be done using ./monitoring/doctl_setup.sh CLUSTER_NAME, e.g. ./monitoring/doctl_setup.sh do-sfo2-dev-k8s-treetracker
 2. To add new users & passwords to the Airflow installations, please see:
 https://github.com/Greenstand/treetracker-airflow-dags/issues/92
-This is a good introduction to Secrets & SealedSecrets on Kubernetes and how to deploy them to Kubernetes using Ansible playbooks.
+This is a good introduction to Secrets & SealedSecrets on Kubernetes and how to deploy them to Kubernetes using Ansible playbooks and Helm charts.

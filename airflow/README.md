@@ -3,9 +3,7 @@ Greenstand uses Airflow as its main workflow orchestration tool. The main Airflo
 
 https://github.com/Greenstand/treetracker-airflow-dags
 
-Greenstand has a dev and prod Kubernetes cluster running on DigitalOcean. dev / prod Airflow is installed on these Kubernetes clusters using a Helm Chart and configured using Ansible. 
-
-You can read up on the above technologies here:
+Greenstand has a dev and prod Kubernetes cluster running on DigitalOcean. dev / prod Airflow is installed on these Kubernetes clusters using a Helm Chart and configured using Ansible. You can read up on these technologies here:
 - https://www.digitalocean.com/
 - https://kubernetes.io/
 - https://helm.sh/
@@ -20,24 +18,26 @@ To modify the Airflow installation, please see the steps below.
 #### Install tools
 The below instructions are for macOS:
 1. Install doctl https://docs.digitalocean.com/reference/doctl/how-to/install/
-- brew install doctl
+- `brew install doctl`
 2. Install helm 3
-- brew install helm
+- `brew install helm`
 3. Install ansible
-- sudo python -m pip install --user ansible
-- ansible-galaxy collection install community.kubernetes
+- `sudo python -m pip install --user ansible`
+- `ansible-galaxy collection install community.kubernetes`
 
 To access the dev Kubernetes cluster UI, first get an access token to the dev Kubernetes cluster by asking in the Greenstand automations-working-group Slack channel. Then:
-- doctl auth init --context dev-k8s-treetracker
-- doctl auth list
-- doctl auth switch --context dev-k8s-treetracker
-- doctl auth list
+- `doctl auth init --context dev-k8s-treetracker`
+- `doctl auth list`
+- `doctl auth switch --context dev-k8s-treetracker`
+- `doctl auth list`
 
-To access the dev Kubernetes cluster UI: https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
-- kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
-- kubectl proxy
+To access the dev Kubernetes cluster UI:
+https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
+- `kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml`
+- `kubectl proxy`
 
-You can now go to http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login
+You can now go to
+http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login
 - input the access token to log in
 - Don't forget to change the namespace to airflow in the UI
 

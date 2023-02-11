@@ -25,6 +25,7 @@ The below instructions are for macOS:
 - `sudo pip install --user ansible`
 - `ansible-galaxy collection install community.kubernetes`
 
+#### Access Kubernetes cluster UI
 To access the dev Kubernetes cluster UI, first get an access token to the dev Kubernetes cluster by asking in the Greenstand automations-working-group Slack channel. Then:
 - `doctl auth init --context dev-k8s-treetracker`
 - `doctl auth list`

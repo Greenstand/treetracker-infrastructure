@@ -55,6 +55,7 @@ http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kube
   - `git clone git@github.com:{your github profile name}/treetracker-infrastructure.git`
 - `cd ~/Greenstand/git/treetracker-infrastructure/airflow`
 - `ansible-playbook airflow-playbook.yml -i environments/development`
+
 Note the specific environment you are running against. In this particular command, you are running against the **development** environment. This instruction deploys any changes the airflow-web, airflow-worker, airflow-sync-user, etc. pods on the (dev) k8s cluster
 
 #### Notes

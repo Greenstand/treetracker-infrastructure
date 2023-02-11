@@ -56,7 +56,7 @@ http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kube
 - `cd ~/Greenstand/git/treetracker-infrastructure/airflow`
 - `ansible-playbook airflow-playbook.yml -i environments/development`
 
-Note the specific environment you are running against. In this particular command, you are running against the **development** environment. This instruction deploys any changes the airflow-web, airflow-worker, airflow-sync-user, etc. pods on the (dev) k8s cluster
+Note the specific environment you are running against. In this particular command, you are running against the **development** environment. This instruction deploys any changes the airflow-web, airflow-worker, airflow-sync-user, etc. pods on the (dev) k8s cluster.
 
 #### Notes
 1. You can view the relevant contexts using kubectl config view | grep treetracker 2-4 can be done using ./monitoring/doctl_setup.sh CLUSTER_NAME, e.g. ./monitoring/doctl_setup.sh do-sfo2-dev-k8s-treetracker

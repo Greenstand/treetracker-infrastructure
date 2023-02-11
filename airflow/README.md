@@ -48,7 +48,7 @@ http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kube
 - `doctl kubernetes cluster kubeconfig save dev-k8s-treetracker`
 3. Switch to the context if not already switched:
 - `kubectl config set-context do-sfo2-dev-k8s-treetracker --namespace=airflow` 
-3. Run ansible to install helm chart:
+3. Run ansible to install helm chart and updated configurations:
 - Fork this repo.
 - Clone the fork to your local system.
   - `cd ~/Greenstand/git/`

@@ -1,11 +1,3 @@
-variable "host" {
-  type = string
-}
-
-variable "password" {
-  type = string
-}
-
 terraform {
   required_providers {
     postgresql = {
@@ -20,7 +12,7 @@ provider "postgresql" {
   database = "integration_test"
 
   host            = var.host
-  port            = 25060
+  port            = var.port
   username        = "doadmin"
   password        = var.password
   sslmode         = "require"
@@ -33,7 +25,7 @@ provider "postgresql" {
   database = "treetracker"
 
   host            = var.host
-  port            = 25060
+  port            = var.port
   username        = "doadmin"
   password        = var.password
   sslmode         = "require"
@@ -46,7 +38,7 @@ provider "postgresql" {
   database = "data_pipeline"
 
   host            = var.host
-  port            = 25060
+  port            = var.port
   username        = "doadmin"
   password        = var.password
   sslmode         = "require"

@@ -3,8 +3,8 @@ variable "host" {
 }
 
 variable "port" {
-  type  = number
-  value = 25060
+  type    = number
+  default = 25060
 }
 
 variable "password" {

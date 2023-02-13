@@ -1,9 +1,11 @@
 variable "host" {
-  type = string
+  type  = string
+  value = "db-postgresql-sfo2-nextgen-do-user-1067699-0.db.ondigitalocean.com"
 }
 
 variable "port" {
-  type = number
+  type  = number
+  value = 25060
 }
 
 variable "password" {

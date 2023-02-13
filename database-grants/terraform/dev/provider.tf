@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    postgresql = {
-      source  = "cyrilgdn/postgresql"
-      version = "1.11.0"
-    }
-  }
-}
-
 provider "postgresql" {
   alias    = "integration_test"
   database = "integration_test"

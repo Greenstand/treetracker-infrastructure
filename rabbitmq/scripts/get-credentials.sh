@@ -1,3 +1,5 @@
+#!/bin/sh
+
 kubectl get -n rabbitmq-cluster rabbitmqcluster  rabbitmqcluster-main \
 -ojsonpath='Name: {.status.admin.serviceReference.name} -- Namespace: {.status.admin.serviceReference.namespace}'
 echo  ""

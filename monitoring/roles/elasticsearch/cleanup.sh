@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/sh
+
 helm uninstall elasticsearch
 helm uninstall elasticsearch-exporter
 helm uninstall kibana

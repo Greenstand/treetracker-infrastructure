@@ -23,4 +23,3 @@ provider "postgresql" {
   connect_timeout = 15
   superuser       = false
 }
-

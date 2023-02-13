@@ -1,4 +1,3 @@
-
 module "microservice_schema" {
   source = "./../../modules/microservice_schema"
   schema = "query"
@@ -83,6 +82,3 @@ resource "postgresql_grant" "query_public_function" {
   object_type = "function"
   privileges  = ["EXECUTE"]
 }
-
-
-

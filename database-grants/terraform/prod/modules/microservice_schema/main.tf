@@ -77,7 +77,6 @@ resource "postgresql_role" "migration_user" {
   search_path = [var.schema, "public"]
 }
 
-
 resource "postgresql_grant" "microservice-migration-executer" {
   database    = var.database
   role        = "m_${var.schema}"
@@ -85,7 +84,6 @@ resource "postgresql_grant" "microservice-migration-executer" {
   object_type = "schema"
   privileges  = ["USAGE", "CREATE"]
 }
-
 
 resource "postgresql_grant" "microservice-migration-executer-tables" {
   database    = var.database
@@ -102,7 +100,6 @@ resource "postgresql_grant" "microservice-migration-executor-sequence" {
   object_type = "sequence"
   privileges  = ["USAGE", "SELECT"]
 }
-
 
 resource "postgresql_grant" "readonlyuser-schema" {
   database    = var.database
@@ -137,4 +134,3 @@ resource "postgresql_grant" "readonlyuser-sequence" {
   object_type = "sequence"
   privileges  = ["USAGE", "SELECT"]
 }
-

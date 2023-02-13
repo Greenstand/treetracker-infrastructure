@@ -1,4 +1,3 @@
-
 resource "random_password" "accountant_password" {
   length           = 16
   special          = true
@@ -24,8 +23,6 @@ resource "postgresql_role" "token_issuer_human" {
   login    = true
   password = random_password.token_issuer_password.result
 }
-
-
 
 resource "random_password" "treetracker_admin_password" {
   length           = 16
@@ -79,8 +76,6 @@ resource "postgresql_role" "token_trading_admin" {
   password = random_password.token_trading_admin_password.result
 }
 
-
-
 resource "random_password" "wallet_operator_password" {
   length           = 16
   special          = true
@@ -93,4 +88,3 @@ resource "postgresql_role" "wallet_operator_human" {
   login    = true
   password = random_password.wallet_operator_password.result
 }
-

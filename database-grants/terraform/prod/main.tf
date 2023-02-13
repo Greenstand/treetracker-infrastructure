@@ -1,11 +1,9 @@
-
 module "field_data_schema" {
   source = "./schemas/field_data"
   providers = {
     postgresql = postgresql.treetracker
   }
 }
-
 
 module "wallet_schema" {
   source = "./schemas/wallet"

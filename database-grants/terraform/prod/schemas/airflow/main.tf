@@ -20,7 +20,6 @@ resource "postgresql_role" "service_user" {
   search_path = ["airflow"]
 }
 
-
 resource "postgresql_grant" "service-user-usage" {
   database    = "treetracker"
   role        = "s_airflow"
@@ -43,5 +42,4 @@ resource "postgresql_grant" "sequence-service-user" {
   schema      = "airflow"
   object_type = "sequence"
   privileges  = ["USAGE", "SELECT"]
-
 }

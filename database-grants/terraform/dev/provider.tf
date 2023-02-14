@@ -1,26 +1,9 @@
-variable "host" {
-  type = string
-}
-
-variable "password" {
-  type = string
-}
-
-terraform {
-  required_providers {
-    postgresql = {
-      source  = "cyrilgdn/postgresql"
-      version = "1.11.0"
-    }
-  }
-}
-
 provider "postgresql" {
   alias    = "integration_test"
   database = "integration_test"
 
   host            = var.host
-  port            = 25060
+  port            = var.port
   username        = "doadmin"
   password        = var.password
   sslmode         = "require"
@@ -33,7 +16,7 @@ provider "postgresql" {
   database = "treetracker"
 
   host            = var.host
-  port            = 25060
+  port            = var.port
   username        = "doadmin"
   password        = var.password
   sslmode         = "require"
@@ -46,7 +29,7 @@ provider "postgresql" {
   database = "data_pipeline"
 
   host            = var.host
-  port            = 25060
+  port            = var.port
   username        = "doadmin"
   password        = var.password
   sslmode         = "require"

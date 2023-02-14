@@ -1,24 +1,3 @@
-variable "host" {
-  type = string
-}
-
-variable "port" {
-  type = number
-}
-
-variable "password" {
-  type = string
-}
-
-terraform {
-  required_providers {
-    postgresql = {
-      source  = "cyrilgdn/postgresql"
-      version = "1.11.0"
-    }
-  }
-}
-
 provider "postgresql" {
   alias    = "treetracker"
   database = "treetracker"
@@ -44,4 +23,3 @@ provider "postgresql" {
   connect_timeout = 15
   superuser       = false
 }
-

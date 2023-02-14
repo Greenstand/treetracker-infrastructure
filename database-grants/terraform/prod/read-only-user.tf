@@ -291,7 +291,6 @@ resource "postgresql_grant" "readonlyuser_sequence_earnings" {
   privileges  = ["SELECT"]
 }
 
-
 resource "postgresql_default_privileges" "read_only_public" {
   provider = postgresql.treetracker
   role     = "readonlyuser"
@@ -346,4 +345,3 @@ resource "postgresql_default_privileges" "read_only_messaging_tables" {
   object_type = "table"
   privileges  = ["SELECT"]
 }
-

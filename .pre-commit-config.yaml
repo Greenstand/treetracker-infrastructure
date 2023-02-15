@@ -4,3 +4,6 @@ repos:
     rev: v1.71.0
     hooks:
       - id: terraform_fmt
+      # - id: terraform_tflint
+      #   args:
+      #     - --args=--only terraform_required_version

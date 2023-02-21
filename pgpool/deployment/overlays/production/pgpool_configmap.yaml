@@ -34,10 +34,10 @@ data:
     memqcache_method = 'shmem'
     memqcache_total_size = 512MB
     memqcache_max_num_cache = 10000
-    memqcache_expire = 14400
+    memqcache_expire = 86400
     memqcache_auto_cache_invalidation = off
     memqcache_cache_block_size = 1MB
-    log_min_messages = 'DEBUG5'
+    log_min_messages = 'WARNING'
     cache_safe_memqcache_table_list = 'active_tree_region,organization_children'
     reserved_connections = 0
     listen_backlog_multiplier = 3

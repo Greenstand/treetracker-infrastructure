@@ -12,18 +12,38 @@ provider "helm" {
   }
 }
 
-resource "helm_release" "solr" {
+locals {
+  solr_version = "0.7.0"
+}
+resource "helm_release" "solr_operator" {
   name             = "solr-operator"
   repository       = "https://solr.apache.org/charts"
   chart            = "solr-operator"
-  version          = "0.7.0"
+  version          = local.solr_version
   namespace        = "solr"
   create_namespace = true
 
 
   values = [
-    "${file("${path.module}/values.yaml")}",
-    var.values_file
+    "${file("${path.module}/solr-operator-values.yaml")}",
+    var.solr_operator_values_file
+  ]
+
+}
+
+
+resource "helm_release" "solr" {
+  name             = "solr"
+  repository       = "https://solr.apache.org/charts"
+  chart            = "solr"
+  version          = local.solr_version
+  namespace        = "solr"
+  create_namespace = true
+
+
+  values = [
+    "${file("${path.module}/solr-values.yaml")}",
+    var.solr_values_file
   ]
 
 }

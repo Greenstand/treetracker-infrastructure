@@ -1,0 +1,3 @@
+zookeeper-operator:
+  crd:
+    create: true

@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/sh
+
 doctl auth init
 CLUSTER=$1
 if [[ -z "$CLUSTER" ]]; then

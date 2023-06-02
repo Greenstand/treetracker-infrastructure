@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/sh
+
 sudo add-apt-repository universe
 sudo apt-get update
 sudo apt-get install libffi-dev libssl-dev software-properties-common --yes

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Retrieve keys from your netrc, specified as
 # machine sfo2.digitaloceanspaces.com login KEY password SECRET

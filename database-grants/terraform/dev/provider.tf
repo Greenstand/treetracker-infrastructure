@@ -13,6 +13,8 @@ terraform {
       version = "1.11.0"
     }
   }
+
+  required_version = "0.14.0"
 }
 
 provider "postgresql" {

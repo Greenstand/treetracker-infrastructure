@@ -1,0 +1,105 @@
+---
+apiVersion: getambassador.io/v3alpha1
+kind: Listener
+metadata:
+  name: edge-stack-listener-8080
+  namespace: ambassador
+spec:
+  port: 8080
+  protocol: HTTP
+  securityModel: XFP
+  hostBinding:
+    namespace:
+      from: ALL
+---
+apiVersion: getambassador.io/v3alpha1
+kind: Listener
+metadata:
+  name: edge-stack-listener-8443
+  namespace: ambassador
+spec:
+  port: 8443
+  protocol: HTTPS
+  securityModel: XFP
+  hostBinding:
+    namespace:
+      from: ALL
+
+---
+#apiVersion: getambassador.io/v3alpha1
+#kind: Filter
+#metadata:
+#  name: keycloak-filter
+#  namespace: ambassador
+#spec:
+#  OAuth2:
+#    #authorizationURL: https://localhost/auth/realms/treetracker
+#    #authorizationURL: http://192.168.0.103/auth/realms/treetracker
+#    authorizationURL: https://test.dadiorxxx.com/auth/realms/master
+#    insecureTLS: true
+#    #authorizationURL: https://dev-k8s.treetracker.org/auth/realms/treetracker
+#    audience: ambassador
+#    clientID: ambassador
+#    secret: mANEOrGcmRsAx8tKX6Rky6WcDjdp3TXx
+#    protectedOrigins:
+#    - origin: https://test.dadiorxxx.com/backend
+#
+#---
+#apiVersion: getambassador.io/v3alpha1
+#kind: FilterPolicy
+#metadata:
+#  name: httpbin-policy
+#  namespace: ambassador
+#spec:
+#  rules:
+#    - host: "*"
+#      path: /backend/
+#      filters:
+#        - name: keycloak-filter ## Enter the Filter name from above
+#          arguments:
+#            scope:
+#            - "offline_access"
+
+#---
+#apiVersion: getambassador.io/v3alpha1
+#kind: AuthService
+#metadata:
+#  name: authentication
+#  namespace: ambassador
+#spec:
+#  auth_service: "treetracker-auth-service.default:80"
+#
+---
+apiVersion: getambassador.io/v3alpha1
+kind: Filter
+metadata:
+  name: "auth-filter"
+  namespace: "ambassador"
+spec:
+  External:
+    auth_service: "http://treetracker-auth-service.default.svc.cluster.local"
+    proto: http
+    tls: false
+
+---
+apiVersion: getambassador.io/v3alpha1
+kind: FilterPolicy
+metadata:
+  name: httpbin-policy
+  namespace: ambassador
+spec:
+  rules:
+    - host: "*"
+      path: /app/*
+      filters:
+        - name: auth-filter ## Enter the Filter name from above
+          arguments:
+            scope:
+             "offline_access"
+    - host: "*"
+      path: /api/*
+      filters:
+        - name: auth-filter ## Enter the Filter name from above
+          arguments:
+            scope:
+             "offline_access"

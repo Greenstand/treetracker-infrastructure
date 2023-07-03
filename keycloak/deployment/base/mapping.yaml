@@ -1,0 +1,11 @@
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: treetracker-keycloak-mapping
+  namespace: keycloak
+spec:
+  hostname: "*"
+  prefix: /auth/
+  service: treetracker-keycloak-service
+  rewrite: /auth/
+  timeout_ms: 60000

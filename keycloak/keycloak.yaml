@@ -1,0 +1,120 @@
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: Keycloak
+metadata:
+  name: example-kc
+spec:
+  instances: 1
+  db:
+    vendor: postgres
+    host: postgres-db
+    usernameSecret:
+      name: keycloak-db-secret
+      key: username
+    passwordSecret:
+      name: keycloak-db-secret
+      key: password
+        #  http:
+        #    tlsSecret: example-tls-secret
+        #hostname:
+        #hostname: example-kc-service.keycloak.svc.cluster.local
+  http:
+    httpEnabled: true
+  hostname:
+    strict: false
+    strictBackchannel: false
+  unsupported:
+    podTemplate:
+      spec:
+        containers:
+          - name: keycloak
+            env:
+              - name: KC_LOG_LEVEL
+                value: INFO
+
+---
+# Ingress Nginx to expose Keycloak
+#apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: keycloak-ingress
+    #  annotations:
+    #    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  defaultBackend:
+    service:
+      name: example-kc-service
+      port:
+        number: 8080
+    #  rules:
+    #  - http:
+    #      paths:
+    #      - path: /
+    #        pathType: Prefix
+    #        backend:
+    #          service: 
+    #            name: example-kc-service 
+    #            port: 
+    #              number: 8080
+
+---
+## Nginx Ingress Controller
+#apiVersion: v1
+#kind: service
+#metadata:
+#  name: nginx-ingress-controller
+#spec:
+#  type: LoadBalancer
+#  ports:
+#    - port: 80
+#      targetPort: 80
+#      protocol: TCP
+#      name: http
+#    - port: 443
+#      targetPort: 443
+#      protocol: TCP
+#      name: https
+#  selector:
+#    app: nginx-ingress-controller
+#
+#---
+## Nginx Ingress Controller
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: nginx-ingress-controller
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: nginx-ingress-controller
+#  template:
+#    metadata:
+#      labels:
+#        app: nginx-ingress-controller
+#    spec:
+#      containers:
+#        - name: nginx-ingress-controller
+#          image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.32.0
+#          args:
+#            - /nginx-ingress-controller
+#            - --publish-service=nginx-ingress-controller
+#            - --configmap=$(POD_NAMESPACE)/nginx-configuration
+#            - --tcp-services-configmap=$(POD_NAMESPACE)/tcp-services
+#            - --udp-services-configmap=$(POD_NAMESPACE)/udp-services
+#            - --annotations-prefix=nginx.ingress.kubernetes.io
+#          env:
+#            - name: POD_NAME
+#              valueFrom:
+#                fieldRef:
+#                  fieldPath: metadata.name
+#            - name: POD_NAMESPACE
+#              valueFrom:
+#                fieldRef:
+#                  fieldPath: metadata.namespace
+#          ports:
+#            - name: http
+#              containerPort: 80
+#            - name: https
+#              containerPort: 443

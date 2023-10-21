@@ -4,6 +4,7 @@ metadata:
   name: example-kc
 spec:
   instances: 1
+  image: dadiorchen/keycloak:test-3
   db:
     vendor: postgres
     database: testdb
@@ -32,6 +33,9 @@ spec:
             env:
               - name: KC_LOG_LEVEL
                 value: INFO
+              - name: KC_DB
+                value: postgres
+
 
 ---
 # Ingress Nginx to expose Keycloak

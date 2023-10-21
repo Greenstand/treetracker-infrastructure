@@ -1,0 +1,34 @@
+.login-pf body {
+  /*background: url(https://treetracker-production-images.s3.eu-central-1.amazonaws.com/2023.09.23.14.04.00_0.45559833333333327_109.32892366666664_5e5b8f08-2f3f-46f7-adbe-967030e48266_IMG_20230829_091903_642222451085378253.jpg) no-repeat center center fixed;*/
+  background: url(https://treetracker-production-images.s3.eu-central-1.amazonaws.com/2023.04.21.03.36.20_8.485640049999999_-13.254117873333334_27928e01-6f29-4ac0-bee2-df494f3a1363_IMG_20230412_170116_1704432758494134189.jpg) no-repeat left 35%;
+  background-size: cover;
+}
+div.kc-logo-text {
+  /*background-image: url(https://map.treetracker.org/images/treetracker_logo.svg);*/
+  background-image: url(https://map.treetracker.org/images/treetracker_logo_white.svg);
+}
+:root {
+  --pf-global--primary-color--100: #86C232;
+  --pf-global--primary-color--200: #a6dc5a;
+  --pf-global--primary-color--dark-100: #86C232;
+  --pf-global--primary-color--light-100: #a6dc5a;
+  --pf-global--active-color--100: #68a119;
+  --pf-global--active-color--200: #b9ef6d;
+  --pf-global--active-color--300: #89e00f;
+  --pf-global--active-color--400: #80aa44;
+  --pf-global--link--Color: #61901f;
+  --pf-global--link--Color--hover: #547722;
+  --pf-global--link--Color--light: #b4ef62;
+  --pf-global--link--Color--light--hover: #b7e973;
+  --pf-global--link--Color--dark: #679822;
+  --pf-global--link--Color--dark--hover: #5e9413;
+  --pf-global--default-color--100: #86C232;
+  --pf-global--default-color--200: #a6dc5a;
+  --pf-global--default-color--300: #86C232;
+}
+@media (max-width: 767px) {
+    .login-pf-page .card-pf {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+}

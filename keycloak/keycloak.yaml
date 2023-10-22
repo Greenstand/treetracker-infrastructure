@@ -4,7 +4,7 @@ metadata:
   name: example-kc
 spec:
   instances: 1
-  image: dadiorchen/keycloak:test-3
+  image: dadiorchen/keycloak:1.1
   db:
     vendor: postgres
     database: testdb

@@ -43,3 +43,9 @@
       with_items: '{{ lookup("url", "https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/22.0.5/kubernetes/kubernetes.yml", split_lines=False) | from_yaml_all | list }}'
       when: item is not none
       no_log: True
+    - name: Deploy keycloak instance
+      community.kubernetes.k8s:
+        state: present
+        namespace: keycloak-next
+        src: kubernetes/deployment.yaml
+

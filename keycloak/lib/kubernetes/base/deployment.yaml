@@ -1,0 +1,47 @@
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: Keycloak
+metadata:
+  name: keycloak
+  namespace: keycloak-next
+spec:
+  instances: 1
+    #image: dadiorchen/keycloak:1.1
+  #db:
+    #vendor: postgres
+        #  http:
+        #    tlsSecret: example-tls-secret
+        #hostname:
+        #hostname: example-kc-service.keycloak.svc.cluster.local
+  http:
+    httpEnabled: true
+  hostname:
+    strict: false
+    strictBackchannel: false
+  unsupported:
+    podTemplate:
+      spec:
+        containers:
+          - name: keycloak
+            env:
+              - name: KC_LOG_LEVEL
+                value: INFO
+              - name: KC_DB
+                value: postgres
+              - name: KC_DB_SCHEMA
+                value: keycloak
+              - name: KC_DB_USERNAME
+                value: doadmin
+              - name: KC_DB_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: keycloak-secret
+                    key: password
+              - name: KC_DB_URL_HOST
+                valueFrom:
+                  secretKeyRef:
+                    name: keycloak-secret
+                    key: host
+              - name: KC_DB_URL_PORT
+                value: "25060"
+              - name: KC_DB_URL_DATABASE
+                value: treetracker

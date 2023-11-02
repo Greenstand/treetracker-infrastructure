@@ -21,4 +21,25 @@
         api_version: v1
         kind: Namespace
         state: present
-
+    - name: Install keycloak operator
+      community.kubernetes.k8s:
+        state: present
+        definition: '{{ item }}'
+      with_items: '{{ lookup("url", "https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/22.0.5/kubernetes/keycloaks.k8s.keycloak.org-v1.yml", split_lines=False) | from_yaml_all | list }}'
+      when: item is not none
+      no_log: True
+    - name: Install keycloak operator 2
+      community.kubernetes.k8s:
+        state: present
+        definition: '{{ item }}'
+      with_items: '{{ lookup("url", "https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/22.0.5/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml", split_lines=False) | from_yaml_all | list }}'
+      when: item is not none
+      no_log: True
+    - name: Deploy keycloak operator 
+      community.kubernetes.k8s:
+        state: present
+        definition: '{{ item }}'
+        namespace: keycloak-next
+      with_items: '{{ lookup("url", "https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/22.0.5/kubernetes/kubernetes.yml", split_lines=False) | from_yaml_all | list }}'
+      when: item is not none
+      no_log: True

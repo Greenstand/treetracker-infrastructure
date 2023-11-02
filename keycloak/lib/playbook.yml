@@ -1,0 +1,24 @@
+# ansible playbook for install keycloak
+---
+- hosts: localhost
+  vars:
+    #TODO
+    deploy_dev: "dev"
+  tasks:
+    - name: install pre-requisites
+      pip:
+        name:
+          - openshift
+          - pyyaml
+          - kubernetes 
+    - name: Print environment variables
+      debug:
+        # print var deploy_dev
+        msg: "Deploy to: {{ deploy_dev }}"
+    - name: Create a namespace for keycloak
+      community.kubernetes.k8s:
+        name: keycloak-next
+        api_version: v1
+        kind: Namespace
+        state: present
+

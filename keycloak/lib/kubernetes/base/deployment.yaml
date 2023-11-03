@@ -5,7 +5,7 @@ metadata:
   namespace: keycloak-next
 spec:
   instances: 1
-    #image: dadiorchen/keycloak:1.1
+  image: dadiorchen/keycloak:1.1
   #db:
     #vendor: postgres
         #  http:
@@ -45,3 +45,13 @@ spec:
                 value: "25060"
               - name: KC_DB_URL_DATABASE
                 value: treetracker
+              - name: KEYCLOAK_ADMIN
+                valueFrom:
+                  secretKeyRef:
+                    name: keycloak-secret
+                    key: admin_username
+              - name: KEYCLOAK_ADMIN_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: keycloak-secret
+                    key: admin_password

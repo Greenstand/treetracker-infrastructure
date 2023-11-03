@@ -21,3 +21,10 @@ ansible-galaxy collection install community.kubernetes
 chmod +x deploy.sh
 ./deploy.sh
 ```
+
+
+# Troubleshooting
+
+## Error: "changesets check sum: Validation Failed"
+
+This is because of the table: `databasechangelog` in the database, can be solved by cleaning up the whole schema tables.;

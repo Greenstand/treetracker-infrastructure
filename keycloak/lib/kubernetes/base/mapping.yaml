@@ -7,5 +7,5 @@ spec:
   # mapping to the service on port 8080
   prefix: /keycloak/
   service: keycloak-service:8080
-  rewrite: /
+  rewrite: /keycloak/
   timeout_ms: 0

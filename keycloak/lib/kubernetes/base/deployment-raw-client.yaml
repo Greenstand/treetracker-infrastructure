@@ -30,7 +30,7 @@ spec:
 
                     <head>
                         <meta charset="utf-8">
-                        <title>Treetracker Raw Client!</title>
+                        <title>Treetracker Raw Client!!</title>
 
                         <!--
                         <script src="lib/jwt-decode.min.js"></script>
@@ -64,6 +64,7 @@ spec:
                                   jQuery("#user_info table tr td:nth-child(2)").eq(1).html(decoded.email);
                                   jQuery("#user_info table tr td:nth-child(2)").eq(2).html(decoded.realm_access.roles.join(","));
                                   jQuery("#user_info table tr td:nth-child(2)").eq(3).html(decoded.sub);
+                      jQuery("button[name='userprofile']").removeAttr("disabled");
                                 }
                               }
                             }, 1000*2);
@@ -76,6 +77,10 @@ spec:
                             console.warn("begin logout");
                             window.location.href = keycloak.createLogoutUrl();
                           }
+
+                    function handleUserProfile(){
+                  window.open(keycloak.createAccountUrl());
+                  }
                         </script>
                     </head>
 
@@ -83,6 +88,7 @@ spec:
                       <h1>Treetracker Raw Client</h1>
                       <button onclick={javascript:handleLogin();} >Login</button>
                       <button onclick={javascript:handleLogout();} >Logout</button>
+                <button disabled="true" onclick={javascript:handleUserProfile();} name="userprofile" >User Profile</button>
                       <div id="user_info" >
                         <h2>Welcome: </h2>
                         <h3>User Info</h3>

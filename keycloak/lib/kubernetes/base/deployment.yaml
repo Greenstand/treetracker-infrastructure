@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: treetracker-keycloak-deployment
+  name: treetracker-keycloak
   namespace: keycloak-next
 spec:
   replicas: 1

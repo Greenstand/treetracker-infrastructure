@@ -4,4 +4,6 @@ resources:
 - deployment.yaml
 - deployment-raw-client.yaml
 - mapping.yaml
+- mapping-raw-client.yaml
 - service.yaml
+- service-raw-client.yaml

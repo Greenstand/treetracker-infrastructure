@@ -36,8 +36,8 @@ spec:
                         <script src="lib/jwt-decode.min.js"></script>
                         -->
 
-                        <script src="http://dev-k8s.treetracker.org/keycloak/js/keycloak.js"></script>
-                        <script src="http://dev-k8s.treetracker.org/keycloak/js/keycloak-authz.js"></script>
+                        <script src="https://dev-k8s.treetracker.org/keycloak/js/keycloak.js"></script>
+                        <script src="https://dev-k8s.treetracker.org/keycloak/js/keycloak-authz.js"></script>
                         <!-- jquery -->
                         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
                         <script >
@@ -45,7 +45,7 @@ spec:
                           var auzTemp;
                           window.onload = function() {
                             keycloak = new Keycloak({
-                              url: 'http://dev-k8s.treetracker.org/keycloak',
+                              url: 'https://dev-k8s.treetracker.org/keycloak',
                               realm: 'treetracker',
                               clientId: 'raw-client',
                             });
@@ -278,7 +278,7 @@ spec:
               npx --yes serve -l 8080 .
           env:
             - name: TEST_CLIENT_URL
-              value: http://167.172.8.145
+              value: https://167.172.8.145
             - name: TEST_CLIENT_REALM
               value: treetracker
             - name: TEST_CLIENT_CLIENT_ID

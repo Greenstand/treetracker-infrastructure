@@ -281,11 +281,8 @@ spec:
                     </script>
 
               EOF
+              sed -i "s/dev-k8s.treetracker.org/${RAW_CLIENT_URL}/g" index.html
               npx --yes serve -l 8080 .
           env:
-            - name: TEST_CLIENT_URL
-              value: https://167.172.8.145
-            - name: TEST_CLIENT_REALM
-              value: treetracker
-            - name: TEST_CLIENT_CLIENT_ID
-              value: raw-client
+            - name: RAW_CLIENT_URL
+              value: dev-k8s.treetracker.org

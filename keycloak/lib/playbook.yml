@@ -2,8 +2,13 @@
 ---
 - hosts: localhost
   vars:
-    #TODO
-    deploy_dev: "dev"
+    envs:
+      dev:
+        kustomize_dir_name: development
+      test:
+        kustomize_dir_name: test
+      prod:
+        kustomize_dir_name: production
   tasks:
     - name: install pre-requisites
       pip:
@@ -13,39 +18,31 @@
           - kubernetes 
     - name: Print environment variables
       debug:
-        # print var deploy_dev
-        msg: "Deploy to: {{ deploy_dev }}"
+        # print var deploy_env
+        msg: "Deploy to: {{ deploy_env }}"
+    - name: Set fact for kustomize dir by deploy_env from dictionary
+      set_fact:
+        kustomize_dir: "./lib/kubernetes/overlays/{{ envs[deploy_env].kustomize_dir_name }}"
+    - name: Print kustomize dir
+      debug:
+        msg: "kustomization dir: {{ kustomize_dir }}"
+    - name: Print k8s config
+      debug:
+        msg: "{{ lookup('kubernetes.core.kustomize', dir=kustomize_dir) }}"
+    - name: fail
+      fail:
+        msg: "Deploy to: {{ deploy_env }}"
     - name: Create a namespace for keycloak
       community.kubernetes.k8s:
         name: keycloak-next
         api_version: v1
         kind: Namespace
         state: present
-    - name: Install keycloak operator
-      community.kubernetes.k8s:
-        state: present
-        definition: '{{ item }}'
-      with_items: '{{ lookup("url", "https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/22.0.5/kubernetes/keycloaks.k8s.keycloak.org-v1.yml", split_lines=False) | from_yaml_all | list }}'
-      when: item is not none
-      no_log: True
-    - name: Install keycloak operator 2
-      community.kubernetes.k8s:
-        state: present
-        definition: '{{ item }}'
-      with_items: '{{ lookup("url", "https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/22.0.5/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml", split_lines=False) | from_yaml_all | list }}'
-      when: item is not none
-      no_log: True
-    - name: Deploy keycloak operator 
-      community.kubernetes.k8s:
-        state: present
-        definition: '{{ item }}'
-        namespace: keycloak-next
-      with_items: '{{ lookup("url", "https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/22.0.5/kubernetes/kubernetes.yml", split_lines=False) | from_yaml_all | list }}'
-      when: item is not none
-      no_log: True
+    - name: Set fact for kustomize dir by deploy_env from dictionary
+      set_fact:
     - name: Deploy keycloak instance
       community.kubernetes.k8s:
         state: present
         namespace: keycloak-next
-        src: kubernetes/deployment.yaml
+        definition: "{{ lookup('kubernetes.core.kustomize', dir='./lib/kubernetes/overlays/development') }}"
 

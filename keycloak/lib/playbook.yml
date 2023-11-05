@@ -26,23 +26,15 @@
     - name: Print kustomize dir
       debug:
         msg: "kustomization dir: {{ kustomize_dir }}"
-    - name: Print k8s config
-      debug:
-        msg: "{{ lookup('kubernetes.core.kustomize', dir=kustomize_dir) }}"
-    - name: fail
-      fail:
-        msg: "Deploy to: {{ deploy_env }}"
     - name: Create a namespace for keycloak
       community.kubernetes.k8s:
         name: keycloak-next
         api_version: v1
         kind: Namespace
         state: present
-    - name: Set fact for kustomize dir by deploy_env from dictionary
-      set_fact:
     - name: Deploy keycloak instance
       community.kubernetes.k8s:
         state: present
         namespace: keycloak-next
-        definition: "{{ lookup('kubernetes.core.kustomize', dir='./lib/kubernetes/overlays/development') }}"
+        definition: "{{ lookup('kubernetes.core.kustomize', dir=kustomize_dir) }}"
 

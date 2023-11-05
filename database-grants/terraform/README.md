@@ -35,4 +35,8 @@ Apply:
 terraform apply -var-file=dev.env.tfvars
 ```
 
+# Troubleshooting
 
+## Error: role or object does not exist
+
+When applying a new schema/grant, sometimes error reports xxx does not exist. But if you run it again, it works. Known issue [here](https://github.com/Greenstand/treetracker-infrastructure/issues/201)

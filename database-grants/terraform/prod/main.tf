@@ -83,3 +83,10 @@ module "contracts_schema" {
     postgresql = postgresql.treetracker
   }
 }
+
+module "keycloak_schema" {
+  source = "./schemas/keycloak"
+  providers = {
+    postgresql = postgresql.treetracker
+  }
+}

@@ -25,7 +25,10 @@ spec:
             - name: KC_DB_SCHEMA
               value: keycloak
             - name: KC_DB_USERNAME
-              value: doadmin
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: username
             - name: KC_DB_PASSWORD
               valueFrom:
                 secretKeyRef:

@@ -7,7 +7,7 @@ const clusterName = process.argv[3];
 const clusterNames = {
   dev: ['do-sfo2-dev-k8s-treetracker'],
   test: ['do-sfo2-test-k8s-treetracker'],
-  prod: ['do-sfo2-prod-k8s-treetracker'],
+  prod: ['do-nyc1-prod-k8s-treetracker'],
 };
 
 if (clusterNames[env]?.includes(clusterName)) {

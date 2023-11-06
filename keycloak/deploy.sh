@@ -4,16 +4,13 @@
 # Prompt user to choose the environment
 echo "Please choose the environment to deploy the keycloak"
 echo "1. dev"
-echo "2. staging"
+echo "2. test"
 echo "3. prod"
-#TODO
-#read -p "Enter your choice: " choice
-#deploy_env=$(node -e 'console.log(["dev", "staging", "prod"][process.argv[1] - 1])' $choice)
-choice=1
-deploy_env='dev'
+read -p "Enter your choice: " choice
+deploy_env=$(node -e 'console.log(["dev", "test", "prod"][process.argv[1] - 1])' $choice)
 echo "The environment to deploy is: $(echo ${deploy_env})"
 #TODO
-#read -p "Enter any key to continue: " key
+read -p "Enter any key to continue: " key
 
 # check the k8s cluster
 echo "Checking the k8s cluster"
@@ -28,5 +25,3 @@ if [ "$is_cluster_ok" != "true" ]; then
 fi
 
 ansible-playbook lib/playbook.yml  --extra-vars "deploy_env=${deploy_env}"
-
-

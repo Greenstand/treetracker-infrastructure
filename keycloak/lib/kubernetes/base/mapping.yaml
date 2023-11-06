@@ -10,5 +10,5 @@ spec:
   rewrite: /keycloak/
   timeout_ms: 0
   # cors:
-  origins:
-    - "*"
+  #origins:
+  #  - "*"

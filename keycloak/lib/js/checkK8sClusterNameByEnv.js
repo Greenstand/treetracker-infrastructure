@@ -10,7 +10,7 @@ const clusterNames = {
   prod: ['do-sfo2-prod-k8s-treetracker'],
 };
 
-if (clusterNames[env].includes(clusterName)) {
+if (clusterNames[env]?.includes(clusterName)) {
   console.log('true');
 }else {
   console.log('false');

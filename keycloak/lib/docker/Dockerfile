@@ -4,7 +4,7 @@
 #FROM quay.io/keycloak/keycloak:22.0.4
 #ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
 
-FROM quay.io/keycloak/keycloak:latest as builder
+FROM quay.io/keycloak/keycloak:22.0.4 as builder
 ENV KC_HEALTH_ENABLED=true
 ENV KC_METRICS_ENABLED=true
 

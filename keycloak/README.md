@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - Node.js
-- kubeclt ? 
+- kubectl ? 
 
 ### To install prerequisites 
 

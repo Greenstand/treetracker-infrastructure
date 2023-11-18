@@ -90,3 +90,13 @@ module "keycloak_schema" {
     postgresql = postgresql.treetracker
   }
 }
+
+module "extra" {
+  source = "./extra"
+  providers = {
+    postgresql = postgresql.treetracker
+  }
+  depends_on = [
+    module.wallet_schema
+  ]
+}

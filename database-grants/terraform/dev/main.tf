@@ -81,3 +81,11 @@ module "keycloak_schema" {
     postgresql = postgresql.treetracker
   }
 }
+
+
+module "wallet_schema" {
+  source = "./schemas/wallet"
+  providers = {
+    postgresql = postgresql.treetracker
+  }
+}

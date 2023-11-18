@@ -1,3 +1,8 @@
+# Prerequisites
+
+- Terraform 1.4.6 , please stick to this version for now, tested 1.6.x, it brings issue with the Dititalocean storage as backend
+
+
 # How to set up terraform
 
 Find your digitalocean spaces access key and secret key here: https://cloud.digitalocean.com/account/api/spaces?i=d79377

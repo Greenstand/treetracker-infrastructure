@@ -93,3 +93,10 @@ module "extra" {
     module.wallet_schema
   ]
 }
+
+module "denormalized_schema" {
+  source = "./schemas/denormalized"
+  providers = {
+    postgresql = postgresql.treetracker
+  }
+}

@@ -54,13 +54,6 @@ module "field_data_schema" {
   }
 }
 
-module "query_schema" {
-  source = "./schemas/query"
-  providers = {
-    postgresql = postgresql.treetracker
-  }
-}
-
 module "reporting_schema" {
   source = "./schemas/reporting"
   providers = {
@@ -85,6 +78,13 @@ module "keycloak_schema" {
 
 module "wallet_schema" {
   source = "./schemas/wallet"
+  providers = {
+    postgresql = postgresql.treetracker
+  }
+}
+
+module "denormalized_schema" {
+  source = "./schemas/denormalized"
   providers = {
     postgresql = postgresql.treetracker
   }

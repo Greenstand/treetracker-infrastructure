@@ -1,0 +1,14 @@
+# deployment a test client for keycloak
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: treetracker-keycloak-raw-client
+  namespace: keycloak-next
+spec:
+  template:
+    spec:
+      containers:
+        - name: treetracker-keycloak
+          env:
+            - name: RAW_CLIENT_URL
+              value: prod-k8s.treetracker.org

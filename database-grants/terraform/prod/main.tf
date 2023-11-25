@@ -56,13 +56,6 @@ module "messaging_schema" {
   }
 }
 
-module "query_schema" {
-  source = "./schemas/query"
-  providers = {
-    postgresql = postgresql.treetracker
-  }
-}
-
 module "stakeholder_schema" {
   source = "./schemas/stakeholder"
   providers = {
@@ -82,4 +75,21 @@ module "contracts_schema" {
   providers = {
     postgresql = postgresql.treetracker
   }
+}
+
+module "keycloak_schema" {
+  source = "./schemas/keycloak"
+  providers = {
+    postgresql = postgresql.treetracker
+  }
+}
+
+module "extra" {
+  source = "./extra"
+  providers = {
+    postgresql = postgresql.treetracker
+  }
+  depends_on = [
+    module.wallet_schema
+  ]
 }

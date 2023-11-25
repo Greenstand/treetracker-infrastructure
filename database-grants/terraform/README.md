@@ -1,3 +1,8 @@
+# Prerequisites
+
+- Terraform 1.4.6 , please stick to this version for now, tested 1.6.x, it brings issue with the Dititalocean storage as backend
+
+
 # How to set up terraform
 
 Find your digitalocean spaces access key and secret key here: https://cloud.digitalocean.com/account/api/spaces?i=d79377
@@ -35,4 +40,8 @@ Apply:
 terraform apply -var-file=dev.env.tfvars
 ```
 
+# Troubleshooting
 
+## Error: role or object does not exist
+
+When applying a new schema/grant, sometimes error reports xxx does not exist. But if you run it again, it works. Known issue [here](https://github.com/Greenstand/treetracker-infrastructure/issues/201)

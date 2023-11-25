@@ -11,33 +11,6 @@ resource "postgresql_role" "readonlyuser_human" {
   password = random_password.readonlyuser_password.result
 }
 
-resource "postgresql_grant" "readonlyyuser_select_field" {
-  provider    = "postgresql.treetracker"
-  database    = "treetracker"
-  role        = "readonlyuser"
-  schema      = "field"
-  object_type = "table"
-  privileges  = ["SELECT"]
-}
-
-resource "postgresql_grant" "readonlyyuser_usage_field" {
-  provider    = "postgresql.treetracker"
-  database    = "treetracker"
-  role        = "readonlyuser"
-  schema      = "field"
-  object_type = "schema"
-  privileges  = ["USAGE"]
-}
-
-resource "postgresql_grant" "readonlyyuser_sequence_field" {
-  provider    = "postgresql.treetracker"
-  database    = "treetracker"
-  role        = "readonlyuser"
-  schema      = "field"
-  object_type = "sequence"
-  privileges  = ["SELECT"]
-}
-
 resource "postgresql_grant" "readonlyyuser_select_public" {
   provider    = "postgresql.treetracker"
   database    = "treetracker"
@@ -161,7 +134,7 @@ resource "postgresql_grant" "readonlyyuser_sequence_treetracker" {
   role        = "readonlyuser"
   schema      = "treetracker"
   object_type = "sequence"
-  privileges  = ["SELECT"]
+  privileges  = ["SELECT", "USAGE"]
 }
 
 resource "postgresql_grant" "readonlyyuser_usage_wallet" {
@@ -188,7 +161,7 @@ resource "postgresql_grant" "readonlyyuser_sequence_wallet" {
   role        = "readonlyuser"
   schema      = "wallet"
   object_type = "sequence"
-  privileges  = ["SELECT"]
+  privileges  = ["SELECT", "USAGE"]
 }
 
 resource "postgresql_grant" "readonlyyuser_usage_webmap" {
@@ -206,7 +179,7 @@ resource "postgresql_grant" "readonlyyuser_sequence_webmap" {
   role        = "readonlyuser"
   schema      = "webmap"
   object_type = "sequence"
-  privileges  = ["SELECT"]
+  privileges  = ["SELECT", "USAGE"]
 }
 
 resource "postgresql_grant" "readonlyyuser_usage_airflow" {
@@ -288,7 +261,7 @@ resource "postgresql_grant" "readonlyuser_sequence_earnings" {
   role        = "readonlyuser"
   schema      = "earnings"
   object_type = "sequence"
-  privileges  = ["SELECT"]
+  privileges  = ["SELECT", "USAGE"]
 }
 
 
@@ -311,7 +284,7 @@ resource "postgresql_default_privileges" "read_only_reporting_sequence" {
 
   owner       = "doadmin"
   object_type = "sequence"
-  privileges  = ["SELECT"]
+  privileges  = ["SELECT", "USAGE"]
 }
 
 resource "postgresql_default_privileges" "read_only_reporting_tables" {

@@ -1,0 +1,59 @@
+# deployment for keycloak
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: treetracker-keycloak
+  namespace: keycloak-next
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: treetracker-keycloak
+  template:
+    metadata:
+      labels:
+        app: treetracker-keycloak
+    spec:
+      containers:
+        - name: treetracker-keycloak
+          image: dadiorchen/keycloak:1.5
+          env:
+            - name: KC_LOG_LEVEL
+              value: INFO
+            - name: KC_DB
+              value: postgres
+            - name: KC_DB_SCHEMA
+              value: keycloak
+            - name: KC_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: username
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: password
+            - name: KC_DB_URL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: host
+            - name: KC_DB_URL_PORT
+              value: "25060"
+            - name: KC_DB_URL_DATABASE
+              value: treetracker
+            - name: KEYCLOAK_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: admin_username
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secret
+                  key: admin_password
+            - name: KC_HTTP_RELATIVE_PATH
+              value: "/keycloak"
+            - name: KC_PROXY
+              value: "edge"

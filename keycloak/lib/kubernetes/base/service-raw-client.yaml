@@ -1,0 +1,13 @@
+# service for keycloak
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-raw-client-service
+  namespace: keycloak-next
+spec:
+  selector:
+    app: treetracker-keycloak-raw-client
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

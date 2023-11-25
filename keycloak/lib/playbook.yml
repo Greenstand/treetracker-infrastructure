@@ -1,0 +1,40 @@
+# ansible playbook for install keycloak
+---
+- hosts: localhost
+  vars:
+    envs:
+      dev:
+        kustomize_dir_name: development
+      test:
+        kustomize_dir_name: test
+      prod:
+        kustomize_dir_name: production
+  tasks:
+    - name: install pre-requisites
+      pip:
+        name:
+          - openshift
+          - pyyaml
+          - kubernetes 
+    - name: Print environment variables
+      debug:
+        # print var deploy_env
+        msg: "Deploy to: {{ deploy_env }}"
+    - name: Set fact for kustomize dir by deploy_env from dictionary
+      set_fact:
+        kustomize_dir: "./lib/kubernetes/overlays/{{ envs[deploy_env].kustomize_dir_name }}"
+    - name: Print kustomize dir
+      debug:
+        msg: "kustomization dir: {{ kustomize_dir }}"
+    - name: Create a namespace for keycloak
+      community.kubernetes.k8s:
+        name: keycloak-next
+        api_version: v1
+        kind: Namespace
+        state: present
+    - name: Deploy keycloak instance
+      community.kubernetes.k8s:
+        state: present
+        namespace: keycloak-next
+        definition: "{{ lookup('kubernetes.core.kustomize', dir=kustomize_dir) }}"
+

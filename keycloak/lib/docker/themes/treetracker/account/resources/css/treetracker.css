@@ -1,0 +1,27 @@
+:root {
+  --pf-global--primary-color--100: #86C232;
+  --pf-global--primary-color--200: #a6dc5a;
+  --pf-global--primary-color--dark-100: #86C232;
+  --pf-global--primary-color--light-100: #a6dc5a;
+  --pf-global--active-color--100: #68a119;
+  --pf-global--active-color--200: #b9ef6d;
+  --pf-global--active-color--300: #89e00f;
+  --pf-global--active-color--400: #80aa44;
+  --pf-global--link--Color: #61901f;
+  --pf-global--link--Color--hover: #547722;
+  --pf-global--link--Color--light: #b4ef62;
+  --pf-global--link--Color--light--hover: #b7e973;
+  --pf-global--link--Color--dark: #679822;
+  --pf-global--link--Color--dark--hover: #5e9413;
+  --pf-global--default-color--100: #86C232;
+  --pf-global--default-color--200: #a6dc5a;
+  --pf-global--default-color--300: #86C232;
+}
+
+.pf-c-brand {
+  content: url("https://map.treetracker.org/images/treetracker_logo_white.svg");
+}
+
+.pf-icon {
+  color: var(--pf-global--primary-color--100);
+}

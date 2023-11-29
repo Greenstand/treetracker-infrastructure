@@ -2,7 +2,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: treetracker-keycloak-mapping
-  namespace: keycloak-next
+  namespace: keycloak
 spec:
   # mapping to the service on port 8080
   prefix: /keycloak/

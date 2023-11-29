@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: treetracker-keycloak
-  namespace: keycloak-next
+  namespace: keycloak
 spec:
   replicas: 1
   selector:
@@ -25,10 +25,7 @@ spec:
             - name: KC_DB_SCHEMA
               value: keycloak
             - name: KC_DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: keycloak-secret
-                  key: username
+              value: s_keycloak
             - name: KC_DB_PASSWORD
               valueFrom:
                 secretKeyRef:

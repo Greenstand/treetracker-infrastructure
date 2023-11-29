@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: treetracker-keycloak-raw-client
-  namespace: keycloak-next
+  namespace: keycloak
 spec:
   template:
     spec:

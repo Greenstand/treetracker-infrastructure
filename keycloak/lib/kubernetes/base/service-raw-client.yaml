@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: keycloak-raw-client-service
-  namespace: keycloak-next
+  namespace: keycloak
 spec:
   selector:
     app: treetracker-keycloak-raw-client

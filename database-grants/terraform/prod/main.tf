@@ -6,7 +6,6 @@ module "field_data_schema" {
   }
 }
 
-
 module "wallet_schema" {
   source = "./schemas/wallet"
   providers = {

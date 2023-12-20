@@ -320,3 +320,57 @@ resource "postgresql_default_privileges" "read_only_messaging_tables" {
   privileges  = ["SELECT"]
 }
 
+
+resource "postgresql_grant" "readonlyyuser_usage_keycloak" {
+  provider    = "postgresql.treetracker"
+  database    = "treetracker"
+  role        = "readonlyuser"
+  schema      = "keycloak"
+  object_type = "schema"
+  privileges  = ["USAGE"]
+}
+
+resource "postgresql_grant" "readonlyyuser_select_keycloak" {
+  provider    = "postgresql.treetracker"
+  database    = "treetracker"
+  role        = "readonlyuser"
+  schema      = "keycloak"
+  object_type = "table"
+  privileges  = ["SELECT"]
+}
+
+resource "postgresql_grant" "readonlyyuser_sequence_keycloak" {
+  provider    = "postgresql.treetracker"
+  database    = "treetracker"
+  role        = "readonlyuser"
+  schema      = "keycloak"
+  object_type = "sequence"
+  privileges  = ["SELECT"]
+}
+
+resource "postgresql_grant" "readonlyyuser_usage_denormalized" {
+  provider    = "postgresql.treetracker"
+  database    = "treetracker"
+  role        = "readonlyuser"
+  schema      = "denormalized"
+  object_type = "schema"
+  privileges  = ["USAGE"]
+}
+
+resource "postgresql_grant" "readonlyyuser_select_denormalized" {
+  provider    = "postgresql.treetracker"
+  database    = "treetracker"
+  role        = "readonlyuser"
+  schema      = "denormalized"
+  object_type = "table"
+  privileges  = ["SELECT"]
+}
+
+resource "postgresql_grant" "readonlyyuser_sequence_denormalized" {
+  provider    = "postgresql.treetracker"
+  database    = "treetracker"
+  role        = "readonlyuser"
+  schema      = "denormalized"
+  object_type = "sequence"
+  privileges  = ["SELECT"]
+}

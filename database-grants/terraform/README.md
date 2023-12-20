@@ -40,8 +40,15 @@ Apply:
 terraform apply -var-file=dev.env.tfvars
 ```
 
+# About the `extra` folder
+
+Put increased grant here, don't put them in the main folder because the order 
+matters, if you put them in the main folder, they will be applied before the
+schema is created, which will cause error.
+
 # Troubleshooting
 
 ## Error: role or object does not exist
 
 When applying a new schema/grant, sometimes error reports xxx does not exist. But if you run it again, it works. Known issue [here](https://github.com/Greenstand/treetracker-infrastructure/issues/201)
+

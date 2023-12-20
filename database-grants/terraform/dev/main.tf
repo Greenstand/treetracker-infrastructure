@@ -47,6 +47,13 @@ module "messaging_schema" {
   }
 }
 
+module "query_schema" {
+  source = "./schemas/query"
+  providers = {
+    postgresql = postgresql.treetracker
+  }
+}
+
 module "field_data_schema" {
   source = "./schemas/field_data"
   providers = {

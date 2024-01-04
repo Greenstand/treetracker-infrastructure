@@ -4,7 +4,7 @@
 #FROM quay.io/keycloak/keycloak:22.0.4
 #ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
 
-FROM quay.io/keycloak/keycloak:22.0.4 as builder
+FROM quay.io/keycloak/keycloak:23.0 as builder
 ENV KC_HEALTH_ENABLED=true
 ENV KC_METRICS_ENABLED=true
 
@@ -17,7 +17,7 @@ WORKDIR /opt/keycloak
 COPY ./themes/treetracker /opt/keycloak/themes/treetracker
 #RUN /opt/keycloak/bin/kc.sh build
 
-FROM quay.io/keycloak/keycloak:latest
+FROM quay.io/keycloak/keycloak:23.0
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev"]

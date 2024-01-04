@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: treetracker-keycloak
-          image: dadiorchen/keycloak:1.5
+          image: mohmin/keycloak-23
           env:
             - name: KC_LOG_LEVEL
               value: INFO

@@ -1,0 +1,85 @@
+---
+# namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openproject
+
+
+---
+# the deployment for openproject application
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openproject
+  namespace: openproject
+  labels:
+    app: openproject
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openproject
+  template:
+    metadata:
+      labels:
+        app: openproject
+    spec:
+      containers:
+      - name: openproject
+        image: openproject/community:13
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SECRET_KEY_BASE
+          value: "some-secret-key"
+        # PLEASE CHANGE THE FOLLOWING ENVIRONMENT VARIABLES
+        - name: OPENPROJECT_HOST__NAME
+          value: prod-k8s.treetracker.org
+        - name: OPENPROJECT_RAILS__RELATIVE__URL__ROOT
+          value: /openproject
+        # PLEASE SET THE SECRET ON KUBERNETES
+        - name: DATABASE_URL
+          # secret 
+          valueFrom:
+            secretKeyRef:
+              name: openproject-db-secret
+              key: database-url
+
+            #        - name: SMTP_ADDRESS
+            #          value: "smtp.gmail.com"
+            #        - name: SMTP_PORT
+            #          value: "587"
+            #        - name: SMTP_DOMAIN
+            #          value: "smtp.gmail.com"
+            #        - name: SMTP_USER_NAME
+            #          value: "
+
+---
+# service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: openproject
+  namespace: openproject
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: openproject
+
+
+---
+# mappping.yaml
+# ambassador mapping for openproject
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: openproject
+  namespace: openproject
+spec:
+  prefix: /openproject/
+  rewrite: /openproject/
+  service: openproject:80

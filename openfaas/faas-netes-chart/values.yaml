@@ -1,0 +1,8 @@
+functionNamespace: openfaas-fn
+operator:
+  create: false
+clusterRole: true
+prometheus:
+  create: false
+alertmanager:
+  create: false

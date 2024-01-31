@@ -5,3 +5,6 @@ terraform.tfvars
 *.swp
 password_file*
 .vscode
+template
+build
+.secrets

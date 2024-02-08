@@ -1,0 +1,49 @@
+resource "digitalocean_database_user" "admin-user" {
+  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
+  name       = "u_admin"
+}
+
+resource "digitalocean_database_user" "manager-user" {
+  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
+  name       = "u_manager"
+}
+
+resource "digitalocean_database_user" "analyst-user" {
+  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
+  name       = "u_analyst"
+}
+
+resource "digitalocean_database_user" "token-issuer-user" {
+  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
+  name       = "u_token_issuer"
+}
+
+resource "digitalocean_database_user" "read-only-user" {
+  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
+  name       = "u_read_only"
+}
+
+
+resource "digitalocean_database_user" "map-service-user" {
+  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
+  name       = "s_map"
+}
+
+resource "digitalocean_database_user" "admin-panel-service-user" {
+  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
+  name       = "s_admin_panel"
+}
+
+resource "digitalocean_database_user" "data-pipeline-service-user" {
+  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
+  name       = "s_data_pipeline"
+}
+
+resource "digitalocean_database_user" "wallet-service-user" {
+  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
+  name       = "s_wallet"
+}
+
+resource "digitalocean_database_user" "wallet-service-migration-user" {
+  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
+  name       = "m_wallet"

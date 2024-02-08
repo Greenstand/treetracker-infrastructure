@@ -1,0 +1,1 @@
+terraform import -var-file=dev.env.tfvars module.airflow_schema.postgresql_role.service_user s_airflow

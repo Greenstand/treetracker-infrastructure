@@ -7,6 +7,9 @@ variable "password" {
 }
 
 terraform {
+  # Ref: https://developer.hashicorp.com/terraform/tutorials/configuration-language/versions#review-example-configuration 
+  required_version = "~> 1.4.6"  
+
   required_providers {
     postgresql = {
       source  = "cyrilgdn/postgresql"

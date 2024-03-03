@@ -31,8 +31,10 @@ Use correct version:
 ```bash
 tfenv use min-required
 ```
-OR 
+OR if you configure `.terraform-version`
+
 ```bash
+echo "1.4.6" > .terraform-version
 tfenv use # this will configure the correct version from .terraform-version file
 ```
 

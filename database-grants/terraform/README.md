@@ -1,6 +1,11 @@
 # Prerequisites
 
-- Terraform 1.4.6 , please stick to this version for now, tested 1.6.x, it brings issue with the Dititalocean storage as backend
+- Ensure you have `tfenv` installed in your system. https://github.com/tfutils/tfenv
+
+- The terraform configuration in this directory requires to have `terraform` binary version to be minimum 1.4.6 Ref: https://developer.hashicorp.com/terraform/tutorials/configuration-language/versions#review-example-configuration
+
+  
+
 
 
 # How to set up terraform
@@ -21,6 +26,21 @@ source setup_keys.sh
 ```
 
 # How to run terraform
+
+Use correct version:
+```bash
+tfenv use min-required
+```
+OR if you configure `.terraform-version`
+
+```bash
+echo "1.4.6" > .terraform-version
+tfenv use # this will configure the correct version from .terraform-version file
+```
+
+```bash
+terraform version # check if the version matches with the required_version in provider.tf
+```
 
 Init:
 

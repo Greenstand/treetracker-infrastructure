@@ -96,3 +96,10 @@ module "denormalized_schema" {
     postgresql = postgresql.treetracker
   }
 }
+
+module "queue_schema" {
+  source = "./schemas/queue"
+  providers = {
+    postgresql = postgresql.treetracker
+  }
+}

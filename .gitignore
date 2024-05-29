@@ -5,3 +5,5 @@ terraform.tfvars
 *.swp
 password_file*
 .vscode
+*.tfstate
+*.backup

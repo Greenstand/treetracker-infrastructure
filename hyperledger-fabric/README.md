@@ -3,6 +3,8 @@
 
 Hyperledger Fabric is a **permissioned blockchain platform** designed for enterprise-grade use. It supports **modular architecture**, **private transactions**, and **chaincode (smart contracts)**.
 
+<img width="1300" height="820" alt="Screenshot 2025-07-17 183852" src="https://github.com/user-attachments/assets/e84bb198-a145-4cc3-9564-c79efb2e440d" />
+
 ---
 
 # 🚀 Why Deploy Hyperledger Fabric on Kubernetes?

@@ -70,3 +70,67 @@ Kubernetes (K8s) is ideal for deploying Fabric because it provides:
 * **Operator Fabric** – Experimental operator for managing Fabric resources.
 
 
+# 🧱 Hyperledger Fabric on Kubernetes – Architecture Diagram
+
+This diagram represents a simplified deployment architecture of Hyperledger Fabric components on a Kubernetes cluster using Mermaid syntax.
+
+```mermaid
+flowchart TD
+  subgraph subGraph0["Fabric CA"]
+    CA["Fabric CA Pod"]
+    CA_CFG["ConfigMaps / Secrets"]
+    CA_DEPLOY["StatefulSet"]
+  end
+
+  subgraph subGraph1["Orderer Node"]
+    ORDERER["Orderer Pod"]
+    ORDERER_STS["StatefulSet"]
+    ORDERER_PVC["Persistent Volume"]
+    ORDERER_CFG["ConfigMaps / Secrets"]
+  end
+
+  subgraph subGraph2["Peer Node"]
+    PEER["Peer Pod"]
+    PEER_STS["StatefulSet"]
+    PEER_PVC["Persistent Volume"]
+    PEER_CFG["ConfigMaps / Secrets"]
+    CHAINCODE["Chaincode Docker Container"]
+    COUCHDB["CouchDB Pod"]
+    COUCHDB_PVC["Persistent Volume"]
+  end
+
+  subgraph subGraph3["Network Access"]
+    INGRESS["Ingress / NodePort"]
+    CLI["Fabric CLI / SDK Client"]
+  end
+
+  subgraph subGraph4["Kubernetes Cluster"]
+    subGraph0
+    subGraph1
+    subGraph2
+    subGraph3
+  end
+
+  CA --> CA_DEPLOY
+  CA --> CA_CFG
+
+  ORDERER --> ORDERER_STS
+  ORDERER --> ORDERER_PVC
+  ORDERER --> ORDERER_CFG
+
+  PEER --> PEER_STS
+  PEER --> PEER_PVC
+  PEER --> PEER_CFG
+  PEER --> CHAINCODE
+  PEER --> COUCHDB
+
+  COUCHDB --> COUCHDB_PVC
+
+  CLI --> INGRESS
+  INGRESS --> CA
+  INGRESS --> ORDERER
+  INGRESS --> PEER
+```
+
+
+

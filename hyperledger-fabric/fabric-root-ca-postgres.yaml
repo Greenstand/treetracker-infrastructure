@@ -1,0 +1,301 @@
+# ----------------------------------------
+# Secret: PostgreSQL Credentials
+# ----------------------------------------
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+  namespace: hlf-ca
+type: Opaque
+stringData:
+  POSTGRES_USER: causer
+  POSTGRES_PASSWORD: capassword
+  POSTGRES_DB: fabric_ca
+---
+# ----------------------------------------
+# Secret: CA Admin Credentials
+# ----------------------------------------
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ca-admin-secret
+  namespace: hlf-ca
+type: Opaque
+stringData:
+  username: admin
+  password: adminpw
+---
+# ----------------------------------------
+# PersistentVolume: PostgreSQL (hostPath)
+# ----------------------------------------
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /mnt/data/postgres
+---
+# ----------------------------------------
+# PVC: PostgreSQL
+# ----------------------------------------
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: hlf-ca
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+# ----------------------------------------
+# Deployment: PostgreSQL
+# ----------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-hlf
+  namespace: hlf-ca
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-hlf
+  template:
+    metadata:
+      labels:
+        app: postgres-hlf
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:13
+        ports:
+        - containerPort: 5432
+        envFrom:
+        - secretRef:
+            name: postgres-secret
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-storage
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+---
+# ----------------------------------------
+# Internal Service: PostgreSQL
+# ----------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-hlf
+  namespace: hlf-ca
+spec:
+  type: ClusterIP
+  selector:
+    app: postgres-hlf
+  ports:
+  - port: 5432
+    targetPort: 5432
+---
+# ----------------------------------------
+# External NodePort Service: PostgreSQL
+# ----------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-hlf-external
+  namespace: hlf-ca
+spec:
+  type: NodePort
+  selector:
+    app: postgres-hlf
+  ports:
+  - port: 5432
+    targetPort: 5432
+    nodePort: 30332
+---
+# ----------------------------------------
+# PersistentVolume: Fabric CA (Root CA) Storage
+# ----------------------------------------
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: root-ca-greenstand-pv
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /mnt/data/root-ca
+---
+# ----------------------------------------
+# StatefulSet: Fabric Root CA (Fixed)
+# ----------------------------------------
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: root-ca-greenstand
+  namespace: hlf-ca
+spec:
+  serviceName: root-ca-greenstand-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: root-ca-greenstand
+  template:
+    metadata:
+      labels:
+        app: root-ca-greenstand
+    spec:
+      containers:
+      - name: ca
+        image: hyperledger/fabric-ca:1.5
+        env:
+        - name: FABRIC_CA_HOME
+          value: /etc/hyperledger/fabric-ca-server
+        - name: FABRIC_CA_SERVER_CA_NAME
+          value: root-ca-greenstand
+        - name: FABRIC_CA_SERVER_TLS_ENABLED
+          value: "true"
+        - name: FABRIC_CA_SERVER_BOOTSTRAP_USER
+          valueFrom:
+            secretKeyRef:
+              name: ca-admin-secret
+              key: username
+        - name: FABRIC_CA_SERVER_BOOTSTRAP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ca-admin-secret
+              key: password
+        - name: FABRIC_CA_SERVER_DB_TYPE
+          value: postgres
+        - name: FABRIC_CA_SERVER_DB_DATASOURCE
+          value: "host=postgres-hlf.hlf-ca.svc.cluster.local port=5432 user=causer password=capassword dbname=fabric_ca sslmode=disable"
+        ports:
+        - containerPort: 7054
+        volumeMounts:
+        - name: ca-storage
+          mountPath: /etc/hyperledger/fabric-ca-server
+      volumes:
+      - name: ca-storage
+        persistentVolumeClaim:
+          claimName: root-ca-greenstand-pvc
+---
+# ----------------------------------------
+# PVC: Fabric CA Storage
+# ----------------------------------------
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: root-ca-greenstand-pvc
+  namespace: hlf-ca
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+# ----------------------------------------
+# Headless Service: for StatefulSet DNS
+# ----------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: root-ca-greenstand-headless
+  namespace: hlf-ca
+spec:
+  clusterIP: None
+  selector:
+    app: root-ca-greenstand
+  ports:
+  - name: ca
+    port: 7054
+    targetPort: 7054
+---
+# ----------------------------------------
+# Internal Service: Fabric CA
+# ----------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: root-ca-greenstand-cluster
+  namespace: hlf-ca
+spec:
+  type: ClusterIP
+  selector:
+    app: root-ca-greenstand
+  ports:
+  - name: ca
+    port: 7054
+    targetPort: 7054
+---
+# ----------------------------------------
+# External NodePort Service: Fabric CA
+# ----------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: root-ca-greenstand-external
+  namespace: hlf-ca
+spec:
+  type: NodePort
+  selector:
+    app: root-ca-greenstand
+  ports:
+  - name: ca
+    port: 7054
+    targetPort: 7054
+    nodePort: 30054
+---
+# ----------------------------------------
+# Ingress Service: Fabric CA
+# ----------------------------------------
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fabric-ca-ingress
+  namespace: hlf-ca
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"  # remove if using TLS
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"  # if CA is TLS-enabled
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: fabric-ca.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: root-ca-greenstand-cluster
+            port:
+              number: 7054
+---
+# ----------------------------------------
+# PersistentVolume: Fabric CA (Root CA) Storage
+# ----------------------------------------
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: root-ca-greenstand-pv
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /mnt/data/root-ca

@@ -1,0 +1,24 @@
+ca:
+  image: hyperledger/fabric-ca:1.5.7
+  adminUser: admin
+  adminPassword: adminpw
+
+orderer:
+  image: hyperledger/fabric-orderer:2.5.4
+  replicas: 5
+  mspID: OrdererMSP
+
+peer:
+  image: hyperledger/fabric-peer:2.5.4
+  mspID: GreenstandMSP
+  peerID: peer0.greenstand
+
+channel:
+  name: treechannel
+  genesisFile: /var/hyperledger/orderer/genesis.block
+
+ingress:
+  host: fabric.greenstand.local
+tlsCert: BASE64_TLS_CERT
+tlsKey: BASE64_TLS_KEY
+caCert: BASE64_CA_CERT

@@ -78,60 +78,76 @@ This diagram represents a simplified deployment architecture of Hyperledger Fabr
 
 ```mermaid
 flowchart TD
-  subgraph subGraph0["Fabric CA"]
-    CA["Fabric CA Pod"]
-    CA_CFG["ConfigMaps / Secrets"]
-    CA_DEPLOY["StatefulSet"]
+
+  %% ===== Ordering Service =====
+  subgraph Ordering_Service["🏛️ Ordering Service (RAFT Cluster)"]
+    OS1["Raft Node 1"]
+    OS2["Raft Node 2"]
+    OS3["Raft Node 3"]
+    OS4["Raft Node 4"]
+    OS5["Raft Node 5"]
   end
 
-  subgraph subGraph1["Orderer Node"]
-    ORDERER["Orderer Pod"]
-    ORDERER_STS["StatefulSet"]
-    ORDERER_PVC["Persistent Volume"]
-    ORDERER_CFG["ConfigMaps / Secrets"]
+  %% ===== Certificate Authority =====
+  subgraph CA["🔐 Certificate Authorities"]
+    RootCA["Root CA"]
+    ICA1["Intermediate CA - Greenstand"]
+    ICA2["Intermediate CA - CBO"]
+    ICA3["Intermediate CA - Investor"]
+    ICA4["Intermediate CA - Verifier"]
+    RootCA --> ICA1
+    RootCA --> ICA2
+    RootCA --> ICA3
+    RootCA --> ICA4
   end
 
-  subgraph subGraph2["Peer Node"]
-    PEER["Peer Pod"]
-    PEER_STS["StatefulSet"]
-    PEER_PVC["Persistent Volume"]
-    PEER_CFG["ConfigMaps / Secrets"]
-    CHAINCODE["Chaincode Docker Container"]
-    COUCHDB["CouchDB Pod"]
-    COUCHDB_PVC["Persistent Volume"]
+  %% ===== Channels =====
+  subgraph Channels["📋 Channels"]
+    PubChan["Public Channel"]
+    PrivChan["Private Channels"]
+    CrossChan["Cross-Channel Communication"]
   end
 
-  subgraph subGraph3["Network Access"]
-    INGRESS["Ingress / NodePort"]
-    CLI["Fabric CLI / SDK Client"]
+  %% ===== Organizations and Peer Nodes =====
+  subgraph GreenstandOrg["🌐 Greenstand Org (3 Peers)"]
+    GS_P1["Peer 1 (Endorser)"]
+    GS_P2["Peer 2 (Committing)"]
+    GS_P3["Peer 3 (Anchor)"]
   end
 
-  subgraph subGraph4["Kubernetes Cluster"]
-    subGraph0
-    subGraph1
-    subGraph2
-    subGraph3
+  subgraph CBOOrg["🏢 CBO Org (2 Peers)"]
+    CBO_P1["Peer 1"]
+    CBO_P2["Peer 2"]
   end
 
-  CA --> CA_DEPLOY
-  CA --> CA_CFG
+  subgraph InvestorOrg["💰 Investor Org (2 Peers)"]
+    INV_P1["Peer 1"]
+    INV_P2["Peer 2"]
+  end
 
-  ORDERER --> ORDERER_STS
-  ORDERER --> ORDERER_PVC
-  ORDERER --> ORDERER_CFG
+  subgraph VerifierOrg["🔍 Verifier Org (1 Peer)"]
+    VER_P1["Peer 1"]
+  end
 
-  PEER --> PEER_STS
-  PEER --> PEER_PVC
-  PEER --> PEER_CFG
-  PEER --> CHAINCODE
-  PEER --> COUCHDB
+  %% ===== Connections =====
+  GS_P1 --> PubChan
+  GS_P2 --> PubChan
+  GS_P3 --> CrossChan
 
-  COUCHDB --> COUCHDB_PVC
+  CBO_P1 --> PubChan
+  CBO_P2 --> PrivChan
 
-  CLI --> INGRESS
-  INGRESS --> CA
-  INGRESS --> ORDERER
-  INGRESS --> PEER
+  INV_P1 --> PubChan
+  INV_P2 --> PrivChan
+
+  VER_P1 --> PubChan
+  VER_P1 --> CrossChan
+
+  ICA1 --> GreenstandOrg
+  ICA2 --> CBOOrg
+  ICA3 --> InvestorOrg
+  ICA4 --> VerifierOrg
+
 ```
 
 

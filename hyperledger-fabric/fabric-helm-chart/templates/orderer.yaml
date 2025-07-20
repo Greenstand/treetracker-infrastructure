@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: orderer
+  namespace: hlf-orderer
+spec:
+  replicas: {{ .Values.orderer.replicas }}
+  selector:
+    matchLabels:
+      app: orderer
+  serviceName: orderer-service
+  template:
+    metadata:
+      labels:
+        app: orderer
+    spec:
+      containers:
+        - name: orderer
+          image: {{ .Values.orderer.image }}
+          ports:
+            - containerPort: 7050
+          env:
+            - name: ORDERER_GENERAL_LOCALMSPID
+              value: {{ .Values.orderer.mspID }}
+            - name: ORDERER_GENERAL_GENESISFILE
+              value: {{ .Values.channel.genesisFile }}

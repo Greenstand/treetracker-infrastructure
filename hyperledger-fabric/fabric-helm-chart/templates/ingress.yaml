@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fabric-ingress
+  namespace: greenstand
+spec:
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /peer
+            pathType: Prefix
+            backend:
+              service:
+                name: peer0-service
+                port:
+                  number: 7051

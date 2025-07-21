@@ -245,29 +245,3 @@ spec:
     - port: 8080
       targetPort: 8080
       # nodePort: 32080
-
-# -----------------------------------------
-# Ingress (commented for now)
-# -----------------------------------------
-# ---
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: root-ca-greenstand-ingress
-#   namespace: hlf-ca
-#   annotations:
-#     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-#     nginx.ingress.kubernetes.io/rewrite-target: /
-#     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-# spec:
-#   rules:
-#     - host: ca.greenstand.local
-#       http:
-#         paths:
-#           - path: /
-#             pathType: Prefix
-#             backend:
-#               service:
-#                 name: root-ca-greenstand-external
-#                 port:
-#                   number: 7054

@@ -185,4 +185,4 @@ flowchart TD
 ---
 ## 📬 Support
 
-For help, contact [the @imos64](https://github.com/imos64) or TreeTracker DevOps team or open a Git issue in your project repo.
+For help, contact [Imos](https://github.com/imos64) or TreeTracker DevOps team or open a Git issue in your project repo.

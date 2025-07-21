@@ -1,0 +1,62 @@
+Organizations:
+  - &OrdererOrg
+    Name: OrdererOrg
+    ID: OrdererMSP
+    MSPDir: ./crypto-config/ordererOrganizations/example.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('OrdererMSP.admin')"
+
+Orderer: &OrdererDefaults
+  OrdererType: etcdraft
+  Addresses:
+    - orderer0.example.com:7050
+  EtcdRaft:
+    Consenters:
+      - Host: orderer0.example.com
+        Port: 7050
+        ClientTLSCert: ./crypto-config/ordererOrganizations/example.com/orderers/orderer0.example.com/tls/server.crt
+        ServerTLSCert: ./crypto-config/ordererOrganizations/example.com/orderers/orderer0.example.com/tls/server.crt
+  Organizations:
+    - *OrdererOrg
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+
+Channel: &ChannelDefaults
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+
+Profiles:
+  OrgsOrdererGenesis:
+    Orderer:
+      <<: *OrdererDefaults
+    Consortiums:
+      SampleConsortium:
+        Organizations:
+          - *OrdererOrg

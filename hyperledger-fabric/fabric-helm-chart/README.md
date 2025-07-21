@@ -1,6 +1,7 @@
 # TreeTracker Hyperledger Fabric Helm Chart
 
 This Helm chart deploys an enterprise-grade Hyperledger Fabric network tailored for the TreeTracker system. It includes a 5-node RAFT ordering service, multiple organizations (Greenstand, CBO, Investor, Verifier), their respective peers, Certificate Authorities, and GitOps-ready ArgoCD support.
+<img width="1300" height="820" alt="Screenshot 2025-07-17 183852" src="https://github.com/user-attachments/assets/e84bb198-a145-4cc3-9564-c79efb2e440d" />
 
 ---
 

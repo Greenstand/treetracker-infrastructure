@@ -1,0 +1,45 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-join-channel-job
+  namespace: greenstand
+spec:
+  template:
+    spec:
+      containers:
+      - name: fabric-tools
+        image: hyperledger/fabric-tools:2.5
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            echo "Creating channel treechannel..."
+            export FABRIC_CFG_PATH=/var/hyperledger/configs
+
+            peer channel create \
+              -o orderer-0.hlf-orderer.svc.cluster.local:7050 \
+              -c treechannel \
+              --ordererTLSHostnameOverride orderer-0 \
+              -f /var/hyperledger/configs/channel.tx \
+              --outputBlock /var/hyperledger/configs/treechannel.block \
+              --tls \
+              --cafile /var/hyperledger/configs/orderer-tls/ca.crt
+
+            echo "Setting env for peer0.greenstand..."
+            export CORE_PEER_LOCALMSPID=GreenstandMSP
+            export CORE_PEER_TLS_ROOTCERT_FILE=/var/hyperledger/configs/peer0-greenstand/tls/ca.crt
+            export CORE_PEER_MSPCONFIGPATH=/var/hyperledger/configs/peer0-greenstand/msp
+            export CORE_PEER_ADDRESS=peer0-greenstand.greenstand.svc.cluster.local:7051
+
+            echo "Joining peer0.greenstand to channel..."
+            peer channel join -b /var/hyperledger/configs/treechannel.block
+
+            echo "Done."
+        volumeMounts:
+          - name: hlf-config
+            mountPath: /var/hyperledger/configs
+      restartPolicy: Never
+      volumes:
+        - name: hlf-config
+          persistentVolumeClaim:
+            claimName: hlf-config-pvc  # ❗Ensure this PVC has all MSP/crypto/orderer/channel artifacts
+  backoffLimit: 1

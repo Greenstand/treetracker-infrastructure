@@ -33,6 +33,18 @@ Edit `values.yaml` to configure:
 - Org-specific MSP IDs
 - Hostname for ingress
 
+### 2. Create Required Namespaces 
+```bash
+kubectl create namespace hlf
+kubectl create namespace hlf-ca
+kubectl create namespace hlf-orderer
+kubectl create namespace gateway
+kubectl create namespace greenstand
+kubectl create namespace cbo
+kubectl create namespace investor
+kubectl create namespace verifier
+```
+
 ### 3. Install with Helm
 
 ```bash

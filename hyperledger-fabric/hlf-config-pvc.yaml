@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: hlf-config-pv
+  namespace: greenstand
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /mnt/data/hlf-config  # ❗ Path on your node that must contain channel.tx, MSPs, TLS, etc.
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hlf-config-pvc
+  namespace: greenstand
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  volumeName: hlf-config-pv

@@ -1,6 +1,0 @@
-apiVersion: v2
-name: fabric-network
-description: A Helm chart for deploying Hyperledger Fabric network components
-type: application
-version: 0.1.0
-appVersion: "2.5.4"

@@ -1,7 +1,0 @@
-apiVersion: v2
-name: fabric-orderer
-description: Hyperledger Fabric Raft-based Orderer Helm Chart
-type: application
-version: 0.1.0
-appVersion: "2.5"
-

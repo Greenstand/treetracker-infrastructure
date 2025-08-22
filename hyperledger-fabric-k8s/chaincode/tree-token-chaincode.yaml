@@ -1,0 +1,523 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tree-token-chaincode
+  namespace: hyperledger-fabric
+data:
+  tree-token.go: |
+    package main
+
+    import (
+        "encoding/json"
+        "fmt"
+        "log"
+        "strconv"
+        "time"
+
+        "github.com/hyperledger/fabric-contract-api-go/contractapi"
+    )
+
+    // TreeTokenContract provides functions for managing tree verification and tokens
+    type TreeTokenContract struct {
+        contractapi.Contract
+    }
+
+    // Tree represents a tree asset
+    type Tree struct {
+        ID              string    `json:"id"`
+        PlantedBy       string    `json:"plantedBy"`
+        Location        Location  `json:"location"`
+        Species         string    `json:"species"`
+        PlantedDate     time.Time `json:"plantedDate"`
+        Status          string    `json:"status"` // planted, growing, verified, deceased
+        VerificationID  string    `json:"verificationId,omitempty"`
+        TokensGenerated int       `json:"tokensGenerated"`
+        CarbonCapture   float64   `json:"carbonCapture"` // in kg CO2
+    }
+
+    // Location represents GPS coordinates
+    type Location struct {
+        Latitude  float64 `json:"latitude"`
+        Longitude float64 `json:"longitude"`
+        Country   string  `json:"country"`
+        Region    string  `json:"region"`
+    }
+
+    // TreeToken represents environmental impact tokens
+    type TreeToken struct {
+        ID              string    `json:"id"`
+        TreeID          string    `json:"treeId"`
+        Owner           string    `json:"owner"`
+        CarbonImpact    float64   `json:"carbonImpact"` // in kg CO2
+        IssueDate       time.Time `json:"issueDate"`
+        Status          string    `json:"status"` // active, transferred, retired
+        VerificationRef string    `json:"verificationRef"`
+    }
+
+    // Verification represents third-party verification
+    type Verification struct {
+        ID          string    `json:"id"`
+        TreeID      string    `json:"treeId"`
+        VerifierOrg string    `json:"verifierOrg"`
+        Date        time.Time `json:"date"`
+        Status      string    `json:"status"` // pending, verified, rejected
+        Evidence    Evidence  `json:"evidence"`
+        CarbonCalc  float64   `json:"carbonCalc"` // calculated carbon capture
+    }
+
+    // Evidence represents verification evidence
+    type Evidence struct {
+        Photos      []string `json:"photos"`
+        GPS         Location `json:"gps"`
+        Measurements string   `json:"measurements"`
+        Notes       string   `json:"notes"`
+    }
+
+    // RegisterTree creates a new tree record
+    func (s *TreeTokenContract) RegisterTree(ctx contractapi.TransactionContextInterface, 
+        id string, plantedBy string, lat float64, lng float64, country string, region string, species string) error {
+        
+        exists, err := s.TreeExists(ctx, id)
+        if err != nil {
+            return err
+        }
+        if exists {
+            return fmt.Errorf("tree %s already exists", id)
+        }
+
+        tree := Tree{
+            ID:        id,
+            PlantedBy: plantedBy,
+            Location: Location{
+                Latitude:  lat,
+                Longitude: lng,
+                Country:   country,
+                Region:    region,
+            },
+            Species:         species,
+            PlantedDate:     time.Now(),
+            Status:          "planted",
+            TokensGenerated: 0,
+            CarbonCapture:   0,
+        }
+
+        treeJSON, err := json.Marshal(tree)
+        if err != nil {
+            return err
+        }
+
+        return ctx.GetStub().PutState(id, treeJSON)
+    }
+
+    // SubmitVerification submits tree for third-party verification
+    func (s *TreeTokenContract) SubmitVerification(ctx contractapi.TransactionContextInterface,
+        verificationID string, treeID string, verifierOrg string, photos []string, 
+        gpsLat float64, gpsLng float64, measurements string, notes string) error {
+        
+        tree, err := s.GetTree(ctx, treeID)
+        if err != nil {
+            return err
+        }
+
+        if tree.Status != "growing" && tree.Status != "planted" {
+            return fmt.Errorf("tree %s is not eligible for verification (status: %s)", treeID, tree.Status)
+        }
+
+        verification := Verification{
+            ID:          verificationID,
+            TreeID:      treeID,
+            VerifierOrg: verifierOrg,
+            Date:        time.Now(),
+            Status:      "pending",
+            Evidence: Evidence{
+                Photos:   photos,
+                GPS:      Location{Latitude: gpsLat, Longitude: gpsLng},
+                Measurements: measurements,
+                Notes:    notes,
+            },
+            CarbonCalc: 0, // To be calculated by verifier
+        }
+
+        verificationJSON, err := json.Marshal(verification)
+        if err != nil {
+            return err
+        }
+
+        return ctx.GetStub().PutState("VERIFICATION_"+verificationID, verificationJSON)
+    }
+
+    // CompleteVerification completes verification and updates tree status
+    func (s *TreeTokenContract) CompleteVerification(ctx contractapi.TransactionContextInterface,
+        verificationID string, status string, carbonCapture float64) error {
+        
+        verification, err := s.GetVerification(ctx, verificationID)
+        if err != nil {
+            return err
+        }
+
+        verification.Status = status
+        verification.CarbonCalc = carbonCapture
+
+        // Update tree record
+        tree, err := s.GetTree(ctx, verification.TreeID)
+        if err != nil {
+            return err
+        }
+
+        if status == "verified" {
+            tree.Status = "verified"
+            tree.VerificationID = verificationID
+            tree.CarbonCapture = carbonCapture
+        }
+
+        // Save both records
+        verificationJSON, err := json.Marshal(verification)
+        if err != nil {
+            return err
+        }
+
+        treeJSON, err := json.Marshal(tree)
+        if err != nil {
+            return err
+        }
+
+        err = ctx.GetStub().PutState("VERIFICATION_"+verificationID, verificationJSON)
+        if err != nil {
+            return err
+        }
+
+        return ctx.GetStub().PutState(verification.TreeID, treeJSON)
+    }
+
+    // IssueTokens creates tokens based on verified tree carbon capture
+    func (s *TreeTokenContract) IssueTokens(ctx contractapi.TransactionContextInterface,
+        tokenID string, treeID string, recipient string) error {
+        
+        tree, err := s.GetTree(ctx, treeID)
+        if err != nil {
+            return err
+        }
+
+        if tree.Status != "verified" {
+            return fmt.Errorf("tree %s is not verified and cannot generate tokens", treeID)
+        }
+
+        if tree.CarbonCapture <= 0 {
+            return fmt.Errorf("tree %s has no carbon capture value", treeID)
+        }
+
+        token := TreeToken{
+            ID:              tokenID,
+            TreeID:          treeID,
+            Owner:           recipient,
+            CarbonImpact:    tree.CarbonCapture,
+            IssueDate:       time.Now(),
+            Status:          "active",
+            VerificationRef: tree.VerificationID,
+        }
+
+        tokenJSON, err := json.Marshal(token)
+        if err != nil {
+            return err
+        }
+
+        // Update tree tokens generated count
+        tree.TokensGenerated++
+        treeJSON, err := json.Marshal(tree)
+        if err != nil {
+            return err
+        }
+
+        err = ctx.GetStub().PutState("TOKEN_"+tokenID, tokenJSON)
+        if err != nil {
+            return err
+        }
+
+        return ctx.GetStub().PutState(treeID, treeJSON)
+    }
+
+    // TransferToken transfers token ownership
+    func (s *TreeTokenContract) TransferToken(ctx contractapi.TransactionContextInterface,
+        tokenID string, newOwner string) error {
+        
+        token, err := s.GetToken(ctx, tokenID)
+        if err != nil {
+            return err
+        }
+
+        if token.Status != "active" {
+            return fmt.Errorf("token %s is not active and cannot be transferred", tokenID)
+        }
+
+        token.Owner = newOwner
+        token.Status = "transferred"
+
+        tokenJSON, err := json.Marshal(token)
+        if err != nil {
+            return err
+        }
+
+        return ctx.GetStub().PutState("TOKEN_"+tokenID, tokenJSON)
+    }
+
+    // Query functions
+    func (s *TreeTokenContract) GetTree(ctx contractapi.TransactionContextInterface, id string) (*Tree, error) {
+        treeJSON, err := ctx.GetStub().GetState(id)
+        if err != nil {
+            return nil, fmt.Errorf("failed to read from world state: %v", err)
+        }
+        if treeJSON == nil {
+            return nil, fmt.Errorf("the tree %s does not exist", id)
+        }
+
+        var tree Tree
+        err = json.Unmarshal(treeJSON, &tree)
+        if err != nil {
+            return nil, err
+        }
+
+        return &tree, nil
+    }
+
+    func (s *TreeTokenContract) GetVerification(ctx contractapi.TransactionContextInterface, id string) (*Verification, error) {
+        verificationJSON, err := ctx.GetStub().GetState("VERIFICATION_" + id)
+        if err != nil {
+            return nil, fmt.Errorf("failed to read from world state: %v", err)
+        }
+        if verificationJSON == nil {
+            return nil, fmt.Errorf("the verification %s does not exist", id)
+        }
+
+        var verification Verification
+        err = json.Unmarshal(verificationJSON, &verification)
+        if err != nil {
+            return nil, err
+        }
+
+        return &verification, nil
+    }
+
+    func (s *TreeTokenContract) GetToken(ctx contractapi.TransactionContextInterface, id string) (*TreeToken, error) {
+        tokenJSON, err := ctx.GetStub().GetState("TOKEN_" + id)
+        if err != nil {
+            return nil, fmt.Errorf("failed to read from world state: %v", err)
+        }
+        if tokenJSON == nil {
+            return nil, fmt.Errorf("the token %s does not exist", id)
+        }
+
+        var token TreeToken
+        err = json.Unmarshal(tokenJSON, &token)
+        if err != nil {
+            return nil, err
+        }
+
+        return &token, nil
+    }
+
+    // TreeExists returns true when asset with given ID exists in world state
+    func (s *TreeTokenContract) TreeExists(ctx contractapi.TransactionContextInterface, id string) (bool, error) {
+        assetJSON, err := ctx.GetStub().GetState(id)
+        if err != nil {
+            return false, fmt.Errorf("failed to read from world state: %v", err)
+        }
+
+        return assetJSON != nil, nil
+    }
+
+    // GetAllTrees returns all trees found in world state
+    func (s *TreeTokenContract) GetAllTrees(ctx contractapi.TransactionContextInterface) ([]*Tree, error) {
+        resultsIterator, err := ctx.GetStub().GetStateByRange("", "")
+        if err != nil {
+            return nil, err
+        }
+        defer resultsIterator.Close()
+
+        var trees []*Tree
+        for resultsIterator.HasNext() {
+            queryResponse, err := resultsIterator.Next()
+            if err != nil {
+                return nil, err
+            }
+
+            // Skip non-tree records
+            if len(queryResponse.Key) > 10 && (queryResponse.Key[:6] == "TOKEN_" || queryResponse.Key[:13] == "VERIFICATION_") {
+                continue
+            }
+
+            var tree Tree
+            err = json.Unmarshal(queryResponse.Value, &tree)
+            if err != nil {
+                continue // Skip invalid records
+            }
+
+            trees = append(trees, &tree)
+        }
+
+        return trees, nil
+    }
+
+    func main() {
+        treeChaincode, err := contractapi.NewChaincode(&TreeTokenContract{})
+        if err != nil {
+            log.Panicf("Error creating tree-token chaincode: %v", err)
+        }
+
+        if err := treeChaincode.Start(); err != nil {
+            log.Panicf("Error starting tree-token chaincode: %v", err)
+        }
+    }
+
+  go.mod: |
+    module tree-token
+
+    go 1.19
+
+    require (
+        github.com/hyperledger/fabric-contract-api-go v1.2.1
+    )
+
+  Dockerfile: |
+    FROM golang:1.19-alpine AS build
+
+    WORKDIR /app
+    COPY go.mod go.sum ./
+    RUN go mod download
+
+    COPY *.go ./
+    RUN CGO_ENABLED=0 GOOS=linux go build -o tree-token .
+
+    FROM alpine:latest
+    RUN apk --no-cache add ca-certificates
+    WORKDIR /root/
+
+    COPY --from=build /app/tree-token .
+    CMD ["./tree-token"]
+
+  install-chaincode.sh: |
+    #!/bin/bash
+    set -e
+
+    echo "Installing Tree Token Chaincode..."
+
+    export FABRIC_CFG_PATH=/etc/hyperledger/fabric
+    export CORE_PEER_TLS_ENABLED=true
+
+    # Function to setup environment for organization
+    setup_org_env() {
+        local org=$1
+        local msp_id=$2
+        
+        export CORE_PEER_LOCALMSPID=${msp_id}
+        export CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/${org}.fabric.local/peers/peer0.${org}.fabric.local/tls/ca.crt
+        export CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/${org}.fabric.local/users/Admin@${org}.fabric.local/msp
+        export CORE_PEER_ADDRESS=peer0-${org}-service.hyperledger-fabric.svc.cluster.local:7051
+    }
+
+    # Package chaincode
+    echo "Packaging chaincode..."
+    peer lifecycle chaincode package tree-token.tar.gz --path /chaincode --lang golang --label tree-token_1.0
+
+    # Install on all organizations
+    for org in greenstand cbo investor verifier; do
+        case $org in
+            greenstand) msp_id="GreenstandMSP" ;;
+            cbo) msp_id="CBOMSP" ;;
+            investor) msp_id="InvestorMSP" ;;
+            verifier) msp_id="VerifierMSP" ;;
+        esac
+        
+        echo "Installing chaincode on ${org}..."
+        setup_org_env $org $msp_id
+        
+        peer lifecycle chaincode install tree-token.tar.gz
+        
+        echo "Approving chaincode for ${org}..."
+        peer lifecycle chaincode approveformyorg --channelID public-channel --name tree-token --version 1.0 --package-id tree-token_1.0:$(peer lifecycle chaincode calculatepackageid tree-token.tar.gz) --sequence 1 --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/fabric.local/orderers/orderer.fabric.local/msp/tlscacerts/tlsca.fabric.local-cert.pem --collections-config /chaincode/collections.json
+    done
+
+    # Commit chaincode (from Greenstand org)
+    echo "Committing chaincode..."
+    setup_org_env "greenstand" "GreenstandMSP"
+    peer lifecycle chaincode commit --channelID public-channel --name tree-token --version 1.0 --sequence 1 --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/fabric.local/orderers/orderer.fabric.local/msp/tlscacerts/tlsca.fabric.local-cert.pem --peerAddresses peer0-greenstand-service.hyperledger-fabric.svc.cluster.local:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/greenstand.fabric.local/peers/peer0.greenstand.fabric.local/tls/ca.crt --peerAddresses peer0-cbo-service.hyperledger-fabric.svc.cluster.local:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/cbo.fabric.local/peers/peer0.cbo.fabric.local/tls/ca.crt --collections-config /chaincode/collections.json
+
+    echo "Tree Token Chaincode installed and committed successfully!"
+
+  collections.json: |
+    [
+      {
+        "name": "publicTreeData",
+        "policy": "OR('GreenstandMSP.member', 'CBOMSP.member', 'InvestorMSP.member', 'VerifierMSP.member')",
+        "requiredPeerCount": 1,
+        "maxPeerCount": 3,
+        "blockToLive": 0,
+        "memberOnlyRead": false,
+        "memberOnlyWrite": false
+      },
+      {
+        "name": "sensitiveTreeData",
+        "policy": "OR('GreenstandMSP.member', 'CBOMSP.member')",
+        "requiredPeerCount": 1,
+        "maxPeerCount": 2,
+        "blockToLive": 1000000,
+        "memberOnlyRead": true,
+        "memberOnlyWrite": true
+      },
+      {
+        "name": "verificationData",
+        "policy": "OR('VerifierMSP.member', 'GreenstandMSP.admin')",
+        "requiredPeerCount": 1,
+        "maxPeerCount": 2,
+        "blockToLive": 2000000,
+        "memberOnlyRead": true,
+        "memberOnlyWrite": true
+      },
+      {
+        "name": "tokenData",
+        "policy": "OR('InvestorMSP.member', 'GreenstandMSP.member')",
+        "requiredPeerCount": 1,
+        "maxPeerCount": 2,
+        "blockToLive": 0,
+        "memberOnlyRead": false,
+        "memberOnlyWrite": true
+      }
+    ]
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: install-tree-token-chaincode
+  namespace: hyperledger-fabric
+spec:
+  template:
+    spec:
+      serviceAccountName: fabric-service-account
+      restartPolicy: OnFailure
+      containers:
+      - name: fabric-tools
+        image: hyperledger/fabric-tools:2.5.4
+        command: ["/bin/bash"]
+        args: ["/scripts/install-chaincode.sh"]
+        env:
+        - name: FABRIC_CFG_PATH
+          value: /etc/hyperledger/fabric
+        volumeMounts:
+        - name: chaincode-source
+          mountPath: /chaincode
+        - name: chaincode-scripts
+          mountPath: /scripts/install-chaincode.sh
+          subPath: install-chaincode.sh
+        - name: crypto-config
+          mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto
+        workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+      volumes:
+      - name: chaincode-source
+        configMap:
+          name: tree-token-chaincode
+      - name: chaincode-scripts
+        configMap:
+          name: tree-token-chaincode
+          defaultMode: 0755
+      - name: crypto-config
+        configMap:
+          name: crypto-config

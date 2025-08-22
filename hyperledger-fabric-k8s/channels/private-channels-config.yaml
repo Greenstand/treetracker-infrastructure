@@ -1,0 +1,245 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: private-channels-config
+  namespace: hyperledger-fabric
+data:
+  # Private Data Collection for Greenstand-CBO collaboration
+  greenstand-cbo-collection.json: |
+    [
+      {
+        "name": "greenstandardCBOPrivateData",
+        "policy": "OR('GreenstandMSP.member', 'CBOMSP.member')",
+        "requiredPeerCount": 1,
+        "maxPeerCount": 3,
+        "blockToLive": 1000000,
+        "memberOnlyRead": true,
+        "memberOnlyWrite": true
+      }
+    ]
+
+  # Private Data Collection for Investor-Verifier collaboration
+  investor-verifier-collection.json: |
+    [
+      {
+        "name": "investorVerifierPrivateData",
+        "policy": "OR('InvestorMSP.member', 'VerifierMSP.member')",
+        "requiredPeerCount": 1,
+        "maxPeerCount": 2,
+        "blockToLive": 1000000,
+        "memberOnlyRead": true,
+        "memberOnlyWrite": true
+      }
+    ]
+
+  # Cross-organization private data for impact verification
+  cross-org-collection.json: |
+    [
+      {
+        "name": "crossOrgPrivateData",
+        "policy": "OR('GreenstandMSP.member', 'CBOMSP.member', 'InvestorMSP.member', 'VerifierMSP.member')",
+        "requiredPeerCount": 2,
+        "maxPeerCount": 4,
+        "blockToLive": 500000,
+        "memberOnlyRead": false,
+        "memberOnlyWrite": true
+      },
+      {
+        "name": "sensitiveFinancialData",
+        "policy": "OR('InvestorMSP.admin', 'GreenstandMSP.admin')",
+        "requiredPeerCount": 1,
+        "maxPeerCount": 2,
+        "blockToLive": 2000000,
+        "memberOnlyRead": true,
+        "memberOnlyWrite": true
+      }
+    ]
+
+  create-private-channels.sh: |
+    #!/bin/bash
+    set -e
+    
+    echo "Setting up private data collections..."
+    
+    export FABRIC_CFG_PATH=/etc/hyperledger/fabric
+    export CORE_PEER_TLS_ENABLED=true
+    
+    # Function to setup environment for organization
+    setup_org_env() {
+        local org=$1
+        local msp_id=$2
+        
+        export CORE_PEER_LOCALMSPID=${msp_id}
+        export CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/${org}.fabric.local/peers/peer0.${org}.fabric.local/tls/ca.crt
+        export CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/${org}.fabric.local/users/Admin@${org}.fabric.local/msp
+        export CORE_PEER_ADDRESS=peer0-${org}-service.hyperledger-fabric.svc.cluster.local:7051
+    }
+    
+    echo "Private data collections configured successfully!"
+    echo "Collections will be automatically deployed with chaincode installation."
+    
+    # Create private channel for Greenstand-CBO sensitive data
+    echo "Creating private channel for Greenstand-CBO collaboration..."
+    setup_org_env "greenstand" "GreenstandMSP"
+    
+    configtxgen -profile PrivateChannel -outputCreateChannelTx ./greenstand-cbo-private.tx -channelID greenstand-cbo-private
+    peer channel create -o orderer-raft-service.hyperledger-fabric.svc.cluster.local:7050 \
+        -c greenstand-cbo-private \
+        -f ./greenstand-cbo-private.tx \
+        --outputBlock ./greenstand-cbo-private.block \
+        --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/fabric.local/orderers/orderer.fabric.local/msp/tlscacerts/tlsca.fabric.local-cert.pem || echo "Channel may already exist"
+    
+    # Join peers to private channel
+    peer channel join -b ./greenstand-cbo-private.block
+    
+    # Switch to CBO org and join
+    setup_org_env "cbo" "CBOMSP"
+    peer channel join -b ./greenstand-cbo-private.block
+    
+    echo "Private channels setup completed!"
+
+  private-channel-configtx.yaml: |
+    Organizations:
+      - &OrdererOrg
+          Name: OrdererMSP
+          ID: OrdererMSP
+          MSPDir: crypto-config/ordererOrganizations/fabric.local/msp
+          Policies:
+            Readers:
+              Type: Signature
+              Rule: "OR('OrdererMSP.member')"
+            Writers:
+              Type: Signature
+              Rule: "OR('OrdererMSP.member')"
+            Admins:
+              Type: Signature
+              Rule: "OR('OrdererMSP.admin')"
+          OrdererEndpoints:
+            - orderer-raft-service.hyperledger-fabric.svc.cluster.local:7050
+
+      - &Greenstand
+          Name: GreenstandMSP
+          ID: GreenstandMSP
+          MSPDir: crypto-config/peerOrganizations/greenstand.fabric.local/msp
+          Policies:
+            Readers:
+              Type: Signature
+              Rule: "OR('GreenstandMSP.admin', 'GreenstandMSP.peer', 'GreenstandMSP.client')"
+            Writers:
+              Type: Signature
+              Rule: "OR('GreenstandMSP.admin', 'GreenstandMSP.client')"
+            Admins:
+              Type: Signature
+              Rule: "OR('GreenstandMSP.admin')"
+            Endorsement:
+              Type: Signature
+              Rule: "OR('GreenstandMSP.peer')"
+          AnchorPeers:
+            - Host: peer0-greenstand-service.hyperledger-fabric.svc.cluster.local
+              Port: 7051
+
+      - &CBO
+          Name: CBOMSP
+          ID: CBOMSP
+          MSPDir: crypto-config/peerOrganizations/cbo.fabric.local/msp
+          Policies:
+            Readers:
+              Type: Signature
+              Rule: "OR('CBOMSP.admin', 'CBOMSP.peer', 'CBOMSP.client')"
+            Writers:
+              Type: Signature
+              Rule: "OR('CBOMSP.admin', 'CBOMSP.client')"
+            Admins:
+              Type: Signature
+              Rule: "OR('CBOMSP.admin')"
+            Endorsement:
+              Type: Signature
+              Rule: "OR('CBOMSP.peer')"
+          AnchorPeers:
+            - Host: peer0-cbo-service.hyperledger-fabric.svc.cluster.local
+              Port: 7051
+
+    Capabilities:
+      Channel: &ChannelCapabilities
+        V2_0: true
+      Orderer: &OrdererCapabilities
+        V2_0: true
+      Application: &ApplicationCapabilities
+        V2_0: true
+
+    Application: &ApplicationDefaults
+      Organizations:
+      Policies:
+        Readers:
+          Type: ImplicitMeta
+          Rule: "ANY Readers"
+        Writers:
+          Type: ImplicitMeta
+          Rule: "ANY Writers"
+        Admins:
+          Type: ImplicitMeta
+          Rule: "MAJORITY Admins"
+        LifecycleEndorsement:
+          Type: ImplicitMeta
+          Rule: "MAJORITY Endorsement"
+        Endorsement:
+          Type: ImplicitMeta
+          Rule: "MAJORITY Endorsement"
+      Capabilities:
+        <<: *ApplicationCapabilities
+
+    Profiles:
+      PrivateChannel:
+        Consortium: SampleConsortium
+        Application:
+          <<: *ApplicationDefaults
+          Organizations:
+            - *Greenstand
+            - *CBO
+          Capabilities:
+            <<: *ApplicationCapabilities
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: setup-private-channels
+  namespace: hyperledger-fabric
+spec:
+  template:
+    spec:
+      serviceAccountName: fabric-service-account
+      restartPolicy: OnFailure
+      containers:
+      - name: fabric-tools
+        image: hyperledger/fabric-tools:2.5.4
+        command: ["/bin/bash"]
+        args: ["/scripts/create-private-channels.sh"]
+        env:
+        - name: FABRIC_CFG_PATH
+          value: /etc/hyperledger/fabric
+        volumeMounts:
+        - name: private-channel-config
+          mountPath: /etc/hyperledger/fabric/configtx.yaml
+          subPath: private-channel-configtx.yaml
+        - name: private-channel-scripts
+          mountPath: /scripts/create-private-channels.sh
+          subPath: create-private-channels.sh
+        - name: crypto-config
+          mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto
+        - name: collections
+          mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/collections
+        workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+      volumes:
+      - name: private-channel-config
+        configMap:
+          name: private-channels-config
+      - name: private-channel-scripts
+        configMap:
+          name: private-channels-config
+          defaultMode: 0755
+      - name: crypto-config
+        configMap:
+          name: crypto-config
+      - name: collections
+        configMap:
+          name: private-channels-config

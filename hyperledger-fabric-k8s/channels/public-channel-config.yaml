@@ -1,0 +1,274 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: public-channel-config
+  namespace: hyperledger-fabric
+data:
+  configtx.yaml: |
+    Organizations:
+      - &OrdererOrg
+          Name: OrdererMSP
+          ID: OrdererMSP
+          MSPDir: crypto-config/ordererOrganizations/fabric.local/msp
+          Policies:
+            Readers:
+              Type: Signature
+              Rule: "OR('OrdererMSP.member')"
+            Writers:
+              Type: Signature
+              Rule: "OR('OrdererMSP.member')"
+            Admins:
+              Type: Signature
+              Rule: "OR('OrdererMSP.admin')"
+          OrdererEndpoints:
+            - orderer-raft-service.hyperledger-fabric.svc.cluster.local:7050
+
+      - &Greenstand
+          Name: GreenstandMSP
+          ID: GreenstandMSP
+          MSPDir: crypto-config/peerOrganizations/greenstand.fabric.local/msp
+          Policies:
+            Readers:
+              Type: Signature
+              Rule: "OR('GreenstandMSP.admin', 'GreenstandMSP.peer', 'GreenstandMSP.client')"
+            Writers:
+              Type: Signature
+              Rule: "OR('GreenstandMSP.admin', 'GreenstandMSP.client')"
+            Admins:
+              Type: Signature
+              Rule: "OR('GreenstandMSP.admin')"
+            Endorsement:
+              Type: Signature
+              Rule: "OR('GreenstandMSP.peer')"
+          AnchorPeers:
+            - Host: peer0-greenstand-service.hyperledger-fabric.svc.cluster.local
+              Port: 7051
+
+      - &CBO
+          Name: CBOMSP
+          ID: CBOMSP
+          MSPDir: crypto-config/peerOrganizations/cbo.fabric.local/msp
+          Policies:
+            Readers:
+              Type: Signature
+              Rule: "OR('CBOMSP.admin', 'CBOMSP.peer', 'CBOMSP.client')"
+            Writers:
+              Type: Signature
+              Rule: "OR('CBOMSP.admin', 'CBOMSP.client')"
+            Admins:
+              Type: Signature
+              Rule: "OR('CBOMSP.admin')"
+            Endorsement:
+              Type: Signature
+              Rule: "OR('CBOMSP.peer')"
+          AnchorPeers:
+            - Host: peer0-cbo-service.hyperledger-fabric.svc.cluster.local
+              Port: 7051
+
+      - &Investor
+          Name: InvestorMSP
+          ID: InvestorMSP
+          MSPDir: crypto-config/peerOrganizations/investor.fabric.local/msp
+          Policies:
+            Readers:
+              Type: Signature
+              Rule: "OR('InvestorMSP.admin', 'InvestorMSP.peer', 'InvestorMSP.client')"
+            Writers:
+              Type: Signature
+              Rule: "OR('InvestorMSP.admin', 'InvestorMSP.client')"
+            Admins:
+              Type: Signature
+              Rule: "OR('InvestorMSP.admin')"
+            Endorsement:
+              Type: Signature
+              Rule: "OR('InvestorMSP.peer')"
+          AnchorPeers:
+            - Host: peer0-investor-service.hyperledger-fabric.svc.cluster.local
+              Port: 7051
+
+      - &Verifier
+          Name: VerifierMSP
+          ID: VerifierMSP
+          MSPDir: crypto-config/peerOrganizations/verifier.fabric.local/msp
+          Policies:
+            Readers:
+              Type: Signature
+              Rule: "OR('VerifierMSP.admin', 'VerifierMSP.peer', 'VerifierMSP.client')"
+            Writers:
+              Type: Signature
+              Rule: "OR('VerifierMSP.admin', 'VerifierMSP.client')"
+            Admins:
+              Type: Signature
+              Rule: "OR('VerifierMSP.admin')"
+            Endorsement:
+              Type: Signature
+              Rule: "OR('VerifierMSP.peer')"
+          AnchorPeers:
+            - Host: peer0-verifier-service.hyperledger-fabric.svc.cluster.local
+              Port: 7051
+
+    Capabilities:
+      Channel: &ChannelCapabilities
+        V2_0: true
+      Orderer: &OrdererCapabilities
+        V2_0: true
+      Application: &ApplicationCapabilities
+        V2_0: true
+
+    Application: &ApplicationDefaults
+      Organizations:
+      Policies:
+        Readers:
+          Type: ImplicitMeta
+          Rule: "ANY Readers"
+        Writers:
+          Type: ImplicitMeta
+          Rule: "ANY Writers"
+        Admins:
+          Type: ImplicitMeta
+          Rule: "MAJORITY Admins"
+        LifecycleEndorsement:
+          Type: ImplicitMeta
+          Rule: "MAJORITY Endorsement"
+        Endorsement:
+          Type: ImplicitMeta
+          Rule: "MAJORITY Endorsement"
+      Capabilities:
+        <<: *ApplicationCapabilities
+
+    Orderer: &OrdererDefaults
+      OrdererType: etcdraft
+      EtcdRaft:
+        Consenters:
+        - Host: orderer-raft-0.orderer-raft-headless.hyperledger-fabric.svc.cluster.local
+          Port: 7050
+          ClientTLSCert: crypto-config/ordererOrganizations/fabric.local/orderers/orderer.fabric.local/tls/server.crt
+          ServerTLSCert: crypto-config/ordererOrganizations/fabric.local/orderers/orderer.fabric.local/tls/server.crt
+        - Host: orderer-raft-1.orderer-raft-headless.hyperledger-fabric.svc.cluster.local
+          Port: 7050
+          ClientTLSCert: crypto-config/ordererOrganizations/fabric.local/orderers/orderer.fabric.local/tls/server.crt
+          ServerTLSCert: crypto-config/ordererOrganizations/fabric.local/orderers/orderer.fabric.local/tls/server.crt
+        - Host: orderer-raft-2.orderer-raft-headless.hyperledger-fabric.svc.cluster.local
+          Port: 7050
+          ClientTLSCert: crypto-config/ordererOrganizations/fabric.local/orderers/orderer.fabric.local/tls/server.crt
+          ServerTLSCert: crypto-config/ordererOrganizations/fabric.local/orderers/orderer.fabric.local/tls/server.crt
+        - Host: orderer-raft-3.orderer-raft-headless.hyperledger-fabric.svc.cluster.local
+          Port: 7050
+          ClientTLSCert: crypto-config/ordererOrganizations/fabric.local/orderers/orderer.fabric.local/tls/server.crt
+          ServerTLSCert: crypto-config/ordererOrganizations/fabric.local/orderers/orderer.fabric.local/tls/server.crt
+        - Host: orderer-raft-4.orderer-raft-headless.hyperledger-fabric.svc.cluster.local
+          Port: 7050
+          ClientTLSCert: crypto-config/ordererOrganizations/fabric.local/orderers/orderer.fabric.local/tls/server.crt
+          ServerTLSCert: crypto-config/ordererOrganizations/fabric.local/orderers/orderer.fabric.local/tls/server.crt
+      Addresses:
+        - orderer-raft-service.hyperledger-fabric.svc.cluster.local:7050
+      BatchTimeout: 2s
+      BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+      Organizations:
+      Policies:
+        Readers:
+          Type: ImplicitMeta
+          Rule: "ANY Readers"
+        Writers:
+          Type: ImplicitMeta
+          Rule: "ANY Writers"
+        Admins:
+          Type: ImplicitMeta
+          Rule: "MAJORITY Admins"
+        BlockValidation:
+          Type: ImplicitMeta
+          Rule: "ANY Writers"
+      Capabilities:
+        <<: *OrdererCapabilities
+
+    Channel: &ChannelDefaults
+      Policies:
+        Readers:
+          Type: ImplicitMeta
+          Rule: "ANY Readers"
+        Writers:
+          Type: ImplicitMeta
+          Rule: "ANY Writers"
+        Admins:
+          Type: ImplicitMeta
+          Rule: "MAJORITY Admins"
+      Capabilities:
+        <<: *ChannelCapabilities
+
+    Profiles:
+      PublicChannel:
+        Consortium: SampleConsortium
+        <<: *ChannelDefaults
+        Application:
+          <<: *ApplicationDefaults
+          Organizations:
+            - *Greenstand
+            - *CBO
+            - *Investor
+            - *Verifier
+          Capabilities:
+            <<: *ApplicationCapabilities
+
+  channel-create-script.sh: |
+    #!/bin/bash
+    set -e
+    
+    echo "Creating public channel..."
+    
+    export FABRIC_CFG_PATH=/etc/hyperledger/fabric
+    export CORE_PEER_TLS_ENABLED=true
+    export CORE_PEER_LOCALMSPID=GreenstandMSP
+    export CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/greenstand.fabric.local/peers/peer0.greenstand.fabric.local/tls/ca.crt
+    export CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/greenstand.fabric.local/users/Admin@greenstand.fabric.local/msp
+    export CORE_PEER_ADDRESS=peer0-greenstand-service.hyperledger-fabric.svc.cluster.local:7051
+    
+    echo "Generating channel configuration..."
+    configtxgen -profile PublicChannel -outputCreateChannelTx ./public-channel.tx -channelID public-channel
+    
+    echo "Creating channel..."
+    peer channel create -o orderer-raft-service.hyperledger-fabric.svc.cluster.local:7050 -c public-channel -f ./public-channel.tx --outputBlock ./public-channel.block --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/fabric.local/orderers/orderer.fabric.local/msp/tlscacerts/tlsca.fabric.local-cert.pem
+    
+    echo "Public channel created successfully!"
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-public-channel
+  namespace: hyperledger-fabric
+spec:
+  template:
+    spec:
+      serviceAccountName: fabric-service-account
+      restartPolicy: OnFailure
+      containers:
+      - name: fabric-tools
+        image: hyperledger/fabric-tools:2.5.4
+        command: ["/bin/bash"]
+        args: ["/scripts/channel-create-script.sh"]
+        env:
+        - name: FABRIC_CFG_PATH
+          value: /etc/hyperledger/fabric
+        volumeMounts:
+        - name: channel-config
+          mountPath: /etc/hyperledger/fabric/configtx.yaml
+          subPath: configtx.yaml
+        - name: channel-scripts
+          mountPath: /scripts/channel-create-script.sh
+          subPath: channel-create-script.sh
+        - name: crypto-config
+          mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto
+        workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+      volumes:
+      - name: channel-config
+        configMap:
+          name: public-channel-config
+      - name: channel-scripts
+        configMap:
+          name: public-channel-config
+          defaultMode: 0755
+      - name: crypto-config
+        configMap:
+          name: crypto-config

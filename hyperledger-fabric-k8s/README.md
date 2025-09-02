@@ -1,6 +1,10 @@
-# Hyperledger Fabric Network on Kubernetes
-A comprehensive Kubernetes deployment for a Hyperledger Fabric network designed for tree verification and environmental token management.
+
 <img width="1291" height="812" alt="Treetracker HLF Network" src="https://github.com/user-attachments/assets/0d799dd3-5c09-402b-8f33-ed6c2b61df25" />
+
+# Hyperledger Fabric Network on Kubernetes
+
+A comprehensive Kubernetes deployment for a Hyperledger Fabric network designed for tree verification and environmental token management.
+
 ## 🏛️ Network Architecture
 
 ### Organizations

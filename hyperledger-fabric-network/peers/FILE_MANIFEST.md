@@ -1,8 +1,14 @@
 # File Manifest - Hyperledger Fabric Peers Directory
 
-**Generated:** 2025-09-02T01:05:31Z  
-**Total Files:** 49  
+**Generated:** 2025-09-02T04:21:00Z  
+**Total Files:** 134  
 **Base Path:** `/root/hyperledger-fabric-network/peers`
+
+## NEW PEER ORGANIZATIONS ADDED
+
+✨ **CBO Peer** - CBOMSP (Chief Business Officer)
+✨ **Investor Peer** - InvestorMSP  
+✨ **Verifier Peer** - VerifierMSP
 
 ## Complete File Listing
 
@@ -90,37 +96,141 @@
 | `secrets/peer2-tls/IssuerPublicKey` | ~843B | PEM | TLS CA public key |
 | `secrets/peer2-tls/IssuerRevocationPublicKey` | ~215B | PEM | TLS CRL public key |
 
+### CBO Peer MSP Materials (6 files) ✨ NEW
+
+| File Path | Size | Type | Description |
+|-----------|------|------|-------------|
+| `secrets/cbo-msp/cacerts/cbo-ca-hlf-ca-svc-cluster-local-7054.pem` | ~786B | PEM | CBO CA root certificate |
+| `secrets/cbo-msp/signcerts/cert.pem` | ~1.1K | PEM | CBO peer identity certificate |
+| `secrets/cbo-msp/keystore/*_sk` | ~241B | PEM | CBO private signing key |
+| `secrets/cbo-msp/config.yaml` | ~536B | YAML | CBO NodeOU configuration |
+| `secrets/cbo-msp/IssuerPublicKey` | ~843B | PEM | CBO CA public key |
+| `secrets/cbo-msp/IssuerRevocationPublicKey` | ~215B | PEM | CBO certificate revocation public key |
+
+### CBO Peer TLS Materials (8 files) ✨ NEW
+
+| File Path | Size | Type | Description |
+|-----------|------|------|-------------|
+| `secrets/cbo-tls/signcerts/cert.pem` | ~1.1K | PEM | CBO TLS identity certificate |
+| `secrets/cbo-tls/keystore/*_sk` | ~241B | PEM | CBO TLS private key |
+| `secrets/cbo-tls/server.crt` | ~1.1K | PEM | CBO TLS server certificate |
+| `secrets/cbo-tls/server.key` | ~241B | PEM | CBO TLS server private key |
+| `secrets/cbo-tls/ca.crt` | ~786B | PEM | CBO TLS CA certificate |
+| `secrets/cbo-tls/tlscacerts/tls-cbo-ca-hlf-ca-svc-cluster-local-7054.pem` | ~786B | PEM | CBO TLS CA certificate (directory) |
+| `secrets/cbo-tls/IssuerPublicKey` | ~843B | PEM | CBO TLS CA public key |
+| `secrets/cbo-tls/IssuerRevocationPublicKey` | ~215B | PEM | CBO TLS CRL public key |
+
+### Investor Peer MSP Materials (6 files) ✨ NEW
+
+| File Path | Size | Type | Description |
+|-----------|------|------|-------------|
+| `secrets/investor-msp/cacerts/investor-ca-hlf-ca-svc-cluster-local-7054.pem` | ~786B | PEM | Investor CA root certificate |
+| `secrets/investor-msp/signcerts/cert.pem` | ~1.1K | PEM | Investor peer identity certificate |
+| `secrets/investor-msp/keystore/*_sk` | ~241B | PEM | Investor private signing key |
+| `secrets/investor-msp/config.yaml` | ~536B | YAML | Investor NodeOU configuration |
+| `secrets/investor-msp/IssuerPublicKey` | ~843B | PEM | Investor CA public key |
+| `secrets/investor-msp/IssuerRevocationPublicKey` | ~215B | PEM | Investor certificate revocation public key |
+
+### Investor Peer TLS Materials (8 files) ✨ NEW
+
+| File Path | Size | Type | Description |
+|-----------|------|------|-------------|
+| `secrets/investor-tls/signcerts/cert.pem` | ~1.1K | PEM | Investor TLS identity certificate |
+| `secrets/investor-tls/keystore/*_sk` | ~241B | PEM | Investor TLS private key |
+| `secrets/investor-tls/server.crt` | ~1.1K | PEM | Investor TLS server certificate |
+| `secrets/investor-tls/server.key` | ~241B | PEM | Investor TLS server private key |
+| `secrets/investor-tls/ca.crt` | ~786B | PEM | Investor TLS CA certificate |
+| `secrets/investor-tls/tlscacerts/tls-investor-ca-hlf-ca-svc-cluster-local-7054.pem` | ~786B | PEM | Investor TLS CA certificate (directory) |
+| `secrets/investor-tls/IssuerPublicKey` | ~843B | PEM | Investor TLS CA public key |
+| `secrets/investor-tls/IssuerRevocationPublicKey` | ~215B | PEM | Investor TLS CRL public key |
+
+### Verifier Peer MSP Materials (6 files) ✨ NEW
+
+| File Path | Size | Type | Description |
+|-----------|------|------|-------------|
+| `secrets/verifier-msp/cacerts/verifier-ca-hlf-ca-svc-cluster-local-7054.pem` | ~786B | PEM | Verifier CA root certificate |
+| `secrets/verifier-msp/signcerts/cert.pem` | ~1.1K | PEM | Verifier peer identity certificate |
+| `secrets/verifier-msp/keystore/*_sk` | ~241B | PEM | Verifier private signing key |
+| `secrets/verifier-msp/config.yaml` | ~536B | YAML | Verifier NodeOU configuration |
+| `secrets/verifier-msp/IssuerPublicKey` | ~843B | PEM | Verifier CA public key |
+| `secrets/verifier-msp/IssuerRevocationPublicKey` | ~215B | PEM | Verifier certificate revocation public key |
+
+### Verifier Peer TLS Materials (8 files) ✨ NEW
+
+| File Path | Size | Type | Description |
+|-----------|------|------|-------------|
+| `secrets/verifier-tls/signcerts/cert.pem` | ~1.1K | PEM | Verifier TLS identity certificate |
+| `secrets/verifier-tls/keystore/*_sk` | ~241B | PEM | Verifier TLS private key |
+| `secrets/verifier-tls/server.crt` | ~1.1K | PEM | Verifier TLS server certificate |
+| `secrets/verifier-tls/server.key` | ~241B | PEM | Verifier TLS server private key |
+| `secrets/verifier-tls/ca.crt` | ~786B | PEM | Verifier TLS CA certificate |
+| `secrets/verifier-tls/tlscacerts/tls-verifier-ca-hlf-ca-svc-cluster-local-7054.pem` | ~786B | PEM | Verifier TLS CA certificate (directory) |
+| `secrets/verifier-tls/IssuerPublicKey` | ~843B | PEM | Verifier TLS CA public key |
+| `secrets/verifier-tls/IssuerRevocationPublicKey` | ~215B | PEM | Verifier TLS CRL public key |
+
+### New Peer Helm Configurations (3 files) ✨ NEW
+
+| File Path | Size | Type | Description |
+|-----------|------|------|-------------|
+| `helm-charts/values-cbo.yaml` | ~1.2K | YAML | CBO peer Helm configuration |
+| `helm-charts/values-investor.yaml` | ~1.2K | YAML | Investor peer Helm configuration |
+| `helm-charts/values-verifier.yaml` | ~1.2K | YAML | Verifier peer Helm configuration |
+
+### New Deployment Scripts (4 files) ✨ NEW
+
+| File Path | Size | Type | Description |
+|-----------|------|------|-------------|
+| `scripts/deploy-cbo-peer.sh` | ~1.1K | Shell | CBO peer deployment script |
+| `scripts/deploy-investor-peer.sh` | ~1.1K | Shell | Investor peer deployment script |
+| `scripts/deploy-verifier-peer.sh` | ~1.1K | Shell | Verifier peer deployment script |
+| `scripts/deploy-all-new-peers.sh` | ~1.8K | Shell | Deploy all new peers at once |
+
 ## File Type Summary
 
 | Category | Count | Total Size | Notes |
 |----------|-------|------------|-------|
-| YAML Configuration | 8 | ~4.5K | Helm and MSP configuration |
-| X.509 Certificates | 18 | ~17K | Identity and TLS certificates |
-| Private Keys | 9 | ~2.2K | ECDSA P-256 private keys |
-| Public Keys | 12 | ~10K | CA and revocation keys |
-| **Total** | **49** | **~34K** | Complete peer configuration |
+| YAML Configuration | 14 | ~8.1K | Helm and MSP configuration (Original + New) |
+| X.509 Certificates | 42 | ~41K | Identity and TLS certificates (6 orgs) |
+| Private Keys | 21 | ~5.1K | ECDSA P-256 private keys (6 orgs) |
+| Public Keys | 28 | ~24K | CA and revocation keys (6 orgs) |
+| Shell Scripts | 10 | ~15K | Deployment and management scripts |
+| Documentation | 4 | ~25K | README and analysis files |
+| **Total** | **134** | **~118K** | Complete multi-org peer configuration |
 
 ## Key File Relationships
 
 ### Certificate Chain Dependencies
 ```
-CA Root (greenstand-ca-hlf-ca-svc-cluster-local-7054.pem)
-├── peer0.greenstand (MSP + TLS certificates)
-├── peer1.greenstand (MSP + TLS certificates)
-└── peer2.greenstand (MSP + TLS certificates)
+Root CA (root-ca.hlf-ca.svc.cluster.local:7054)
+├── Greenstand CA (greenstand-ca-hlf-ca-svc-cluster-local-7054.pem)
+│   ├── peer0.greenstand (GreenstandMSP)
+│   ├── peer1.greenstand (GreenstandMSP)
+│   └── peer2.greenstand (GreenstandMSP)
+├── CBO CA (cbo-ca-hlf-ca-svc-cluster-local-7054.pem) ✨ NEW
+│   └── peer0.cbo (CBOMSP)
+├── Investor CA (investor-ca-hlf-ca-svc-cluster-local-7054.pem) ✨ NEW
+│   └── peer0.investor (InvestorMSP)
+└── Verifier CA (verifier-ca-hlf-ca-svc-cluster-local-7054.pem) ✨ NEW
+    └── peer0.verifier (VerifierMSP)
 ```
 
 ### Kubernetes Secret Mapping
 ```
-Peer MSP Secrets:
-├── peer0-msp → secrets/peer0-msp/
-├── peer1-msp → secrets/peer1-msp/
-└── peer2-msp → secrets/peer2-msp/
-
-Peer TLS Secrets:
+Original Greenstand Peers:
+├── peer0-msp → secrets/peer0-msp/ (GreenstandMSP)
+├── peer1-msp → secrets/peer1-msp/ (GreenstandMSP)
+├── peer2-msp → secrets/peer2-msp/ (GreenstandMSP)
 ├── peer0-tls → secrets/peer0-tls/
 ├── peer1-tls → secrets/peer1-tls/
 └── peer2-tls → secrets/peer2-tls/
+
+New Organization Peers: ✨
+├── cbo-msp → secrets/cbo-msp/ (CBOMSP)
+├── cbo-tls → secrets/cbo-tls/
+├── investor-msp → secrets/investor-msp/ (InvestorMSP)
+├── investor-tls → secrets/investor-tls/
+├── verifier-msp → secrets/verifier-msp/ (VerifierMSP)
+└── verifier-tls → secrets/verifier-tls/
 ```
 
 ### Helm Template Relationships

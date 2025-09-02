@@ -1,0 +1,9 @@
+- app_version: 1.5.12
+  chart: greenstand-ca-0.1.0
+  description: "Release \"greenstand-ca\" failed: 4 errors occurred:\n\t* deployments.apps
+    \"greenstand-ca\" already exists\n\t* deployments.apps \"greenstand-ca\" already
+    exists\n\t* deployments.apps \"greenstand-ca\" already exists\n\t* deployments.apps
+    \"greenstand-ca\" already exists\n\n"
+  revision: 1
+  status: failed
+  updated: "2025-08-08T03:54:37.904743127-04:00"

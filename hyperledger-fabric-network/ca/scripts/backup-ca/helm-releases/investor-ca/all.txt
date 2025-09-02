@@ -1,0 +1,127 @@
+NAME: investor-ca
+LAST DEPLOYED: Thu Aug  7 21:35:26 2025
+NAMESPACE: hlf-ca
+STATUS: deployed
+REVISION: 1
+CHART: investor-ca
+VERSION: 0.1.0
+APP_VERSION: 1.5.12
+TEST SUITE: None
+USER-SUPPLIED VALUES:
+null
+
+COMPUTED VALUES:
+intermediateCA:
+  bootstrapPassword: investorcapw
+  bootstrapUser: investor-ca
+  csr:
+    cn: investor-ca
+    hosts:
+    - investor-ca
+    - investor-ca.hlf-ca.svc.cluster.local
+    - localhost
+  enabled: true
+  image:
+    pullPolicy: IfNotPresent
+    repository: hyperledger/fabric-ca
+    tag: 1.5.12
+  msp:
+    secretName: investor-ca-msp
+  name: investor-ca
+  namespace: hlf-ca
+  parentHost: root-ca.hlf-ca.svc.cluster.local
+  parentID: investor-ca
+  parentSecret: investorcapw
+  port: 7054
+  service:
+    port: 7054
+  storage:
+    accessMode: ReadWriteOnce
+    pvcName: pvc-investor-ca
+    size: 2Gi
+    storageClass: do-block-storage
+  tls:
+    enabled: true
+    secretName: investor-ca-tls-cert
+
+HOOKS:
+MANIFEST:
+---
+# Source: investor-ca/templates/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-investor-ca
+  namespace: hlf-ca
+  labels:
+    app: investor-ca
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: do-block-storage
+---
+# Source: investor-ca/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: investor-ca
+  namespace: hlf-ca
+  labels:
+    app: investor-ca
+spec:
+  selector:
+    app: investor-ca
+  ports:
+    - name: ca-port
+      port: 7054
+      targetPort: ca-port
+---
+# Source: investor-ca/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: investor-ca
+  namespace: hlf-ca
+  labels:
+    app: investor-ca
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: investor-ca
+  template:
+    metadata:
+      labels:
+        app: investor-ca
+    spec:
+      containers:
+        - name: fabric-ca
+          image: "hyperledger/fabric-ca:1.5.12"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 7054
+              name: ca-port
+          env:
+            - name: FABRIC_CA_HOME
+              value: /etc/hyperledger/fabric-ca-server
+            - name: FABRIC_CA_SERVER_CA_NAME
+              value: investor-ca
+            - name: FABRIC_CA_SERVER_PORT
+              value: "7054"
+            - name: FABRIC_CA_SERVER_PARENT_URL
+              value: "https://investor-ca:investorcapw@root-ca.hlf-ca.svc.cluster.local:7054"
+            - name: FABRIC_CA_SERVER_TLS_ENABLED
+              value: "true"
+            - name: FABRIC_CA_SERVER_CSR_HOSTS
+              value: "investor-ca,investor-ca.hlf-ca.svc.cluster.local,localhost"
+          volumeMounts:
+            - name: fabric-ca-data
+              mountPath: /etc/hyperledger/fabric-ca-server
+      volumes:
+        - name: fabric-ca-data
+          persistentVolumeClaim:
+            claimName: pvc-investor-ca
+

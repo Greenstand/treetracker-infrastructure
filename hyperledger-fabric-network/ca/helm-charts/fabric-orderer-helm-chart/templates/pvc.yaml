@@ -1,0 +1,15 @@
+{{- range $i := until (.Values.replicaCount | int) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: orderer{{ $i }}-pvc
+  namespace: {{ $.Values.namespace }}
+spec:
+  accessModes:
+    - {{ $.Values.storage.accessMode }}
+  resources:
+    requests:
+      storage: {{ $.Values.storage.size }}
+---
+{{- end }}
+

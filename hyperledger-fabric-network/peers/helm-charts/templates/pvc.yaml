@@ -1,0 +1,22 @@
+{{- $ns := .Values.namespace -}}
+{{- range .Values.peers }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .name }}-data
+  namespace: {{ $ns }}
+  labels:
+    app: {{ .name }}
+spec:
+  accessModes:
+    {{- range $.Values.persistence.accessModes }}
+    - {{ . }}
+    {{- end }}
+  resources:
+    requests:
+      storage: {{ $.Values.persistence.size }}
+  {{- if $.Values.persistence.storageClassName }}
+  storageClassName: {{ $.Values.persistence.storageClassName }}
+  {{- end }}
+---
+{{- end }}

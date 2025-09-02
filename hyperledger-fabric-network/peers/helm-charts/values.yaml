@@ -1,0 +1,61 @@
+# ------- Common -------
+namespace: hlf-greenstand-peer
+mspID: GreenstandMSP
+
+image:
+  repository: hyperledger/fabric-peer
+  tag: 2.5.4
+  pullPolicy: IfNotPresent
+
+busyboxImage: busybox:1.36
+
+# Enable CCAAS external builder for all peers (recommended on k8s)
+# If you want to toggle per peer, keep the per-peer flags below and your chart can gate on them.
+chaincode:
+  externalBuilder:
+    enabled: true   # ensures core.yaml gets externalBuilders section
+
+peers:
+  - name: peer0
+    id: 0
+    host: peer0.greenstand
+    chaincodeExternalBuilder: true
+  - name: peer1
+    id: 1
+    host: peer1.greenstand
+    chaincodeExternalBuilder: true
+  - name: peer2
+    id: 2
+    host: peer2.greenstand
+    chaincodeExternalBuilder: true
+
+ports:
+  listen: 7051
+  chaincode: 7052
+  operations: 9443
+  metrics: 9444
+
+# ---- Storage / PVC ----
+persistence:
+  enabled: true              # <- fixes the nil pointer in pvc.yaml
+  size: 20Gi
+  storageClassName: "do-block-storage"       # e.g. "do-block-storage" | "gp2" | "standard"
+  accessModes: ["ReadWriteOnce"]
+
+# Orderers (for CLI/discovery if needed)
+orderers:
+  - "orderer0.hlf-orderer.svc.cluster.local:7050"
+  - "orderer1.hlf-orderer.svc.cluster.local:7050"
+  - "orderer2.hlf-orderer.svc.cluster.local:7050"
+  - "orderer3.hlf-orderer.svc.cluster.local:7050"
+  - "orderer4.hlf-orderer.svc.cluster.local:7050"
+
+# Service (one per peer)
+service:
+  type: ClusterIP
+
+# Optional scheduling knobs
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

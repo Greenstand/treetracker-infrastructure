@@ -1,0 +1,27 @@
+{{- range $i, $o := .Values.orderers }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $o.name }}
+  labels:
+    app.kubernetes.io/name: {{ $o.name }}
+    app.kubernetes.io/component: orderer
+    app.kubernetes.io/instance: {{ include "fabric-orderer.fullname" $ }}
+    helm.sh/chart: {{ $.Chart.Name }}-{{ $.Chart.Version }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: {{ $o.name }}
+    app.kubernetes.io/component: orderer
+  ports:
+    - name: client
+      port: {{ $.Values.ports.client }}
+      targetPort: {{ $.Values.ports.client }}
+    - name: cluster
+      port: {{ $.Values.ports.cluster }}
+      targetPort: {{ $.Values.ports.cluster }}
+    - name: operations
+      port: {{ $.Values.ports.operations }}
+      targetPort: {{ $.Values.ports.operations }}
+---
+{{- end }}

@@ -1,0 +1,131 @@
+---
+Organizations:
+
+  - &OrdererOrg
+    Name: OrdererOrg
+    ID: OrdererMSP
+    MSPDir: /root/hyperledger-fabric-network/orderer/secrets/orderer0-msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('OrdererMSP.admin')"
+
+Orderer:
+  OrdererType: etcdraft
+  Addresses:
+    - orderer0.hlf-orderer.svc.cluster.local:7050
+    - orderer1.hlf-orderer.svc.cluster.local:7050
+    - orderer2.hlf-orderer.svc.cluster.local:7050
+    - orderer3.hlf-orderer.svc.cluster.local:7050
+    - orderer4.hlf-orderer.svc.cluster.local:7050
+
+  EtcdRaft:
+    Consenters:
+      - Host: orderer0.hlf-orderer.svc.cluster.local
+        Port: 7050
+        ClientTLSCert: /consenters/orderer0.crt
+        ServerTLSCert: /consenters/orderer0.crt
+      - Host: orderer1.hlf-orderer.svc.cluster.local
+        Port: 7050
+        ClientTLSCert: /consenters/orderer1.crt
+        ServerTLSCert: /consenters/orderer1.crt
+      - Host: orderer2.hlf-orderer.svc.cluster.local
+        Port: 7050
+        ClientTLSCert: /consenters/orderer2.crt
+        ServerTLSCert: /consenters/orderer2.crt
+      - Host: orderer3.hlf-orderer.svc.cluster.local
+        Port: 7050
+        ClientTLSCert: /consenters/orderer3.crt
+        ServerTLSCert: /consenters/orderer3.crt
+      - Host: orderer4.hlf-orderer.svc.cluster.local
+        Port: 7050
+        ClientTLSCert: /consenters/orderer4.crt
+        ServerTLSCert: /consenters/orderer4.crt
+        
+#Orderer: &OrdererDefaults
+#  OrdererType: etcdraft
+#  Addresses:
+#    - orderer0.hlf-orderer.svc.cluster.local:7050
+#    - orderer1.hlf-orderer.svc.cluster.local:7050
+#    - orderer2.hlf-orderer.svc.cluster.local:7050
+#    - orderer3.hlf-orderer.svc.cluster.local:7050
+#    - orderer4.hlf-orderer.svc.cluster.local:7050
+#
+#  EtcdRaft:
+#    Consenters:
+#      - Host: orderer0.hlf-orderer.svc.cluster.local
+#        Port: 7050
+#        ClientTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer0-tls/signcerts/cert.pem
+#        ServerTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer0-tls/signcerts/cert.pem
+#      - Host: orderer1.hlf-orderer.svc.cluster.local
+#        Port: 7051
+#        ClientTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer1-tls/signcerts/cert.pem
+#        ServerTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer1-tls/signcerts/cert.pem
+#      - Host: orderer2.hlf-orderer.svc.cluster.local
+#        Port: 7052
+#        ClientTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer2-tls/signcerts/cert.pem
+#        ServerTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer2-tls/signcerts/cert.pem
+#      - Host: orderer3.hlf-orderer.svc.cluster.local
+#        Port: 7050
+#        ClientTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer3-tls/signcerts/cert.pem
+#        ServerTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer3-tls/signcerts/cert.pem
+#      - Host: orderer4.hlf-orderer.svc.cluster.local
+#        Port: 7054
+#        ClientTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer4-tls/signcerts/cert.pem
+#        ServerTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer4-tls/signcerts/cert.pem
+
+  BatchTimeout: 2s
+  BatchSize:
+    MaxMessageCount: 10
+    AbsoluteMaxBytes: 99 MB
+    PreferredMaxBytes: 512 KB
+
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+
+  Capabilities:
+    V2_0: true
+
+Capabilities:
+  Channel: &ChannelCapabilities
+    V2_0: true
+  Orderer: &OrdererCapabilities
+    V2_0: true
+
+Profiles:
+
+  OrdererGenesis:
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+        - *OrdererOrg
+    Policies:
+      Readers:
+        Type: ImplicitMeta
+        Rule: "ANY Readers"
+      Writers:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+      Admins:
+        Type: ImplicitMeta
+        Rule: "MAJORITY Admins"
+    Consortiums:
+      SampleConsortium:
+        Organizations: []  # ? No peer orgs needed now

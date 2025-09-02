@@ -1,0 +1,218 @@
+---
+Organizations:
+
+  - &OrdererOrg
+    Name: OrdererOrg
+    ID: OrdererMSP
+    MSPDir: /root/hyperledger-fabric-network/orderer/secrets/orderer0-msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('OrdererMSP.admin')"
+
+  - &Greenstand
+    Name: GreenstandMSP
+    ID: GreenstandMSP
+    MSPDir: /var/hyperledger/peerOrganizations/greenstand/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('GreenstandMSP.admin', 'GreenstandMSP.peer', 'GreenstandMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('GreenstandMSP.admin', 'GreenstandMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('GreenstandMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('GreenstandMSP.peer')"
+
+  - &CBO
+    Name: CBOMSP
+    ID: CBOMSP
+    MSPDir: /var/hyperledger/peerOrganizations/cbo/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('CBOMSP.admin', 'CBOMSP.peer', 'CBOMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('CBOMSP.admin', 'CBOMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('CBOMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('CBOMSP.peer')"
+
+  - &Investor
+    Name: InvestorMSP
+    ID: InvestorMSP
+    MSPDir: /var/hyperledger/peerOrganizations/investor/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('InvestorMSP.admin', 'InvestorMSP.peer', 'InvestorMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('InvestorMSP.admin', 'InvestorMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('InvestorMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('InvestorMSP.peer')"
+
+  - &Verifier
+    Name: VerifierMSP
+    ID: VerifierMSP
+    MSPDir: /var/hyperledger/peerOrganizations/verifier/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('VerifierMSP.admin', 'VerifierMSP.peer', 'VerifierMSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('VerifierMSP.admin', 'VerifierMSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('VerifierMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('VerifierMSP.peer')"
+
+Orderer: &OrdererDefaults
+  OrdererType: etcdraft
+  Addresses:
+    - orderer0.hlf-orderer.svc.cluster.local:7050
+    - orderer1.hlf-orderer.svc.cluster.local:7051
+    - orderer2.hlf-orderer.svc.cluster.local:7052
+    - orderer3.hlf-orderer.svc.cluster.local:7050
+    - orderer4.hlf-orderer.svc.cluster.local:7054
+
+  EtcdRaft:
+    Consenters:
+      - Host: orderer0.hlf-orderer.svc.cluster.local
+        Port: 7050
+        ClientTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer0-tls/signcerts/cert.pem
+        ServerTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer0-tls/signcerts/cert.pem
+      - Host: orderer1.hlf-orderer.svc.cluster.local
+        Port: 7051
+        ClientTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer1-tls/signcerts/cert.pem
+        ServerTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer1-tls/signcerts/cert.pem
+      - Host: orderer2.hlf-orderer.svc.cluster.local
+        Port: 7052
+        ClientTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer2-tls/signcerts/cert.pem
+        ServerTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer2-tls/signcerts/cert.pem
+      - Host: orderer3.hlf-orderer.svc.cluster.local
+        Port: 7050
+        ClientTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer3-tls/signcerts/cert.pem
+        ServerTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer3-tls/signcerts/cert.pem
+      - Host: orderer4.hlf-orderer.svc.cluster.local
+        Port: 7054
+        ClientTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer4-tls/signcerts/cert.pem
+        ServerTLSCert: /root/hyperledger-fabric-network/orderer/secrets/orderer4-tls/signcerts/cert.pem
+  BatchTimeout: 2s
+  BatchSize:
+    MaxMessageCount: 10
+    AbsoluteMaxBytes: 99 MB
+    PreferredMaxBytes: 512 KB
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+  Capabilities:
+    V2_0: true
+
+Application: &ApplicationDefaults
+  ACLs: {}
+  Organizations: []
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    LifecycleEndorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+    Endorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+  Capabilities:
+    V2_0: true
+
+Capabilities:
+  Channel: &ChannelCapabilities
+    V2_0: true
+  Orderer: &OrdererCapabilities
+    V2_0: true
+  Application: &ApplicationCapabilities
+    V2_0: true
+
+Profiles:
+
+  OrdererGenesis:
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+        - *OrdererOrg
+    Policies:
+      Readers:
+        Type: ImplicitMeta
+        Rule: "ANY Readers"
+      Writers:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+      Admins:
+        Type: ImplicitMeta
+        Rule: "MAJORITY Admins"
+    Consortiums:
+      SampleConsortium:
+        Organizations:
+          - *Greenstand
+          - *CBO
+          - *Investor
+          - *Verifier
+
+  PublicChannel:
+    Consortium: SampleConsortium
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *Greenstand
+        - *CBO
+        - *Investor
+        - *Verifier
+      Capabilities:
+        <<: *ApplicationCapabilities
+
+  PrivateChannel:
+    Consortium: SampleConsortium
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *Greenstand
+        - *Investor
+      Capabilities:
+        <<: *ApplicationCapabilities

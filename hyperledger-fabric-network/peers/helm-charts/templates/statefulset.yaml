@@ -1,0 +1,177 @@
+{{- $ns := .Values.namespace -}}
+{{- $busy := .Values.busyboxImage -}}
+{{- range .Values.peers }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .name }}
+  namespace: {{ $ns }}
+  labels:
+    app: {{ .name }}
+spec:
+  serviceName: {{ .name }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .name }}
+    spec:
+      terminationGracePeriodSeconds: 30
+      initContainers:
+        - name: init-msp-tls
+          image: {{ $busy }}
+          command: ["/bin/sh","-c"]
+          args:
+            - |
+              set -euo pipefail
+
+              # Ensure target dirs
+              for d in \
+                /var/hyperledger/peer/msp/cacerts \
+                /var/hyperledger/peer/msp/tlscacerts \
+                /var/hyperledger/peer/msp/signcerts \
+                /var/hyperledger/peer/msp/keystore \
+                /var/hyperledger/peer/tls \
+                /var/hyperledger/production
+              do mkdir -p "$d"; done
+
+              # ==== MSP (supports dir and single-file secrets) ====
+              # cacerts
+              if [ -d /secrets/msp/cacerts ]; then
+                cp -R /secrets/msp/cacerts/* /var/hyperledger/peer/msp/cacerts/ || true
+              elif [ -f /secrets/msp/cacerts.pem ]; then
+                cp /secrets/msp/cacerts.pem /var/hyperledger/peer/msp/cacerts/cacerts.pem
+              elif [ -f /secrets/msp/cacerts ]; then
+                cp /secrets/msp/cacerts /var/hyperledger/peer/msp/cacerts/cacerts.pem
+              fi
+
+              # signcerts
+              if [ -d /secrets/msp/signcerts ]; then
+                cp -R /secrets/msp/signcerts/* /var/hyperledger/peer/msp/signcerts/ || true
+              elif [ -f /secrets/msp/signcerts.pem ]; then
+                cp /secrets/msp/signcerts.pem /var/hyperledger/peer/msp/signcerts/cert.pem
+              elif [ -f /secrets/msp/cert.pem ]; then
+                cp /secrets/msp/cert.pem /var/hyperledger/peer/msp/signcerts/cert.pem
+              elif [ -f /secrets/msp/signcerts ]; then
+                cp /secrets/msp/signcerts /var/hyperledger/peer/msp/signcerts/cert.pem
+              fi
+
+              # keystore
+              if [ -d /secrets/msp/keystore ]; then
+                cp -R /secrets/msp/keystore/* /var/hyperledger/peer/msp/keystore/ || true
+              elif [ -f /secrets/msp/keystore ]; then
+                bn="$(basename /secrets/msp/keystore)"
+                cp /secrets/msp/keystore /var/hyperledger/peer/msp/keystore/"${bn}"
+              else
+                sk=$(ls /secrets/msp/*_sk 2>/dev/null || true)
+                if [ -n "${sk}" ]; then
+                  cp ${sk} /var/hyperledger/peer/msp/keystore/
+                fi
+              fi
+
+              # config.yaml
+              if [ -f /secrets/msp/config.yaml ]; then
+                cp /secrets/msp/config.yaml /var/hyperledger/peer/msp/config.yaml
+              fi
+
+              # ==== TLS (supports tls.* or server.*) ====
+              if [ -f /secrets/tls/tls.crt ]; then
+                cp /secrets/tls/tls.crt /var/hyperledger/peer/tls/server.crt
+              else
+                cp /secrets/tls/server.crt /var/hyperledger/peer/tls/server.crt
+              fi
+
+              if [ -f /secrets/tls/tls.key ]; then
+                cp /secrets/tls/tls.key /var/hyperledger/peer/tls/server.key
+              else
+                cp /secrets/tls/server.key /var/hyperledger/peer/tls/server.key
+              fi
+
+              cp /secrets/tls/ca.crt /var/hyperledger/peer/tls/ca.crt
+
+              chmod -R 700 /var/hyperledger/peer/msp/keystore || true
+              chmod 600 /var/hyperledger/peer/tls/server.key || true
+          volumeMounts:
+            - name: msp
+              mountPath: /secrets/msp
+              readOnly: true
+            - name: tls
+              mountPath: /secrets/tls
+              readOnly: true
+            - name: data
+              mountPath: /var/hyperledger
+      containers:
+        - name: peer
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          env:
+            - name: FABRIC_LOGGING_SPEC
+              value: INFO
+            - name: FABRIC_CFG_PATH
+              value: /etc/hyperledger/fabric
+            - name: CORE_PEER_ID
+              value: {{ .name }}
+            - name: CORE_PEER_ADDRESS
+              value: {{ .name }}.{{ $ns }}.svc.cluster.local:{{ $.Values.ports.listen }}
+            - name: CORE_PEER_LOCALMSPID
+              value: {{ $.Values.mspID }}
+            - name: CORE_PEER_FILESYSTEMPATH
+              value: /var/hyperledger/production
+            - name: CORE_PEER_MSPCONFIGPATH
+              value: /var/hyperledger/peer/msp
+            # TLS
+            - name: CORE_PEER_TLS_ENABLED
+              value: "true"
+            - name: CORE_PEER_TLS_CERT_FILE
+              value: /var/hyperledger/peer/tls/server.crt
+            - name: CORE_PEER_TLS_KEY_FILE
+              value: /var/hyperledger/peer/tls/server.key
+            - name: CORE_PEER_TLS_ROOTCERT_FILE
+              value: /var/hyperledger/peer/tls/ca.crt
+            - name: CORE_OPERATIONS_LISTENADDRESS
+              value: 0.0.0.0:{{ $.Values.ports.operations }}
+            # BCCSP (software)
+            - name: CORE_PEER_BCCSP_DEFAULT
+              value: SW
+            - name: CORE_PEER_BCCSP_SW_HASH
+              value: SHA2
+            - name: CORE_PEER_BCCSP_SW_SECURITY
+              value: "256"
+            - name: CORE_PEER_BCCSP_SW_FILEKEYSTORE_KEYSTORE
+              value: /var/hyperledger/peer/msp/keystore
+            # (Optional) remove the gossip warning and help cross-org access
+            - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
+              value: {{ .name }}.{{ $ns }}.svc.cluster.local:{{ $.Values.ports.listen }}
+            # - name: CORE_PEER_GOSSIP_BOOTSTRAP
+            #   value: peer1.{{ $ns }}.svc.cluster.local:{{ $.Values.ports.listen }}
+          command: ["peer","node","start"]
+          ports:
+            - containerPort: {{ $.Values.ports.listen }}
+            - containerPort: {{ $.Values.ports.chaincode }}
+            - containerPort: {{ $.Values.ports.operations }}
+          volumeMounts:
+            - name: data
+              mountPath: /var/hyperledger
+            - name: peer-config
+              mountPath: /etc/hyperledger/fabric
+      volumes:
+        - name: peer-config
+          configMap:
+            name: peer-config
+            items:
+              - key: core.yaml
+                path: core.yaml
+        - name: msp
+          secret:
+            secretName: {{ .name }}-msp
+        - name: tls
+          secret:
+            secretName: {{ .name }}-tls
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .name }}-data
+---
+{{- end }}

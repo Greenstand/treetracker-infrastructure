@@ -1,0 +1,115 @@
+NAME: root-ca
+LAST DEPLOYED: Thu Aug  7 20:57:10 2025
+NAMESPACE: hlf-ca
+STATUS: deployed
+REVISION: 1
+CHART: fabric-ca
+VERSION: 0.1.0
+APP_VERSION: 1.5.12
+TEST SUITE: None
+USER-SUPPLIED VALUES:
+null
+
+COMPUTED VALUES:
+rootCA:
+  configMountPath: /etc/hyperledger/fabric-ca-server-config
+  csr:
+    cn: root-ca
+    hosts:
+    - root-ca
+    - root-ca.hlf-ca.svc.cluster.local
+    - localhost
+  enabled: true
+  image:
+    pullPolicy: IfNotPresent
+    repository: hyperledger/fabric-ca
+    tag: 1.5.12
+  name: root-ca
+  namespace: hlf-ca
+  port: 7054
+  storage:
+    accessMode: ReadWriteOnce
+    size: 2Gi
+    storageClass: do-block-storage
+  tlsSecret: root-ca-tls-cert
+
+HOOKS:
+MANIFEST:
+---
+# Source: fabric-ca/templates/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-root-ca
+  namespace: hlf-ca
+  labels:
+    app: root-ca
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: do-block-storage
+---
+# Source: fabric-ca/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: root-ca
+  namespace: hlf-ca
+  labels:
+    app: root-ca
+spec:
+  selector:
+    app: root-ca
+  ports:
+    - protocol: TCP
+      port: 7054
+      targetPort: ca-port
+  type: ClusterIP
+---
+# Source: fabric-ca/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: root-ca
+  namespace: hlf-ca
+  labels:
+    app: root-ca
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: root-ca
+  template:
+    metadata:
+      labels:
+        app: root-ca
+    spec:
+      containers:
+        - name: fabric-ca
+          image: "hyperledger/fabric-ca:1.5.12"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 7054
+              name: ca-port
+          env:
+            - name: FABRIC_CA_HOME
+              value: /etc/hyperledger/fabric-ca-server
+            - name: FABRIC_CA_SERVER_CA_NAME
+              value: root-ca
+            - name: FABRIC_CA_SERVER_PORT
+              value: "7054"
+            - name: FABRIC_CA_SERVER_TLS_ENABLED
+              value: "true"
+            - name: FABRIC_CA_SERVER_CSR_HOSTS
+              value: "root-ca,root-ca.hlf-ca.svc.cluster.local,localhost"
+          volumeMounts:
+            - name: fabric-ca-data
+              mountPath: /etc/hyperledger/fabric-ca-server
+      volumes:
+        - name: fabric-ca-data
+          persistentVolumeClaim:
+            claimName: pvc-root-ca
+

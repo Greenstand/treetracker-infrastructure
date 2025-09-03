@@ -33,7 +33,7 @@ Fabric’s ordering service packages endorsed transactions into blocks, determin
 ---
 
 ## Treetracker Integration Architecture
-<img width="1449" height="817" alt="HLF TT Arch" src="https://github.com/user-attachments/assets/1a7e43ec-2309-4efc-acac-18bd76b8305c" />
+<img width="1449" height="704" alt="HLF TT Arch2" src="https://github.com/user-attachments/assets/f30eed73-d14c-4912-b333-cdbebc25dd49" />
 
 ### Client Applications
 

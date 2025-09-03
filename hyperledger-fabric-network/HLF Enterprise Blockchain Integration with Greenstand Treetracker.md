@@ -65,7 +65,7 @@ Fabric’s ordering service packages endorsed transactions into blocks, determin
 ---
 
 ## Hyperledger Fabric Network Setup
-<img width="1291" height="812" alt="Treetracker HLF Network" src="https://github.com/user-attachments/assets/0d799dd3-5c09-402b-8f33-ed6c2b61df25" />
+<img width="1407" height="780" alt="HLF TT Arch3" src="https://github.com/user-attachments/assets/1b9a81b3-8a5d-4d2a-a23b-acc68aba3fb0" />
 
 ### Ordering Service
 

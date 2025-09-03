@@ -76,6 +76,7 @@ A **Raft** ordering service is provisioned with five orderer nodes, distributed 
 Each organisation runs endorsing and committing peers. Endorsing peers execute chaincode and produce proposal responses; committing peers validate transactions and update their ledgers. Peers use a **gossip** protocol to discover other peers, disseminate blocks and private data, and keep ledgers consistent ([hyperledger-fabric.readthedocs.io](https://hyperledger-fabric.readthedocs.io)). Gossip also elects leaders within organisations to efficiently pull blocks from the ordering service ([hyperledger-fabric.readthedocs.io](https://hyperledger-fabric.readthedocs.io)).
 
 ### Channels
+<img width="1036" height="927" alt="HLF TT Arch4 2" src="https://github.com/user-attachments/assets/90d8410b-3357-4bbc-8297-7a765d24cd11" />
 
 Treetracker uses several channels:
 
@@ -90,6 +91,7 @@ Treetracker uses several channels:
 For each organisation, a root CA issues certificates for one or more intermediate CAs. Intermediate CAs issue X.509 certificates to users, peers and orderers. The Fabric CA server is initialised with a CSR (Certificate Signing Request) specifying fields like Common Name (CN), organisation (O), organisational unit (OU), location (L), state (ST) and country (C) ([hyperledger-fabric-ca.readthedocs.io](https://hyperledger-fabric-ca.readthedocs.io)). The server can generate a self-signed CA certificate or obtain a certificate signed by a parent CA ([hyperledger-fabric-ca.readthedocs.io](https://hyperledger-fabric-ca.readthedocs.io)). TLS is enabled to secure enrolment and registration ([hyperledger-fabric-ca.readthedocs.io](https://hyperledger-fabric-ca.readthedocs.io)). The Membership Service Provider (MSP) uses these certificates to define valid identities and assign roles ([hyperledger-fabric.readthedocs.io](https://hyperledger-fabric.readthedocs.io)).
 
 ### Smart Contracts (Chaincode)
+<img width="1199" height="575" alt="HLF TT Arch5" src="https://github.com/user-attachments/assets/783b3383-c875-456d-8d48-a6c9ddabf5a6" />
 
 Chaincode encapsulates the business logic of Treetracker. Four main contracts are envisaged:
 

@@ -1,4 +1,4 @@
-<img width="1449" height="658" alt="HLF TT Arch2" src="https://github.com/user-attachments/assets/c9d5f450-78cc-4236-ad02-8d300d1c13b0" /># Hyperledger Fabric Enterprise Blockchain Integration with Greenstand Treetracker
+# Hyperledger Fabric Enterprise Blockchain Integration with Greenstand Treetracker
 
 ## Introduction
 
@@ -33,7 +33,7 @@ Fabric’s ordering service packages endorsed transactions into blocks, determin
 ---
 
 ## Treetracker Integration Architecture
-<img width="1449" height="658" alt="HLF TT Arch2" src="https://github.com/user-attachments/assets/92301304-8826-4bd9-8089-aefc467fff8b" />
+<img width="1449" height="658" alt="HLF TT Arch2" src="https://github.com/user-attachments/assets/c9d5f450-78cc-4236-ad02-8d300d1c13b0" />
 
 ### Client Applications
 

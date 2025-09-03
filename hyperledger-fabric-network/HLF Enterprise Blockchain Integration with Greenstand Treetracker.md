@@ -1,4 +1,4 @@
-# Hyperledger Fabric Enterprise Blockchain Integration with Greenstand Treetracker
+# Enterprise Blockchain (Hyperledger Fabric) Integration with Greenstand Treetracker Platform
 
 ## Introduction
 
@@ -108,6 +108,7 @@ Chaincode runs in a Docker container managed by peers. Fabric’s **new chaincod
 ---
 
 ## Transaction Flow Mapping
+<img width="1562" height="409" alt="HLF TT Arch6" src="https://github.com/user-attachments/assets/94ef183a-e952-4948-8351-ec4a56a6655b" />
 
 A typical tree registration and token issuance flow maps onto Fabric’s transaction flow ([hyperledger-fabric.readthedocs.io](https://hyperledger-fabric.readthedocs.io)):
 

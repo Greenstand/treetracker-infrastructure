@@ -1,10 +1,6 @@
-
 <img width="1291" height="812" alt="Treetracker HLF Network" src="https://github.com/user-attachments/assets/0d799dd3-5c09-402b-8f33-ed6c2b61df25" />
 
-# Hyperledger Fabric Treetracker Network
-
 <div align="center">
-  <img src="https://www.hyperledger.org/wp-content/uploads/2016/09/logo_hl_new.png" alt="Hyperledger Logo" width="200">
   <h3>🌳 Blockchain-based Tree Tracking Network 🌳</h3>
   <p>A production-ready Hyperledger Fabric network for transparent tree planting and carbon offset tracking</p>
 </div>

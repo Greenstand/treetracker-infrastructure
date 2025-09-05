@@ -1,314 +1,324 @@
 
 <img width="1291" height="812" alt="Treetracker HLF Network" src="https://github.com/user-attachments/assets/0d799dd3-5c09-402b-8f33-ed6c2b61df25" />
 
-# Hyperledger Fabric Network on Kubernetes
+# Hyperledger Fabric Treetracker Network
 
-A comprehensive Kubernetes deployment for a Hyperledger Fabric network designed for tree verification and environmental token management.
+<div align="center">
+  <img src="https://www.hyperledger.org/wp-content/uploads/2016/09/logo_hl_new.png" alt="Hyperledger Logo" width="200">
+  <h3>🌳 Blockchain-based Tree Tracking Network 🌳</h3>
+  <p>A production-ready Hyperledger Fabric network for transparent tree planting and carbon offset tracking</p>
+</div>
 
-## 🏛️ Network Architecture
+[![Hyperledger Fabric](https://img.shields.io/badge/Hyperledger%20Fabric-2.5.7-blue.svg)](https://hyperledger-fabric.readthedocs.io/)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-1.28+-blue.svg)](https://kubernetes.io/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Network Status](https://img.shields.io/badge/Network-Production%20Ready-brightgreen.svg)](#)
+
+---
+
+## 🌍 Overview
+
+The Hyperledger Fabric Treetracker Network is a blockchain-based solution designed to provide transparent, immutable tracking of tree planting initiatives and carbon offset programs. Built for [Greenstand](https://greenstand.org/) and partners, this network ensures accountability in environmental restoration projects through distributed ledger technology.
+
+### Key Features
+
+- **🔒 Immutable Tree Records** - Every tree planting event is permanently recorded on the blockchain
+- **🤝 Multi-Organization Network** - Supports Greenstand, CBOs, Investors, and Verifiers
+- **🌐 Public Transparency** - All stakeholders can verify tree planting data
+- **📊 Real-time Analytics** - Live dashboards for monitoring forest restoration progress
+- **🔐 Enterprise Security** - Certificate-based authentication and TLS encryption
+- **📈 Scalable Infrastructure** - Kubernetes-based deployment supporting global operations
+
+---
+
+## 🏗️ Network Architecture
 
 ### Organizations
-- **🌐 Greenstand Org**: Network admin, chaincode deployment, system governance (3 peer nodes)
-- **🏢 CBO Org**: Community-based organizations, local implementation partners (2 peer nodes)
-- **💰 Investor Org**: Environmental donors, impact investors, token purchasers (2 peer nodes)
-- **🔍 Verifier Org**: Third-party verification services, audit organizations (1 peer node)
 
-### Core Components
-- **🏛️ Ordering Service**: 5-node Raft consensus cluster for high availability
-- **🔗 Peer Nodes**: 8 total peers across 4 organizations with CouchDB state database
-- **📋 Channels**: Public channel for transparency, private channels for sensitive data
-- **🔐 Certificate Authority**: Root CA + Intermediate CAs for each organization
-- **⛓️ Chaincode**: Tree Token contract for managing tree verification and token issuance
+| Organization | Role | Peers | Description |
+|--------------|------|-------|-------------|
+| **Greenstand** | Network Admin | 3 | Primary tree tracking organization |
+| **CBO** | Tree Planters | 2 | Community-Based Organizations |
+| **Investor** | Funders | 2 | Carbon offset purchasers |
+| **Verifier** | Validators | 1 | Independent verification entities |
 
-### Monitoring & Management
-- **📊 Hyperledger Explorer**: Blockchain network explorer and transaction viewer
-- **📈 Prometheus**: Metrics collection from all Fabric components
-- **📉 Grafana**: Visual dashboards for network monitoring and analytics
+### Network Components
 
-## 📁 Project Structure
+- **🏦 Ordering Service**: 5-node Raft consensus cluster
+- **🔐 Certificate Authorities**: 5 CAs (1 Root + 4 Organization CAs)
+- **📊 Monitoring**: Prometheus + Grafana stack
+- **🗄️ Storage**: Persistent volumes with automatic backup
+- **🌐 API Gateway**: RESTful APIs for external integration
 
-```
-hyperledger-fabric-k8s/
-├── base/                     # Base Kubernetes resources
-│   ├── namespace.yaml        # Namespace and RBAC configuration
-│   └── storage.yaml          # Storage classes and persistent volumes
-├── ca/                       # Certificate Authority deployments
-│   ├── root-ca.yaml          # Root Certificate Authority
-│   ├── greenstand-ca.yaml    # Greenstand organization CA
-│   ├── cbo-ca.yaml           # CBO organization CA
-│   ├── investor-ca.yaml      # Investor organization CA
-│   └── verifier-ca.yaml      # Verifier organization CA
-├── orderer/                  # Ordering service configuration
-│   └── raft-orderer.yaml     # 5-node Raft consensus cluster
-├── peers/                    # Peer node deployments
-│   ├── peer0-greenstand.yaml # Greenstand peer nodes
-│   ├── peer1-greenstand.yaml
-│   ├── peer2-greenstand.yaml
-│   ├── peer0-cbo.yaml        # CBO peer nodes
-│   ├── peer1-cbo.yaml
-│   ├── peer0-investor.yaml   # Investor peer nodes
-│   ├── peer1-investor.yaml
-│   └── peer0-verifier.yaml   # Verifier peer node
-├── channels/                 # Channel configurations
-│   ├── public-channel-config.yaml    # Public channel for tree data
-│   └── private-channels-config.yaml  # Private channels and collections
-├── chaincode/               # Smart contract deployments
-│   └── tree-token-chaincode.yaml    # Tree token management contract
-├── monitoring/              # Monitoring and management tools
-│   └── fabric-explorer.yaml # Explorer, Prometheus, and Grafana
-└── scripts/                # Deployment and utility scripts
-    ├── deploy-network.sh    # Main deployment script
-    ├── generate-org-cas.sh  # CA generation script
-    └── generate-peer-deployments.sh # Peer generation script
-```
+---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Kubernetes cluster (v1.20+)
-- kubectl configured to access your cluster
-- At least 16GB RAM and 8 CPU cores available in cluster
-- Storage provisioner configured (for persistent volumes)
 
-### Deployment
+- **Kubernetes Cluster**: v1.23+ with 5+ nodes
+- **Storage**: 500GB+ SSD with dynamic provisioning
+- **Resources**: 32+ CPU cores, 64GB+ RAM
+- **Network**: LoadBalancer support for external access
 
-1. **Clone and navigate to the project:**
-```bash
-cd hyperledger-fabric-k8s
-```
-
-2. **Make scripts executable:**
-```bash
-chmod +x scripts/*.sh
-```
-
-3. **Deploy the complete network:**
-```bash
-./scripts/deploy-network.sh
-```
-
-4. **Check deployment status:**
-```bash
-./scripts/deploy-network.sh --status
-```
-
-### Step-by-Step Deployment
-
-If you prefer to deploy components individually:
+### 1. Clone the Repository
 
 ```bash
-# Deploy base configuration
-./scripts/deploy-network.sh --base-only
-
-# Deploy Certificate Authorities
-./scripts/deploy-network.sh --cas-only
-
-# Deploy Ordering Service
-./scripts/deploy-network.sh --orderers-only
-
-# Deploy Peer Nodes
-./scripts/deploy-network.sh --peers-only
-
-# Create Channels
-./scripts/deploy-network.sh --channels-only
-
-# Deploy Chaincode
-./scripts/deploy-network.sh --chaincode-only
-
-# Deploy Monitoring
-./scripts/deploy-network.sh --monitoring-only
+git clone https://github.com/Greenstand/hyperledger-fabric-network.git
+cd hyperledger-fabric-network
 ```
 
-## 📊 Accessing the Network
-
-### Web Interfaces
-
-Once deployed, access these services through LoadBalancer IPs or port-forwarding:
-
-- **Hyperledger Explorer**: Port 8080
-  - View blockchain transactions, blocks, and network statistics
-- **Grafana Dashboard**: Port 3000
-  - Username: `admin`, Password: `admin`
-  - Monitor network performance and health metrics
-- **Prometheus**: Port 9090
-  - Raw metrics and monitoring data
-
-### Port Forwarding (for local access)
-```bash
-# Hyperledger Explorer
-kubectl port-forward svc/hyperledger-explorer-service 8080:8080 -n hyperledger-fabric
-
-# Grafana
-kubectl port-forward svc/grafana-service 3000:3000 -n hyperledger-fabric
-
-# Prometheus
-kubectl port-forward svc/prometheus-service 9090:9090 -n hyperledger-fabric
-```
-
-## ⛓️ Chaincode Operations
-
-The network includes a Tree Token chaincode with the following functions:
-
-### Tree Management
-- `RegisterTree`: Register a new tree with location and planting details
-- `SubmitVerification`: Submit tree for third-party verification
-- `CompleteVerification`: Complete verification and update tree status
-
-### Token Operations
-- `IssueTokens`: Issue environmental impact tokens based on verified trees
-- `TransferToken`: Transfer token ownership
-- `GetTree`: Query tree information
-- `GetToken`: Query token details
-
-### Example Usage
-```bash
-# Get a shell in the fabric-tools container
-kubectl exec -it <fabric-tools-pod> -n hyperledger-fabric -- bash
-
-# Register a new tree
-peer chaincode invoke -o orderer-raft-service:7050 \
-  --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/fabric.local/orderers/orderer.fabric.local/msp/tlscacerts/tlsca.fabric.local-cert.pem \
-  -C public-channel -n tree-token \
-  -c '{"function":"RegisterTree","Args":["TREE001","GreenstandMSP","-1.2921","36.8219","Kenya","Nairobi","Acacia"]}'
-
-# Query tree information
-peer chaincode query -C public-channel -n tree-token \
-  -c '{"function":"GetTree","Args":["TREE001"]}'
-```
-
-## 🔧 Configuration
-
-### Resource Requirements
-
-| Component | Replicas | CPU Request | Memory Request | Storage |
-|-----------|----------|-------------|----------------|---------|
-| CA (each) | 1 | 100m | 256Mi | 2Gi |
-| Orderer | 5 | 500m | 1Gi | 10Gi |
-| Peer (each) | 1 | 500m | 1Gi | 15Gi |
-| CouchDB (each) | 1 | 250m | 512Mi | 5Gi |
-| Explorer | 1 | 250m | 512Mi | - |
-| Prometheus | 1 | 100m | 256Mi | 10Gi |
-| Grafana | 1 | 100m | 256Mi | 5Gi |
-
-### Scaling
-
-To scale peer nodes, modify the peer deployment files and update channel configurations accordingly.
-
-### TLS and Security
-
-All components are configured with TLS enabled:
-- Peer-to-peer communication encrypted
-- Client-to-peer communication encrypted
-- Orderer communication encrypted
-- Certificate-based authentication
-
-## 📋 Channel Configuration
-
-### Public Channel
-- **Name**: `public-channel`
-- **Participants**: All organizations
-- **Purpose**: Tree verification data and public token transactions
-- **Endorsement Policy**: Majority endorsement required
-
-### Private Channels
-- **Greenstand-CBO Private**: Sensitive collaboration data
-- **Investor-Verifier Private**: Financial and audit data
-- **Cross-Org Collections**: Multi-party private data sharing
-
-## 🔍 Monitoring and Logging
-
-### Prometheus Metrics
-The setup collects metrics from:
-- Peer nodes (endorsement metrics, ledger metrics)
-- Orderer nodes (consensus metrics, transaction metrics)
-- Certificate Authorities (enrollment metrics)
-
-### Grafana Dashboards
-Pre-configured dashboards for:
-- Network overview and health
-- Transaction throughput and latency
-- Resource utilization
-- Certificate and identity management
-
-### Logs Access
-```bash
-# View peer logs
-kubectl logs <peer-pod-name> -n hyperledger-fabric
-
-# View orderer logs
-kubectl logs <orderer-pod-name> -n hyperledger-fabric
-
-# View CA logs
-kubectl logs <ca-pod-name> -n hyperledger-fabric
-```
-
-## 🛠️ Troubleshooting
-
-### Common Issues
-
-1. **Pods in Pending State**
-   - Check storage provisioner configuration
-   - Verify node resources availability
-
-2. **Certificate Issues**
-   - Ensure CA pods are running before deploying peers
-   - Check certificate expiration dates
-
-3. **Channel Creation Fails**
-   - Verify orderer service is ready
-   - Check network policies and connectivity
-
-4. **Chaincode Installation Issues**
-   - Ensure all peers are joined to the channel
-   - Verify chaincode package format
-
-### Debug Commands
-```bash
-# Check pod status and events
-kubectl describe pod <pod-name> -n hyperledger-fabric
-
-# View persistent volume claims
-kubectl get pvc -n hyperledger-fabric
-
-# Check service connectivity
-kubectl exec -it <pod-name> -n hyperledger-fabric -- nslookup <service-name>
-
-# View fabric network logs
-kubectl logs -f <pod-name> -n hyperledger-fabric
-```
-
-## 🚫 Cleanup
-
-To remove the entire network:
+### 2. Deploy the Network
 
 ```bash
-# Delete all resources in the namespace
-kubectl delete namespace hyperledger-fabric
+# Deploy complete network infrastructure
+./scripts/deploy-treetracker-network.sh
 
-# Remove persistent volumes (if needed)
-kubectl delete pv fabric-ca-pv fabric-orderer-pv fabric-peer-pv
+# Create channels
+./scripts/create-channels.sh
+
+# Deploy chaincode
+./scripts/deploy-chaincode.sh
+
+# Verify deployment
+./scripts/test-network.sh
 ```
 
-## 🤝 Contributing
+### 3. Access the Network
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+```bash
+# Get network status
+kubectl get pods --all-namespaces | grep hlf-
 
-## 📄 License
+# Access API Gateway
+kubectl port-forward svc/api-gateway 8080:80 -n treetracker-apps
 
-This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
-
-## 🆘 Support
-
-For issues and questions:
-1. Check the troubleshooting section above
-2. Review Hyperledger Fabric documentation
-3. Open an issue in the project repository
-4. Join the Hyperledger Fabric community channels
+# View monitoring dashboard
+kubectl port-forward svc/grafana 3000:3000 -n monitoring
+```
 
 ---
 
-**Note**: This setup is designed for development and testing environments. For production deployments, additional security hardening, backup strategies, and high availability configurations should be implemented.
+## 📚 Documentation
+
+Comprehensive documentation is available in the `/docs` directory:
+
+### For Users & Operators
+- 📖 **[User Manual](docs/TREETRACKER_USER_MANUAL.md)** - Complete user guide for network operations
+- 🛠️ **[Deployment Guide](docs/TREETRACKER_DEPLOYMENT_GUIDE.md)** - Step-by-step deployment instructions
+
+### For Developers
+- 💻 **[Integration Manual](docs/TREETRACKER_INTEGRATION_MANUAL.md)** - SDK usage and API integration
+- 🏗️ **[Architecture Guide](docs/TREETRACKER_ARCHITECTURE_GUIDE.md)** - Network design and component details
+
+### Quick Reference
+- [API Documentation](docs/TREETRACKER_INTEGRATION_MANUAL.md#api-reference)
+- [Chaincode Functions](docs/TREETRACKER_INTEGRATION_MANUAL.md#chaincode-development)
+- [Troubleshooting Guide](docs/TREETRACKER_DEPLOYMENT_GUIDE.md#troubleshooting)
+- [Monitoring & Alerts](docs/TREETRACKER_ARCHITECTURE_GUIDE.md#monitoring-and-observability)
+
+---
+
+## 🌐 Network Endpoints
+
+### Production Network
+- **API Gateway**: `https://api.treetracker.network`
+- **Blockchain Explorer**: `https://explorer.treetracker.network`
+- **Monitoring Dashboard**: `https://monitoring.treetracker.network`
+
+### Development Network
+- **API Gateway**: `http://localhost:8080`
+- **Grafana**: `http://localhost:3000`
+- **Prometheus**: `http://localhost:9090`
+
+---
+
+## 🔧 Directory Structure
+
+```
+hyperledger-fabric-network/
+├── 📁 chaincode/              # Smart contracts
+│   └── treetracker/           # Tree tracking chaincode (Go)
+├── 📁 config/                 # Network configuration
+│   ├── configtx.yaml         # Channel configuration
+│   ├── crypto-config.yaml    # Certificate configuration
+│   └── network-config.yaml   # Main network settings
+├── 📁 docs/                   # Documentation
+│   ├── TREETRACKER_USER_MANUAL.md
+│   ├── TREETRACKER_INTEGRATION_MANUAL.md
+│   ├── TREETRACKER_ARCHITECTURE_GUIDE.md
+│   └── TREETRACKER_DEPLOYMENT_GUIDE.md
+├── 📁 k8s/                    # Kubernetes manifests
+│   ├── ca/                   # Certificate Authority deployments
+│   ├── orderer/              # Orderer node deployments
+│   ├── peers/                # Peer node deployments
+│   └── monitoring/           # Monitoring stack
+├── 📁 scripts/               # Deployment and management scripts
+│   ├── deploy-treetracker-network.sh
+│   ├── create-channels.sh
+│   ├── deploy-chaincode.sh
+│   └── test-network.sh
+└── 📁 api/                   # REST API gateway
+    ├── nodejs/               # Node.js SDK integration
+    └── gateway/              # API Gateway service
+```
+
+---
+
+## 🔐 Security Features
+
+### Certificate Management
+- **Root CA**: Self-signed root certificate authority
+- **Organization CAs**: Individual CAs for each organization
+- **TLS Encryption**: All network communication encrypted
+- **Certificate Rotation**: Automated certificate lifecycle management
+
+### Network Security
+- **RBAC**: Role-based access control for all operations
+- **Network Policies**: Kubernetes network segmentation
+- **Mutual TLS**: Peer-to-peer authentication
+- **HSM Support**: Hardware security module integration (optional)
+
+### Data Privacy
+- **Channel Isolation**: Private data channels between organizations
+- **Endorsement Policies**: Multi-signature transaction validation
+- **Audit Trails**: Immutable transaction logs
+- **Data Encryption**: At-rest and in-transit encryption
+
+---
+
+## 📊 Monitoring & Observability
+
+### Metrics Collection
+- **Peer Metrics**: Transaction throughput, ledger size, endorsement latency
+- **Orderer Metrics**: Block creation rate, consensus performance
+- **Network Metrics**: Channel health, certificate status
+- **Application Metrics**: API response times, chaincode execution
+
+### Alerting
+- **Network Health**: Peer/orderer downtime alerts
+- **Performance**: Transaction latency thresholds
+- **Security**: Certificate expiration warnings
+- **Capacity**: Storage and resource utilization
+
+### Dashboards
+- **Executive Dashboard**: High-level KPIs and network status
+- **Operations Dashboard**: Detailed technical metrics
+- **Business Dashboard**: Tree planting progress and carbon metrics
+
+---
+
+## 🧪 Testing & Quality Assurance
+
+### Test Coverage
+- **Unit Tests**: Chaincode function testing
+- **Integration Tests**: End-to-end network testing
+- **Performance Tests**: Load testing and benchmarking
+- **Security Tests**: Penetration testing and vulnerability scans
+
+### Continuous Integration
+- **Automated Testing**: GitHub Actions CI/CD pipeline
+- **Code Quality**: SonarQube analysis
+- **Security Scanning**: Container and dependency scanning
+- **Deployment Testing**: Automated deployment validation
+
+---
+
+## 🚀 Deployment Options
+
+### Cloud Providers
+- **AWS**: EKS with managed services
+- **Google Cloud**: GKE with Cloud SQL
+- **Azure**: AKS with Azure Storage
+- **DigitalOcean**: DOKS with block storage
+
+### On-Premises
+- **Bare Metal**: Direct Kubernetes installation
+- **VMware**: vSphere with Tanzu
+- **OpenShift**: Red Hat OpenShift platform
+
+### Development
+- **Kind**: Local Kubernetes in Docker
+- **Minikube**: Single-node local cluster
+- **Docker Compose**: Simplified local development
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions from the community! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+
+### Development Workflow
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes with tests
+4. Submit a pull request
+
+### Code Standards
+- **Go**: Follow Go best practices for chaincode
+- **JavaScript**: ESLint configuration for API code
+- **Documentation**: Update docs for any API changes
+- **Testing**: Maintain 80%+ test coverage
+
+---
+
+## 📞 Support & Community
+
+### Getting Help
+- **Documentation**: Comprehensive guides in `/docs`
+- **GitHub Issues**: Bug reports and feature requests
+- **Discord**: Real-time community support
+- **Email**: technical-support@greenstand.org
+
+### Community Resources
+- **Greenstand Website**: [https://greenstand.org](https://greenstand.org)
+- **Slack Channel**: [#treetracker-blockchain](https://greenstand.slack.com)
+- **Developer Forum**: [https://forum.greenstand.org](https://forum.greenstand.org)
+
+---
+
+## 📈 Roadmap
+
+### Current Release (v1.0)
+- ✅ Multi-organization network
+- ✅ Tree tracking chaincode
+- ✅ Kubernetes deployment
+- ✅ Monitoring and alerting
+
+### Next Release (v1.1)
+- 🔄 Mobile wallet integration
+- 🔄 Carbon credit tokenization
+- 🔄 Enhanced analytics dashboard
+- 🔄 Multi-chain interoperability
+
+### Future Releases
+- 📋 IoT sensor integration
+- 📋 Satellite imagery verification
+- 📋 Machine learning analytics
+- 📋 Cross-border payment rails
+
+---
+
+## 📄 License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **Hyperledger Foundation**: For the excellent Fabric framework
+- **Greenstand Team**: For environmental vision and leadership
+- **Open Source Community**: For tools, libraries, and inspiration
+- **Tree Planting Partners**: CBOs worldwide making real impact
+
+---
+
+**🌱 Together, we're growing a more transparent and sustainable future through blockchain technology! 🌱**
+
+<div align="center">
+  <strong>Made with ❤️ by the Greenstand Community</strong><br>
+  <a href="https://greenstand.org">greenstand.org</a> | 
+  <a href="https://github.com/Greenstand">GitHub</a> | 
+  <a href="https://twitter.com/GreenstandOrg">Twitter</a>
+</div>

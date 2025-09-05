@@ -315,6 +315,5 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 <div align="center">
   <strong>Architected with ❤️ by <a href="https://github.com/imos64">Imos Aikoroje</a>  For Greenstand Community</strong><br>
   <a href="https://greenstand.org">greenstand.org</a> | 
-  <a href="https://github.com/Greenstand">GitHub</a> | 
-  <a href="https://twitter.com/GreenstandOrg">Twitter</a>
+  <a href="https://github.com/Greenstand">GitHub</a> 
 </div>

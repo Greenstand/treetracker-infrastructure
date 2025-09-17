@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.peer.name }}
+  namespace: {{ .Values.peer.namespace }}
+  labels:
+    app: {{ .Values.peer.name }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: peer
+      port: {{ .Values.peer.ports.peer }}
+      targetPort: {{ .Values.peer.ports.peer }}
+    - name: chaincode
+      port: {{ .Values.peer.ports.chaincode }}
+      targetPort: {{ .Values.peer.ports.chaincode }}
+    - name: operations
+      port: {{ .Values.peer.ports.operations }}
+      targetPort: {{ .Values.peer.ports.operations }}
+  selector:
+    app: {{ .Values.peer.name }}

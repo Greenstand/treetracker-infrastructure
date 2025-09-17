@@ -1,0 +1,447 @@
+---
+# Source: fabric-orderer/templates/service-orderer.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderer0
+  namespace: hyperledger-fabric
+spec:
+  selector:
+    app: orderer0
+  ports:
+    - name: grpc
+      port: 7050
+      targetPort: 7050
+---
+# Source: fabric-orderer/templates/service-orderer.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderer1
+  namespace: hyperledger-fabric
+spec:
+  selector:
+    app: orderer1
+  ports:
+    - name: grpc
+      port: 7050
+      targetPort: 7050
+---
+# Source: fabric-orderer/templates/service-orderer.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderer2
+  namespace: hyperledger-fabric
+spec:
+  selector:
+    app: orderer2
+  ports:
+    - name: grpc
+      port: 7050
+      targetPort: 7050
+---
+# Source: fabric-orderer/templates/service-orderer.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderer3
+  namespace: hyperledger-fabric
+spec:
+  selector:
+    app: orderer3
+  ports:
+    - name: grpc
+      port: 7050
+      targetPort: 7050
+---
+# Source: fabric-orderer/templates/service-orderer.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderer4
+  namespace: hyperledger-fabric
+spec:
+  selector:
+    app: orderer4
+  ports:
+    - name: grpc
+      port: 7050
+      targetPort: 7050
+---
+# Source: fabric-orderer/templates/statefulset-orderer.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: orderer0
+  namespace: hyperledger-fabric
+spec:
+  serviceName: orderer0
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orderer0
+  template:
+    metadata:
+      labels:
+        app: orderer0
+    spec:
+      containers:
+        - name: orderer
+          image: "hyperledger/fabric-orderer:2.5"
+          imagePullPolicy: IfNotPresent
+          command: ["orderer"]
+          ports:
+            - containerPort: 7050
+              name: grpc
+          env:
+            - name: ORDERER_GENERAL_LISTENADDRESS
+              value: "0.0.0.0"
+            - name: ORDERER_GENERAL_LISTENPORT
+              value: "7050"
+            - name: ORDERER_GENERAL_LOCALMSPID
+              value: "OrdererMSP"
+            - name: ORDERER_GENERAL_TLS_ENABLED
+              value: "true"
+            - name: ORDERER_GENERAL_TLS_PRIVATEKEY
+              value: /var/hyperledger/tls/server.key
+            - name: ORDERER_GENERAL_TLS_CERTIFICATE
+              value: /var/hyperledger/tls/server.crt
+            - name: ORDERER_GENERAL_TLS_ROOTCAS
+              value: "[/var/hyperledger/tls/ca.crt]"
+            - name: ORDERER_FILELEDGER_LOCATION
+              value: /var/hyperledger/production
+            - name: ORDERER_GENERAL_BOOTSTRAPMETHOD
+              value: "file"
+            - name: ORDERER_GENERAL_BOOTSTRAPFILE
+              value: /var/hyperledger/genesis/genesis.block
+          volumeMounts:
+            - name: msp
+              mountPath: /var/hyperledger/msp
+            - name: tls
+              mountPath: /var/hyperledger/tls
+            - name: genesis
+              mountPath: /var/hyperledger/genesis
+            - name: data
+              mountPath: /var/hyperledger/production
+      volumes:
+        - name: msp
+          secret:
+            secretName: orderer0-msp
+        - name: tls
+          secret:
+            secretName: orderer0-tls
+        - name: genesis
+          secret:
+            secretName: orderer-genesis-block
+            items:
+              - key: genesis.block
+                path: genesis.block
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 2Gi
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: orderer1
+  namespace: hyperledger-fabric
+spec:
+  serviceName: orderer1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orderer1
+  template:
+    metadata:
+      labels:
+        app: orderer1
+    spec:
+      containers:
+        - name: orderer
+          image: "hyperledger/fabric-orderer:2.5"
+          imagePullPolicy: IfNotPresent
+          command: ["orderer"]
+          ports:
+            - containerPort: 7050
+              name: grpc
+          env:
+            - name: ORDERER_GENERAL_LISTENADDRESS
+              value: "0.0.0.0"
+            - name: ORDERER_GENERAL_LISTENPORT
+              value: "7050"
+            - name: ORDERER_GENERAL_LOCALMSPID
+              value: "OrdererMSP"
+            - name: ORDERER_GENERAL_TLS_ENABLED
+              value: "true"
+            - name: ORDERER_GENERAL_TLS_PRIVATEKEY
+              value: /var/hyperledger/tls/server.key
+            - name: ORDERER_GENERAL_TLS_CERTIFICATE
+              value: /var/hyperledger/tls/server.crt
+            - name: ORDERER_GENERAL_TLS_ROOTCAS
+              value: "[/var/hyperledger/tls/ca.crt]"
+            - name: ORDERER_FILELEDGER_LOCATION
+              value: /var/hyperledger/production
+            - name: ORDERER_GENERAL_BOOTSTRAPMETHOD
+              value: "file"
+            - name: ORDERER_GENERAL_BOOTSTRAPFILE
+              value: /var/hyperledger/genesis/genesis.block
+          volumeMounts:
+            - name: msp
+              mountPath: /var/hyperledger/msp
+            - name: tls
+              mountPath: /var/hyperledger/tls
+            - name: genesis
+              mountPath: /var/hyperledger/genesis
+            - name: data
+              mountPath: /var/hyperledger/production
+      volumes:
+        - name: msp
+          secret:
+            secretName: orderer1-msp
+        - name: tls
+          secret:
+            secretName: orderer1-tls
+        - name: genesis
+          secret:
+            secretName: orderer-genesis-block
+            items:
+              - key: genesis.block
+                path: genesis.block
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 2Gi
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: orderer2
+  namespace: hyperledger-fabric
+spec:
+  serviceName: orderer2
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orderer2
+  template:
+    metadata:
+      labels:
+        app: orderer2
+    spec:
+      containers:
+        - name: orderer
+          image: "hyperledger/fabric-orderer:2.5"
+          imagePullPolicy: IfNotPresent
+          command: ["orderer"]
+          ports:
+            - containerPort: 7050
+              name: grpc
+          env:
+            - name: ORDERER_GENERAL_LISTENADDRESS
+              value: "0.0.0.0"
+            - name: ORDERER_GENERAL_LISTENPORT
+              value: "7050"
+            - name: ORDERER_GENERAL_LOCALMSPID
+              value: "OrdererMSP"
+            - name: ORDERER_GENERAL_TLS_ENABLED
+              value: "true"
+            - name: ORDERER_GENERAL_TLS_PRIVATEKEY
+              value: /var/hyperledger/tls/server.key
+            - name: ORDERER_GENERAL_TLS_CERTIFICATE
+              value: /var/hyperledger/tls/server.crt
+            - name: ORDERER_GENERAL_TLS_ROOTCAS
+              value: "[/var/hyperledger/tls/ca.crt]"
+            - name: ORDERER_FILELEDGER_LOCATION
+              value: /var/hyperledger/production
+            - name: ORDERER_GENERAL_BOOTSTRAPMETHOD
+              value: "file"
+            - name: ORDERER_GENERAL_BOOTSTRAPFILE
+              value: /var/hyperledger/genesis/genesis.block
+          volumeMounts:
+            - name: msp
+              mountPath: /var/hyperledger/msp
+            - name: tls
+              mountPath: /var/hyperledger/tls
+            - name: genesis
+              mountPath: /var/hyperledger/genesis
+            - name: data
+              mountPath: /var/hyperledger/production
+      volumes:
+        - name: msp
+          secret:
+            secretName: orderer2-msp
+        - name: tls
+          secret:
+            secretName: orderer2-tls
+        - name: genesis
+          secret:
+            secretName: orderer-genesis-block
+            items:
+              - key: genesis.block
+                path: genesis.block
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 2Gi
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: orderer3
+  namespace: hyperledger-fabric
+spec:
+  serviceName: orderer3
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orderer3
+  template:
+    metadata:
+      labels:
+        app: orderer3
+    spec:
+      containers:
+        - name: orderer
+          image: "hyperledger/fabric-orderer:2.5"
+          imagePullPolicy: IfNotPresent
+          command: ["orderer"]
+          ports:
+            - containerPort: 7050
+              name: grpc
+          env:
+            - name: ORDERER_GENERAL_LISTENADDRESS
+              value: "0.0.0.0"
+            - name: ORDERER_GENERAL_LISTENPORT
+              value: "7050"
+            - name: ORDERER_GENERAL_LOCALMSPID
+              value: "OrdererMSP"
+            - name: ORDERER_GENERAL_TLS_ENABLED
+              value: "true"
+            - name: ORDERER_GENERAL_TLS_PRIVATEKEY
+              value: /var/hyperledger/tls/server.key
+            - name: ORDERER_GENERAL_TLS_CERTIFICATE
+              value: /var/hyperledger/tls/server.crt
+            - name: ORDERER_GENERAL_TLS_ROOTCAS
+              value: "[/var/hyperledger/tls/ca.crt]"
+            - name: ORDERER_FILELEDGER_LOCATION
+              value: /var/hyperledger/production
+            - name: ORDERER_GENERAL_BOOTSTRAPMETHOD
+              value: "file"
+            - name: ORDERER_GENERAL_BOOTSTRAPFILE
+              value: /var/hyperledger/genesis/genesis.block
+          volumeMounts:
+            - name: msp
+              mountPath: /var/hyperledger/msp
+            - name: tls
+              mountPath: /var/hyperledger/tls
+            - name: genesis
+              mountPath: /var/hyperledger/genesis
+            - name: data
+              mountPath: /var/hyperledger/production
+      volumes:
+        - name: msp
+          secret:
+            secretName: orderer3-msp
+        - name: tls
+          secret:
+            secretName: orderer3-tls
+        - name: genesis
+          secret:
+            secretName: orderer-genesis-block
+            items:
+              - key: genesis.block
+                path: genesis.block
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 2Gi
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: orderer4
+  namespace: hyperledger-fabric
+spec:
+  serviceName: orderer4
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orderer4
+  template:
+    metadata:
+      labels:
+        app: orderer4
+    spec:
+      containers:
+        - name: orderer
+          image: "hyperledger/fabric-orderer:2.5"
+          imagePullPolicy: IfNotPresent
+          command: ["orderer"]
+          ports:
+            - containerPort: 7050
+              name: grpc
+          env:
+            - name: ORDERER_GENERAL_LISTENADDRESS
+              value: "0.0.0.0"
+            - name: ORDERER_GENERAL_LISTENPORT
+              value: "7050"
+            - name: ORDERER_GENERAL_LOCALMSPID
+              value: "OrdererMSP"
+            - name: ORDERER_GENERAL_TLS_ENABLED
+              value: "true"
+            - name: ORDERER_GENERAL_TLS_PRIVATEKEY
+              value: /var/hyperledger/tls/server.key
+            - name: ORDERER_GENERAL_TLS_CERTIFICATE
+              value: /var/hyperledger/tls/server.crt
+            - name: ORDERER_GENERAL_TLS_ROOTCAS
+              value: "[/var/hyperledger/tls/ca.crt]"
+            - name: ORDERER_FILELEDGER_LOCATION
+              value: /var/hyperledger/production
+            - name: ORDERER_GENERAL_BOOTSTRAPMETHOD
+              value: "file"
+            - name: ORDERER_GENERAL_BOOTSTRAPFILE
+              value: /var/hyperledger/genesis/genesis.block
+          volumeMounts:
+            - name: msp
+              mountPath: /var/hyperledger/msp
+            - name: tls
+              mountPath: /var/hyperledger/tls
+            - name: genesis
+              mountPath: /var/hyperledger/genesis
+            - name: data
+              mountPath: /var/hyperledger/production
+      volumes:
+        - name: msp
+          secret:
+            secretName: orderer4-msp
+        - name: tls
+          secret:
+            secretName: orderer4-tls
+        - name: genesis
+          secret:
+            secretName: orderer-genesis-block
+            items:
+              - key: genesis.block
+                path: genesis.block
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 2Gi

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: fabric-ca-client
+  namespace: hlf-ca
+spec:
+  serviceName: fabric-ca-client
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fabric-ca-client
+  template:
+    metadata:
+      labels:
+        app: fabric-ca-client
+    spec:
+      containers:
+        - name: fabric-ca-client
+          image: hyperledger/fabric-ca:1.5.7
+          command: ["/bin/bash", "-c", "--"]
+          args:
+            - |
+              while true; do sleep 3600; done
+          volumeMounts:
+            - name: ca-client-config
+              mountPath: /etc/hyperledger/fabric-ca-client
+            - name: client-data
+              mountPath: /data
+      volumes:
+        - name: ca-client-config
+          configMap:
+            name: ca-client-config
+  volumeClaimTemplates:
+    - metadata:
+        name: client-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+        storageClassName: standard
+

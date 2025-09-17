@@ -1,0 +1,6 @@
+apiVersion: v2
+name: verifier-ca
+description: Hyperledger Fabric intermediate CA for Verifier
+type: application
+version: 0.1.0
+appVersion: 1.5.12

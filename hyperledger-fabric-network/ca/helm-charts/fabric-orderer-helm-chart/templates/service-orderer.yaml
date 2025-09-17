@@ -1,0 +1,16 @@
+{{- range .Values.orderer.nodes }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .name }}
+  namespace: {{ .namespace }}
+spec:
+  selector:
+    app: {{ .name }}
+  ports:
+    - name: grpc
+      port: 7050
+      targetPort: 7050
+---
+{{- end }}
+

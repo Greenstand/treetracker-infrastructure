@@ -1,0 +1,53 @@
+peer:
+  name: greenstand-peer0
+  peerID: peer0.greenstand.v2
+  mspID: GreenstandMSP
+  org: greenstand
+  namespace: hlf-greenstand-peer
+
+  image:
+    repository: hyperledger/fabric-peer
+    tag: 2.5.7
+    pullPolicy: IfNotPresent
+
+  storage:
+    size: 5Gi
+    storageClass: do-block-storage
+
+  msp:
+    secret: peer0-greenstand-v2-msp
+    configPath: /etc/hyperledger/fabric/msp
+    certFile: cert.pem
+    keyFile: key.pem
+    caCertFile: ca.pem
+
+  tls:
+    enabled: true
+    secret: peer0-greenstand-v2-tls
+    certFile: cert.pem
+    keyFile: key.pem
+    caCertFile: ca.crt
+    configPath: /etc/hyperledger/fabric/tls
+
+  ports:
+    peer: 7051
+    chaincode: 7052
+    operations: 9443
+
+  gossip:
+    bootstrap: peer0.greenstand.hlf-greenstand-peer.svc.cluster.local:7051
+    externalEndpoint: peer0.greenstand.hlf-greenstand-peer.svc.cluster.local:7051
+
+  env:
+    - name: CORE_BCCSP_SW_FILEKEYSTORE_KEYSTORE
+      value: /etc/hyperledger/fabric/msp
+    - name: CORE_BCCSP_DEFAULT
+      value: SW
+    - name: CORE_PEER_MSPCERT_FILE
+      value: /etc/hyperledger/fabric/msp/cert.pem
+    - name: CORE_PEER_MSPKEY_FILE
+      value: /etc/hyperledger/fabric/msp/key.pem
+    - name: CORE_PEER_MSPCACERT_FILE
+      value: /etc/hyperledger/fabric/msp/ca.pem
+    - name: CORE_PEER_CHAINCODELISTENADDRESS
+      value: "0.0.0.0:7052"

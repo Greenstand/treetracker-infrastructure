@@ -1,0 +1,72 @@
+# fabric-ca-server-config.yaml
+
+# Server info
+version: 1.5.0
+ca:
+  name: {{ ICA_NAME }}                          # e.g., greenstand-ca
+  keyfile: /etc/hyperledger/fabric-ca-server/ca-key.pem
+  certfile: /etc/hyperledger/fabric-ca-server/ca-cert.pem
+
+# Database (default: sqlite3)
+db:
+  type: sqlite3
+  datasource: fabric-ca-server.db
+  tls:
+    enabled: false
+
+# TLS Configuration
+tls:
+  enabled: true
+  certfile: /etc/hyperledger/fabric-ca-server/tls-cert.pem
+  keyfile: /etc/hyperledger/fabric-ca-server/tls-key.pem
+  clientauth:
+    type: noclientcert
+
+# Registry - identities this CA can issue
+registry:
+  maxenrollments: -1
+  identities:
+    - name: {{ ICA_NAME }}
+      pass: {{ ICA_PASSWORD }}                 # e.g., greenstandcapw
+      type: client
+      attrs:
+        hf.IntermediateCA: "true"
+
+# Affiliations - organizational hierarchy
+affiliations:
+  {{ ORG_NAME }}:                              # e.g., greenstand
+    - department1
+    - department2
+
+# Signing options
+csr:
+  cn: {{ ICA_NAME }}
+  hosts:
+    - {{ ICA_NAME }}
+    - {{ ICA_NAME }}.hlf-ca.svc.cluster.local
+    - localhost
+  names:
+    - C: US
+      ST: North Carolina
+      L: Durham
+      O: Treetracker
+      OU: {{ ORG_NAME }} Department
+
+# Certificate expiration settings
+caexpiry: 8760h   # 1 year
+certfileexpiry: 8760h
+crl:
+  expiry: 24h
+
+# LDAP (not used here)
+ldap:
+  enabled: false
+
+# Intermediate CA settings (pointing to Root CA)
+intermediate:
+  parentserver:
+    url: https://admin:adminpw@root-ca.hlf-ca.svc.cluster.local:7054
+    caname: root-ca
+    tls:
+      certfiles:
+        - /etc/hyperledger/fabric-ca-server/root-tls-cert.pem

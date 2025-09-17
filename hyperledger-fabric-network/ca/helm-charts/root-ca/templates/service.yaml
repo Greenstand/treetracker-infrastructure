@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.rootCA.name }}
+  namespace: {{ .Values.rootCA.namespace }}
+  labels:
+    app: {{ .Values.rootCA.name }}
+spec:
+  selector:
+    app: {{ .Values.rootCA.name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.rootCA.port }}
+      targetPort: ca-port
+  type: ClusterIP

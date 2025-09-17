@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.rootCA.name }}
+  namespace: {{ .Values.rootCA.namespace }}
+  labels:
+    app: {{ .Values.rootCA.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.rootCA.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.rootCA.name }}
+    spec:
+      containers:
+        - name: fabric-ca
+          image: "{{ .Values.rootCA.image.repository }}:{{ .Values.rootCA.image.tag }}"
+          imagePullPolicy: {{ .Values.rootCA.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.rootCA.port }}
+              name: ca-port
+          env:
+            - name: FABRIC_CA_HOME
+              value: /etc/hyperledger/fabric-ca-server
+            - name: FABRIC_CA_SERVER_CA_NAME
+              value: {{ .Values.rootCA.name }}
+            - name: FABRIC_CA_SERVER_PORT
+              value: "{{ .Values.rootCA.port }}"
+            - name: FABRIC_CA_SERVER_TLS_ENABLED
+              value: "true"
+            - name: FABRIC_CA_SERVER_CSR_HOSTS
+              value: "root-ca,root-ca.hlf-ca.svc.cluster.local,localhost"
+          volumeMounts:
+            - name: fabric-ca-data
+              mountPath: /etc/hyperledger/fabric-ca-server
+      volumes:
+        - name: fabric-ca-data
+          persistentVolumeClaim:
+            claimName: pvc-{{ .Values.rootCA.name }}

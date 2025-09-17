@@ -1,16 +1,54 @@
-
-name: "Pre-Commit"
+name: Pre-Commit
 
 on:
   pull_request:
   push:
-    branches:
-      - master
+    branches: [ master ]
 
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
-    continue-on-error: true
+    permissions:
+      contents: write          # only needed if you keep the auto-commit step
     steps:
-    - uses: actions/checkout@v3
-    - uses: pre-commit/action@v2.0.3
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+
+      # If you have Terraform hooks, keep this (safe even if you don't)
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.x
+
+      - name: Install pre-commit
+        run: python -m pip install --upgrade pre-commit
+
+      # PRs: check-only (fail if formatting needed), no cache involved
+      - name: Run pre-commit (check-only) on PR
+        if: github.event_name == 'pull_request'
+        env:
+          PRE_COMMIT_COLOR: always
+          PRE_COMMIT_HOME: .cache/pre-commit   # local dir, not GitHub cache
+        run: pre-commit run --all-files --verbose --show-diff-on-failure
+
+      # Pushes: apply fixes (format files) and commit them back
+      - name: Run pre-commit (apply fixes) on push
+        if: github.event_name == 'push'
+        env:
+          PRE_COMMIT_COLOR: always
+          PRE_COMMIT_HOME: .cache/pre-commit
+        run: pre-commit run --all-files --verbose
+
+      - name: Commit pre-commit fixes (if any)  # optional
+        if: github.event_name == 'push'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(pre-commit): apply auto-fixes"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
+
+      # Verify clean after auto-fix (optional)
+      - name: Verify no diffs
+        if: github.event_name == 'push'
+        run: git diff --exit-code

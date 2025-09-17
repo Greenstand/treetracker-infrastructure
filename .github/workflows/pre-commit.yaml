@@ -1,16 +1,56 @@
-
-name: "Pre-Commit"
+name: Pre-Commit
 
 on:
   pull_request:
   push:
-    branches:
-      - master
+    branches: [ master ]
 
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
-    continue-on-error: true
+    permissions:
+      contents: write  # needed for auto-commit on push events
     steps:
-    - uses: actions/checkout@v3
-    - uses: pre-commit/action@v2.0.3
+      # For push: check out the actual branch; for PR: check out the head ref if available
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+
+      # Terraform needed by terraform_fmt (keep if you use TF hooks)
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.x
+
+      # ---- PATH A: push events -> allow auto-fix & push back ----
+      - name: Run pre-commit (apply fixes) on push
+        if: github.event_name == 'push'
+        id: precommit_push
+        uses: pre-commit/action@v3.0.1
+        with:
+          # no --check here so it can write changes
+          extra_args: --all-files --verbose
+
+      - name: Commit pre-commit fixes (if any)
+        if: github.event_name == 'push'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(pre-commit): apply auto-fixes"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
+          # Do NOT set 'branch:' — it pushes to the currently checked-out ref.
+          # file_pattern: "."  # optional
+
+      - name: Verify clean after auto-fix
+        if: github.event_name == 'push'
+        uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: --all-files --verbose --show-diff-on-failure
+
+      # ---- PATH B: pull_request events -> check-only, don't try to push ----
+      - name: Run pre-commit (check-only) on PR
+        if: github.event_name == 'pull_request'
+        uses: pre-commit/action@v3.0.1
+        with:
+          # show diffs, but fail if formatting is needed
+          extra_args: --all-files --verbose --show-diff-on-failure

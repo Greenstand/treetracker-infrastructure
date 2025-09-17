@@ -1,0 +1,6 @@
+apiVersion: v2
+name: fabric-orderer
+description: Hyperledger Fabric RAFT Ordering Service (one StatefulSet per orderer)
+type: application
+version: 0.1.0
+appVersion: "2.5.7"

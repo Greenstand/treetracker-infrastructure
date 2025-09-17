@@ -1,0 +1,118 @@
+# values.yaml
+
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: hyperledger/fabric-orderer
+  tag: 2.5.7
+  pullPolicy: IfNotPresent
+
+initImage:
+  repository: busybox
+  tag: "1.36"
+  pullPolicy: IfNotPresent
+
+# Define each orderer (one StatefulSet per entry)
+orderers:
+  - name: orderer0
+    mspID: OrdererMSP
+    mspSecretName: orderer0-msp
+    tlsSecretName: orderer0-tls
+  - name: orderer1
+    mspID: OrdererMSP
+    mspSecretName: orderer1-msp
+    tlsSecretName: orderer1-tls
+  - name: orderer2
+    mspID: OrdererMSP
+    mspSecretName: orderer2-msp
+    tlsSecretName: orderer2-tls
+  - name: orderer3
+    mspID: OrdererMSP
+    mspSecretName: orderer3-msp
+    tlsSecretName: orderer3-tls
+  - name: orderer4
+    mspID: OrdererMSP
+    mspSecretName: orderer4-msp
+    tlsSecretName: orderer4-tls
+
+# Service/container ports
+ports:
+  client: 7050       # client/peer requests (gRPC)
+  cluster: 7051      # RAFT cluster comms
+  operations: 9443   # Prometheus/health
+
+# Persistent storage for ledger/WAL/snapshots
+storage:
+  size: 10Gi
+  storageClassName: ""   # set your StorageClass here if no default
+
+resources:
+  requests:
+    cpu: "250m"
+    memory: "512Mi"
+  limits:
+    cpu: "1000m"
+    memory: "2Gi"
+
+# Optional scheduling controls
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Bootstrap mode toggle
+# participation API (preferred): enabled here by setting genesis.enabled=false
+# legacy genesis bootstrap: set enabled=true and create the secret below
+genesis:
+  enabled: false
+  secretName: "genesis-block"
+  mountPath: "/var/hyperledger/genesis"
+  fileName: "genesis.block"
+
+# This renders to /etc/hyperledger/fabric/orderer.yaml in the pod
+ordererConfig:
+  General:
+    ListenAddress: 0.0.0.0
+    ListenPort: 7050
+    TLS:
+      Enabled: true
+    Keepalive:
+      ServerMinInterval: 60s
+    Cluster:
+      ListenPort: 7051
+
+  # File-based ledger path (replace deprecated General.LedgerType)
+  FileLedger:
+    Location: /var/hyperledger/production/orderer
+
+  # Enable the Channel Participation API (no system channel / no genesis)
+  ChannelParticipation:
+    Enabled: true
+
+  # Health/metrics
+  Operations:
+    ListenAddress: 0.0.0.0:9443
+  Metrics:
+    Provider: prometheus
+
+  # Optional explicit etcdraft directories (safe defaults)
+  Consensus:
+    WALDir: /var/hyperledger/production/orderer/etcdraft/wal
+    SnapDir: /var/hyperledger/production/orderer/etcdraft/snapshot
+
+# Probes (Operations endpoint is HTTP)
+probes:
+  readiness:
+    enabled: true
+    path: /healthz
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 6
+  liveness:
+    enabled: true
+    path: /healthz
+    initialDelaySeconds: 20
+    periodSeconds: 20
+    timeoutSeconds: 5
+    failureThreshold: 6

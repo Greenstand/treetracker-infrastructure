@@ -1,0 +1,61 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: orderer-generate-network-policy
+  annotations:
+    description: "Generate NetworkPolicy to restrict ingress traffic for orderer workloads"
+    policies.kyverno.io/category: Networking
+    policies.kyverno.io/severity: medium
+spec:
+  generateExisting: false
+  rules:
+  - name: generate-orderer-network-policy
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+          names:
+          - orderer
+    generate:
+      synchronize: true
+      apiVersion: networking.k8s.io/v1
+      kind: NetworkPolicy
+      name: orderer-ingress-policy
+      namespace: "{{ request.object.metadata.name }}"
+      data:
+        metadata:
+          labels:
+            generated-by: kyverno
+            app.kubernetes.io/part-of: hyperledger-fabric
+        spec:
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: fabric-orderer
+          policyTypes:
+          - Ingress
+          ingress:
+          # Allow from peer namespaces
+          - from:
+            - namespaceSelector:
+                matchLabels:
+                  peer-access: "true"
+            ports:
+            - protocol: TCP
+              port: 7050
+          # Allow inter-orderer Raft communication
+          - from:
+            - podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: fabric-orderer
+            ports:
+            - protocol: TCP
+              port: 7050
+          # Allow operations endpoint (optional)
+          - from:
+            - namespaceSelector:
+                matchLabels:
+                  monitoring-access: "true"
+            ports:
+            - protocol: TCP
+              port: 9443

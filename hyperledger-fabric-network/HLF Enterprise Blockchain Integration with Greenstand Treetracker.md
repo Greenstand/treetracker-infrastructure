@@ -33,7 +33,7 @@ Fabric’s ordering service packages endorsed transactions into blocks, determin
 ---
 
 ## Treetracker Integration Architecture
-![alt text](<HLF TT Arch2.png>)
+<img width="1449" height="658" alt="HLF TT Arch2" src="https://github.com/user-attachments/assets/6da6552b-262e-4563-b950-06e55a4cdf40" />
 
 ### Client Applications
 
@@ -65,7 +65,8 @@ Fabric’s ordering service packages endorsed transactions into blocks, determin
 ---
 
 ## Hyperledger Fabric Network Setup
-![alt text](<HLF TT Arch3.png>)
+<img width="1407" height="780" alt="HLF TT Arch3" src="https://github.com/user-attachments/assets/58319135-b102-4b6d-9e19-c1e2ff54225c" />
+
 ### Ordering Service
 
 A **Raft** ordering service is provisioned with five orderer nodes, distributed across multiple data centres for high availability. Raft is crash-fault-tolerant; it can withstand the loss of up to two nodes in a five-node cluster ([hyperledger-fabric.readthedocs.io](https://hyperledger-fabric.readthedocs.io)). Each channel runs its own Raft instance, electing a leader per channel ([hyperledger-fabric.readthedocs.io](https://hyperledger-fabric.readthedocs.io)). Organisations may specify which of their orderer nodes participate in each channel ([hyperledger-fabric.readthedocs.io](https://hyperledger-fabric.readthedocs.io)).
@@ -75,7 +76,7 @@ A **Raft** ordering service is provisioned with five orderer nodes, distributed 
 Each organisation runs endorsing and committing peers. Endorsing peers execute chaincode and produce proposal responses; committing peers validate transactions and update their ledgers. Peers use a **gossip** protocol to discover other peers, disseminate blocks and private data, and keep ledgers consistent ([hyperledger-fabric.readthedocs.io](https://hyperledger-fabric.readthedocs.io)). Gossip also elects leaders within organisations to efficiently pull blocks from the ordering service ([hyperledger-fabric.readthedocs.io](https://hyperledger-fabric.readthedocs.io)).
 
 ### Channels
-![alt text](<HLF TT Arch4.2.png>)
+<img width="1036" height="927" alt="HLF TT Arch4 2" src="https://github.com/user-attachments/assets/0bbf4dd6-4903-4c75-b052-442ca5ad13f5" />
 
 Treetracker uses several channels:
 
@@ -90,7 +91,7 @@ Treetracker uses several channels:
 For each organisation, a root CA issues certificates for one or more intermediate CAs. Intermediate CAs issue X.509 certificates to users, peers and orderers. The Fabric CA server is initialised with a CSR (Certificate Signing Request) specifying fields like Common Name (CN), organisation (O), organisational unit (OU), location (L), state (ST) and country (C) ([hyperledger-fabric-ca.readthedocs.io](https://hyperledger-fabric-ca.readthedocs.io)). The server can generate a self-signed CA certificate or obtain a certificate signed by a parent CA ([hyperledger-fabric-ca.readthedocs.io](https://hyperledger-fabric-ca.readthedocs.io)). TLS is enabled to secure enrolment and registration ([hyperledger-fabric-ca.readthedocs.io](https://hyperledger-fabric-ca.readthedocs.io)). The Membership Service Provider (MSP) uses these certificates to define valid identities and assign roles ([hyperledger-fabric.readthedocs.io](https://hyperledger-fabric.readthedocs.io)).
 
 ### Smart Contracts (Chaincode)
-![alt text](<HLF TT Arch5.png>)
+<img width="1199" height="575" alt="HLF TT Arch5" src="https://github.com/user-attachments/assets/9b1c669e-e356-419c-b594-98492f5055a2" />
 
 Chaincode encapsulates the business logic of Treetracker. Four main contracts are envisaged:
 
@@ -107,7 +108,7 @@ Chaincode runs in a Docker container managed by peers. Fabric’s **new chaincod
 ---
 
 ## Transaction Flow Mapping
-![alt text](<HLF TT Arch6.png>)
+<img width="1562" height="409" alt="HLF TT Arch6" src="https://github.com/user-attachments/assets/2f706ca2-48c3-47cf-835b-8cd78911b531" />
 
 A typical tree registration and token issuance flow maps onto Fabric’s transaction flow ([hyperledger-fabric.readthedocs.io](https://hyperledger-fabric.readthedocs.io)):
 

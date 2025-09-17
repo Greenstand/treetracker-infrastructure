@@ -1,16 +1,22 @@
-
-name: "Pre-Commit"
+name: Pre-Commit
 
 on:
   pull_request:
   push:
-    branches:
-      - master
+    branches: [ master ]
 
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
-    - uses: actions/checkout@v3
-    - uses: pre-commit/action@v2.0.3
+      - uses: actions/checkout@v4
+
+      # Install Terraform for terraform_fmt (and other TF hooks)
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.x   # or pin exactly, e.g. 1.9.6
+
+      # Run pre-commit with useful output
+      - uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: --all-files --verbose --show-diff-on-failure

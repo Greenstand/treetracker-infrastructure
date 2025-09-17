@@ -1,16 +1,18 @@
-
-name: "Pre-Commit"
+name: Pre-Commit
 
 on:
   pull_request:
   push:
-    branches:
-      - master
+    branches: [ master ]
 
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
-    - uses: actions/checkout@v3
-    - uses: pre-commit/action@v2.0.3
+      - uses: actions/checkout@v4
+
+      - uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: --all-files --verbose --show-diff-on-failure
+        env:
+          PRE_COMMIT_COLOR: always

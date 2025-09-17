@@ -1,4 +1,4 @@
-<img width="1291" height="812" alt="Treetracker HLF Network" src="https://github.com/user-attachments/assets/0d799dd3-5c09-402b-8f33-ed6c2b61df25" />
+<img width="1291" height="812" alt="Treetracker HLF Network" src="https://github.com/user-attachments/assets/e6f0b726-b253-4108-8f84-06cd6cb46db3" />
 
 <div align="center">
   <h3>🌳 Blockchain-based Tree Tracking Network 🌳</h3>

@@ -1,0 +1,58 @@
+name: Create IAM PR from Issue
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  create-pr:
+    if: contains(github.event.issue.labels.*.name, 'iam-request')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract issue body
+        id: parse
+        run: |
+          printf "%s" "${{ github.event.issue.body }}" > issue.txt
+
+      - name: Create user config file
+        id: userfile
+        run: |
+          # Use sanitized issue number as filename
+          FILE="requests/request-${{ github.event.issue.number }}.yaml"
+
+          echo "Creating $FILE..."
+
+          # Extract values from the issue (which is pre-structured)
+          FULL_NAME=$(grep -A1 "Full name" issue.txt | tail -n1)
+          EMAIL=$(grep -A1 "Email" issue.txt | tail -n1)
+          USERNAME=$(grep -A1 "Preferred IAM username" issue.txt | tail -n1)
+          ROLE=$(grep -A1 "Access level" issue.txt | tail -n1)
+
+          mkdir -p requests
+          cat <<EOF > "$FILE"
+github_login: "${{ github.event.issue.user.login }}"
+full_name: "$FULL_NAME"
+email: "$EMAIL"
+iam_username: "$USERNAME"
+groups:
+  - "$ROLE"
+EOF
+
+          echo "file_path=$FILE" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: "IAM Request for ${{ github.event.issue.user.login }}"
+          body: "Auto-generated from Issue #${{ github.event.issue.number }}"
+          commit-message: "Add IAM request for ${{ github.event.issue.user.login }}"
+          branch: "iam-request-${{ github.event.issue.number }}"
+          base: main
+          add-paths: ${{ steps.userfile.outputs.file_path }}

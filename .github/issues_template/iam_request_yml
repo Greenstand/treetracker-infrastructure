@@ -1,0 +1,39 @@
+name: Volunteer IAM Request
+description: Submit a request to create your IAM user for AWS access
+title: "[IAM Request] "
+labels: ["iam-request"]
+body:
+  - type: input
+    id: full_name
+    attributes:
+      label: Full name
+    validations:
+      required: true
+  - type: input
+    id: email
+    attributes:
+      label: Email to use for IAM account
+    validations:
+      required: true
+  - type: input
+    id: username
+    attributes:
+      label: Preferred IAM username (letters/dashes only)
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: Access level requested
+      options:
+        - VolunteersReadOnly
+        - VolunteersPowerUser
+    validations:
+      required: true
+  - type: textarea
+    id: justification
+    attributes:
+      label: Why do you need this access?
+      placeholder: short explanation
+    validations:
+      required: true

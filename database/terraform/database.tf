@@ -45,12 +45,13 @@ resource "digitalocean_database_firewall" "treetracker-database-fw" {
   }
 }
 
-resource "digitalocean_database_replica" "treetracker-postgres-read-replica" {
-  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
-  name       = "read-replica"
-  size       = "db-s-2vcpu-4gb"
-  region     = "nyc1"
-}
+#resource "digitalocean_database_replica" "treetracker-postgres-read-replica" {
+#  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
+#  name       = "read-replica"
+#  size       = "db-s-4vcpu-8gb"
+#  region     = "nyc1"
+#  tags       = ["foresmatic"]
+#}
 
 #resource "digitalocean_database_replica_firewall" "treetracker-database-replica-fw" {
 #  cluster_id = digitalocean_database_replica.treetracker-postgres-read-replica.id
@@ -76,13 +77,13 @@ resource "digitalocean_database_db" "ckan-database" {
   name       = "ckan"
 }
 
-resource "digitalocean_database_db" "ckan-datastore-database" {
-  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
-  name       = "ckan_datastore"
-}
-
-resource "digitalocean_database_db" "world-bank-backup-database" {
-  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
-  name       = "world_bank_backup"
-}
+#resource "digitalocean_database_db" "ckan-datastore-database" {
+#  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
+#  name       = "ckan_datastore"
+#}
+#
+#resource "digitalocean_database_db" "world-bank-backup-database" {
+#  cluster_id = digitalocean_database_cluster.treetracker-postgres-cluster.id
+#  name       = "world_bank_backup"
+#}
 

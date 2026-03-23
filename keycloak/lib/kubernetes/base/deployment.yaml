@@ -54,3 +54,5 @@ spec:
               value: "/keycloak"
             - name: KC_PROXY_HEADERS
               value: "xforwarded"
+            - name: KC_HTTP_ENABLED
+              value: "true"

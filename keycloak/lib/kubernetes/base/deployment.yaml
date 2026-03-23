@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: treetracker-keycloak
-          image: quay.io/keycloak/keycloak:26.1.0
+          image: quay.io/keycloak/keycloak:26.5.0
           env:
             - name: KC_LOG_LEVEL
               value: INFO

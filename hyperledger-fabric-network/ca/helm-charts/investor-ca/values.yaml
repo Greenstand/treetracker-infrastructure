@@ -1,0 +1,43 @@
+# Default values for the Investor intermediate CA chart.
+
+intermediateCA:
+  enabled: true
+  name: investor-ca
+  namespace: hlf-ca
+
+  image:
+    repository: hyperledger/fabric-ca
+    tag: 1.5.12
+    pullPolicy: IfNotPresent
+
+  port: 7054
+
+  storage:
+    accessMode: ReadWriteOnce
+    size: 2Gi
+    storageClass: do-block-storage
+    pvcName: pvc-investor-ca  # Added from second block
+
+  parentID: investor-ca
+  parentSecret: investorcapw
+  parentHost: root-ca.hlf-ca.svc.cluster.local
+
+  csr:
+    cn: investor-ca           # Added from second block
+    hosts:
+      - investor-ca
+      - investor-ca.hlf-ca.svc.cluster.local
+      - localhost
+
+  tls:
+    enabled: true
+    secretName: investor-ca-tls-cert
+
+  msp:
+    secretName: investor-ca-msp
+
+  bootstrapUser: investor-ca
+  bootstrapPassword: investorcapw
+
+  service:
+    port: 7054

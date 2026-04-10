@@ -1,0 +1,16 @@
+{{- if .Values.intermediateCA.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.intermediateCA.name }}
+  namespace: {{ .Values.intermediateCA.namespace }}
+  labels:
+    app: {{ .Values.intermediateCA.name }}
+spec:
+  selector:
+    app: {{ .Values.intermediateCA.name }}
+  ports:
+    - name: ca-port
+      port: {{ .Values.intermediateCA.port }}
+      targetPort: ca-port
+{{- end -}}

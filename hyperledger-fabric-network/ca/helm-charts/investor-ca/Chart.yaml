@@ -1,0 +1,6 @@
+apiVersion: v2
+name: investor-ca
+description: Hyperledger Fabric intermediate CA for Investor
+type: application
+version: 0.1.0
+appVersion: 1.5.12

@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: keycloak
+    app.kubernetes.io/instance: keycloak
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/part-of: keycloak
+    app.kubernetes.io/version: 26.3.3
+    helm.sh/chart: keycloak-25.2.0
+  name: keycloak-nodeport
+  namespace: keycloak-next
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/component: keycloak
+    app.kubernetes.io/instance: keycloak
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/part-of: keycloak
+  type: NodePort
+status:
+  loadBalancer: {}

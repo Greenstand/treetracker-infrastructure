@@ -1,9 +1,13 @@
 #!/bin/bash
 
-# Retrieve keys from your netrc, specified as
-# machine sfo2.digitaloceanspaces.com login KEY password SECRET
+# Retrieve keys from your netrc. Two entries are expected:
+#   machine sfo2.digitaloceanspaces.com login SPACES_KEY password SPACES_SECRET
+#   machine api.digitalocean.com login unused password DO_API_TOKEN
 # Source this file before running terraform commands
-netrc_string=$(grep digitalocean.dev.treetracker.org ~/.netrc)
-export AWS_ACCESS_KEY_ID=$(echo $netrc_string | awk '{print $4}')
-export AWS_SECRET_ACCESS_KEY=$(echo $netrc_string | awk '{print $6}')
+spaces_string=$(grep sfo2.digitaloceanspaces.com ~/.netrc)
+export AWS_ACCESS_KEY_ID=$(echo $spaces_string | awk '{print $4}')
+export AWS_SECRET_ACCESS_KEY=$(echo $spaces_string | awk '{print $6}')
+
+api_string=$(grep api.digitalocean.com ~/.netrc)
+export TF_VAR_do_token=$(echo $api_string | awk '{print $6}')
 

@@ -1,9 +1,5 @@
 variable "cluster_name" {}
 
-data "digitalocean_kubernetes_versions" "treetracker_kubernetes_version" {
-  version_prefix = "1.20."
-}
-
 resource "digitalocean_kubernetes_cluster" "kubernetes-cluster" {
   name = var.cluster_name
 
@@ -13,12 +9,14 @@ resource "digitalocean_kubernetes_cluster" "kubernetes-cluster" {
 
   region       = "sfo2"
   auto_upgrade = true
-  version      = data.digitalocean_kubernetes_versions.treetracker_kubernetes_version.latest_version
+  version      = "1.32.13-do.2"
 
   node_pool {
     name       = "default-node-pool"
     size       = "s-2vcpu-4gb"
-    node_count = 1
+    auto_scale = true
+    min_nodes  = 1
+    max_nodes  = 2
     tags       = ["default-node", "treetracker-database-access"]
   }
 
@@ -29,7 +27,9 @@ resource "digitalocean_kubernetes_node_pool" "microservices-node-pool" {
 
   name       = "microservices-node-pool"
   size       = "s-2vcpu-4gb"
-  node_count = 3
+  auto_scale = true
+  min_nodes  = 1
+  max_nodes  = 3
   tags       = ["microservices-node", "treetracker-database-access"]
 
 }
@@ -40,7 +40,9 @@ resource "digitalocean_kubernetes_node_pool" "cloud-services-node-pool" {
 
   name       = "cloud-services-node-pool"
   size       = "s-2vcpu-4gb"
-  node_count = 4
+  auto_scale = true
+  min_nodes  = 1
+  max_nodes  = 4
   tags       = ["cloud-services-node", "treetracker-database-access"]
 
 }
@@ -50,7 +52,9 @@ resource "digitalocean_kubernetes_node_pool" "monitoring-node-pool" {
 
   name       = "monitoring-node-pool"
   size       = "s-2vcpu-4gb"
-  node_count = 3
+  auto_scale = true
+  min_nodes  = 1
+  max_nodes  = 3
   tags       = ["monitoring-node", "treetracker-database-access"]
 
 }

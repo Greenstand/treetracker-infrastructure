@@ -1,0 +1,6 @@
+apiVersion: v2
+name: fabric-ca
+description: Fabric CA deployment chart for Hyperledger Fabric Root and Intermediate CAs
+type: application
+version: 0.1.0
+appVersion: "1.5.12"

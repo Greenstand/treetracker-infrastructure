@@ -1,0 +1,16 @@
+{{- if .Values.intermediateCA.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.intermediateCA.storage.pvcName }}
+  namespace: {{ .Values.intermediateCA.namespace }}
+  labels:
+    app: {{ .Values.intermediateCA.name }}
+spec:
+  accessModes:
+    - {{ .Values.intermediateCA.storage.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.intermediateCA.storage.size | quote }}
+  storageClassName: {{ .Values.intermediateCA.storage.storageClass | quote }}
+{{- end }}

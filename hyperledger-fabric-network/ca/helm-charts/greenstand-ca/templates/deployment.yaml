@@ -1,0 +1,46 @@
+{{- if .Values.intermediateCA.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.intermediateCA.name }}
+  namespace: {{ .Values.intermediateCA.namespace }}
+  labels:
+    app: {{ .Values.intermediateCA.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.intermediateCA.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.intermediateCA.name }}
+    spec:
+      containers:
+        - name: fabric-ca
+          image: "{{ .Values.intermediateCA.image.repository }}:{{ .Values.intermediateCA.image.tag }}"
+          imagePullPolicy: {{ .Values.intermediateCA.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.intermediateCA.port }}
+              name: ca-port
+          env:
+            - name: FABRIC_CA_HOME
+              value: /etc/hyperledger/fabric-ca-server
+            - name: FABRIC_CA_SERVER_CA_NAME
+              value: {{ .Values.intermediateCA.name }}
+            - name: FABRIC_CA_SERVER_PORT
+              value: "{{ .Values.intermediateCA.port }}"
+            - name: FABRIC_CA_SERVER_PARENT_URL
+              value: "https://{{ .Values.intermediateCA.parentID }}:{{ .Values.intermediateCA.parentSecret }}@{{ .Values.intermediateCA.parentHost }}:7054"
+            - name: FABRIC_CA_SERVER_TLS_ENABLED
+              value: "true"
+            - name: FABRIC_CA_SERVER_CSR_HOSTS
+              value: "{{ join "," .Values.intermediateCA.csr.hosts }}"
+          volumeMounts:
+            - name: fabric-ca-data
+              mountPath: /etc/hyperledger/fabric-ca-server
+      volumes:
+        - name: fabric-ca-data
+          persistentVolumeClaim:
+            claimName: pvc-{{ .Values.intermediateCA.name }}
+{{- end -}}

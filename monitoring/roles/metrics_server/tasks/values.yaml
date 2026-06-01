@@ -1,0 +1,11 @@
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: doks.digitalocean.com/node-pool
+          operator: In
+          values:
+          - cloud-services-node-pool
+apiService:
+  create: true

@@ -53,7 +53,7 @@ resource "digitalocean_kubernetes_node_pool" "monitoring-node-pool" {
   name       = "monitoring-node-pool"
   size       = "s-2vcpu-4gb"
   auto_scale = true
-  min_nodes  = 1
+  min_nodes  = 0
   max_nodes  = 3
   tags       = ["monitoring-node", "treetracker-database-access"]
 

@@ -28,12 +28,6 @@ module "earnings_schema" {
   }
 }
 
-module "webmap_schema" {
-  source = "./schemas/webmap"
-  providers = {
-    postgresql = postgresql.treetracker
-  }
-}
 
 module "reporting_schema" {
   source = "./schemas/reporting"
@@ -70,19 +64,7 @@ module "stakeholder_schema" {
   }
 }
 
-module "regions_schema" {
-  source = "./schemas/regions"
-  providers = {
-    postgresql = postgresql.treetracker
-  }
-}
 
-module "contracts_schema" {
-  source = "./schemas/contracts"
-  providers = {
-    postgresql = postgresql.treetracker
-  }
-}
 
 module "keycloak_schema" {
   source = "./schemas/keycloak"

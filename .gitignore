@@ -1,5 +1,6 @@
 *playbook.retry
 .DS_Store
+*.tfvars
 terraform.tfvars
 .terraform*
 *.swp

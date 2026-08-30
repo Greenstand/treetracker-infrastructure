@@ -1,0 +1,56 @@
+-- Raise work_mem to 64MB for the readonlyuser role on the treetracker database.
+--
+-- Why: the tile-map read queries sort large amounts of spatial data. When an operation needs
+--   more memory than work_mem, PostgreSQL writes the overflow to temporary files on disk and
+--   reads it back. Two 12-hour monitoring runs showed about 55 to 65GB of temp writes per
+--   window (and a similar volume of temp reads, since temp read and write are close to 1:1)
+--   while replica memory sat near 30 percent. That is the signature of an under-sized
+--   work_mem: the database trades spare RAM for disk spill. The current work_mem is 13MB (the
+--   DigitalOcean default on this 16GB replica); this change raises it to 64MB, about 5x.
+--
+-- Scope: readonlyuser, database treetracker only. No other role, database, or the primary
+--   writer is affected. work_mem is allocated per operation per connection, so a wider scope
+--   would multiply memory use across unrelated workloads and risk an out-of-memory condition,
+--   especially on the smaller 8GB primary.
+--
+-- Why 64MB: the value is bounded by peak concurrency, not the average. The read role peaks at
+--   about 30 to 33 concurrent heavy queries (confirmed across both monitoring runs), so 64MB
+--   keeps the worst-case in-memory footprint safe on the 16GB replica. A larger value such as
+--   256MB would remove more spill but risks OOM at that concurrency, so it is left for later,
+--   once the follow-up indexes reduce the pile-up.
+--
+-- Expected effect: the captured query plans show the spill comes from Sort nodes running in a
+--   single process, so work_mem applies at 1x (hash_mem_multiplier and parallel workers do not
+--   apply here). At 64MB this gives a meaningful but partial reduction, largest for the
+--   mid-size queries. The case1 spatial queries, whose per-call working set is about 1.33GB,
+--   are far above any safe work_mem and improve only marginally; they need the spatial index,
+--   not more memory. The exact reduction should be measured on the validation fork with
+--   EXPLAIN (ANALYZE, BUFFERS). This change is a mitigation, not the complete fix.
+--
+-- Applied by: a database administrator using the doadmin account. The CI service account is
+--   intentionally not permitted to change production data.
+--
+-- Not Terraform: the cyrilgdn/postgresql provider (1.22.0) used in database-grants has no
+--   resource for a per-role, per-database configuration parameter (the
+--   ALTER ROLE ... IN DATABASE ... SET form), so this cannot be expressed as a Terraform
+--   resource. See ./README.md.
+--
+-- After applying: recycle the pgpool connection pool (restart the pgpool deployment). The new
+--   value only takes effect for new backend sessions at login time, and pgpool holds
+--   long-lived pooled connections, so they must be recycled to pick up 64MB.
+
+-- APPLY
+ALTER ROLE readonlyuser IN DATABASE treetracker SET work_mem = '64MB';
+
+-- VERIFY (stored default is present)
+-- SELECT r.rolname, d.datname, s.setconfig
+-- FROM pg_db_role_setting s
+-- JOIN pg_roles r ON r.oid = s.setrole
+-- JOIN pg_database d ON d.oid = s.setdatabase
+-- WHERE r.rolname = 'readonlyuser' AND d.datname = 'treetracker';
+
+-- VERIFY (effective value, in a new readonlyuser session after the pgpool recycle)
+-- SHOW work_mem;  -- expect 64MB
+
+-- ROLLBACK (restore the cluster default for this role and database, then recycle pgpool again)
+-- ALTER ROLE readonlyuser IN DATABASE treetracker RESET work_mem;

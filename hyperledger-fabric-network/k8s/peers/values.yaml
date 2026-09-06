@@ -1,0 +1,1206 @@
+expectedNamespace: hlf-peer-org
+commonLabels: {}
+imagePullSecrets: []
+nodeSelector: {}
+tolerations: []
+podAnnotations: {}
+defaults:
+  podAnnotations: {}
+  pod:
+    containers:
+      peer:
+        env:
+          CORE_PEER_CHAINCODELISTENADDRESS:
+            value: 0.0.0.0:7052
+          CORE_PEER_MSPCONFIGPATH:
+            value: /var/hyperledger/msp
+          CORE_PEER_LISTENADDRESS:
+            value: 0.0.0.0:7051
+          CORE_PEER_GOSSIP_USELEADERELECTION:
+            value: 'true'
+          CORE_PEER_GOSSIP_ORGLEADER:
+            value: 'false'
+          CORE_PEER_PROFILE_ENABLED:
+            value: 'true'
+          CORE_PEER_TLS_ENABLED:
+            value: 'true'
+          CORE_PEER_TLS_CERT_FILE:
+            value: /var/hyperledger/tls/server.crt
+          CORE_PEER_TLS_KEY_FILE:
+            value: /var/hyperledger/tls/server.key
+          CORE_PEER_TLS_ROOTCERT_FILE:
+            value: /var/hyperledger/tls/ca.crt
+          CORE_LEDGER_STATE_STATEDATABASE:
+            value: CouchDB
+          CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME:
+            valueFrom:
+              secretKeyRef:
+                key: username
+                name: couchdb-credentials
+          CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: couchdb-credentials
+          FABRIC_LOGGING_SPEC:
+            value: info
+          CORE_PEER_LOGGING_LEVEL:
+            value: info
+          CORE_OPERATIONS_LISTENADDRESS:
+            value: 0.0.0.0:9443
+          CORE_OPERATIONS_TLS_ENABLED:
+            value: 'false'
+          CORE_METRICS_PROVIDER:
+            value: prometheus
+          CORE_CHAINCODE_EXECUTETIMEOUT:
+            value: 300s
+          CORE_CHAINCODE_STARTUPTIMEOUT:
+            value: 300s
+          CORE_CHAINCODE_LOGGING_LEVEL:
+            value: info
+          CORE_CHAINCODE_LOGGING_SHIM:
+            value: info
+          CORE_CHAINCODE_EXTERNALBUILDERS:
+            value: '[{"name": "external", "path": "/builders/external", "environmentWhitelist": ["GOPROXY"]}]'
+        image: docker.io/hyperledger/fabric-peer@sha256:09ee75042de9983bfde31ca88a5bf033386351f10a990e4c48264ee50172dee0
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 9443
+          periodSeconds: 20
+          timeoutSeconds: 5
+          failureThreshold: 3
+        ports:
+        - containerPort: 7051
+          name: peer-port
+          protocol: TCP
+        - containerPort: 7052
+          name: chaincode-port
+          protocol: TCP
+        - containerPort: 9443
+          name: operations-port
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 9443
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1Gi
+          requests:
+            cpu: 200m
+            memory: 512Mi
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        startupProbe:
+          httpGet:
+            path: /healthz
+            port: 9443
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 60
+    securityContext:
+      fsGroup: 1000
+      fsGroupChangePolicy: Always
+      runAsGroup: 1000
+      runAsUser: 1000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationGracePeriodSeconds: 90
+    volumes:
+      msp-certs:
+        secret:
+          defaultMode: 420
+          items:
+          - key: msp-cert
+            path: msp-cert
+          - key: msp-key
+            path: msp-key
+          - key: msp-cacert
+            path: msp-cacert
+      tls-certs:
+        secret:
+          defaultMode: 420
+          items:
+          - key: tls-cert
+            path: tls-cert
+          - key: tls-key
+            path: tls-key
+          - key: tls-cacert
+            path: tls-cacert
+      msp-config:
+        configMap:
+          defaultMode: 420
+      builders:
+        configMap:
+          name: fabric-external-builder
+          defaultMode: 365
+          items:
+          - key: detect
+            path: external/bin/detect
+          - key: build
+            path: external/bin/build
+          - key: release
+            path: external/bin/release
+    automountServiceAccountToken: false
+nodes:
+  peer0-cbo:
+    pod:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: fabric-peer
+                  organization: cbo
+              topologyKey: kubernetes.io/hostname
+      containers:
+        peer:
+          env:
+            CORE_PEER_ID:
+              value: peer0-cbo
+            CORE_PEER_ADDRESS:
+              value: peer0-cbo.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_CHAINCODEADDRESS:
+              value: peer0-cbo.hlf-peer-org.svc.cluster.local:7052
+            CORE_PEER_GOSSIP_BOOTSTRAP:
+              value: peer0-cbo.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_GOSSIP_EXTERNALENDPOINT:
+              value: peer0-cbo.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_LOCALMSPID:
+              value: CboMSP
+            CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS:
+              value: peer0-cbo-couchdb:5984
+          volumeMounts:
+          - mountPath: /builders
+            name: builders
+            readOnly: true
+          - mountPath: /var/hyperledger/msp/signcerts/cert.pem
+            name: msp-certs
+            readOnly: true
+            subPath: msp-cert
+          - mountPath: /var/hyperledger/msp/keystore/priv_sk
+            name: msp-certs
+            readOnly: true
+            subPath: msp-key
+          - mountPath: /var/hyperledger/msp/cacerts/ca-cert.pem
+            name: msp-certs
+            readOnly: true
+            subPath: msp-cacert
+          - mountPath: /var/hyperledger/msp/cacerts/current-ca.pem
+            name: current-msp-root
+            readOnly: true
+            subPath: current-ca.pem
+          - mountPath: /var/hyperledger/msp/config.yaml
+            name: msp-config
+            readOnly: true
+            subPath: config.yaml
+          - mountPath: /var/hyperledger/tls/server.crt
+            name: tls-certs
+            readOnly: true
+            subPath: tls-cert
+          - mountPath: /var/hyperledger/tls/server.key
+            name: tls-certs
+            readOnly: true
+            subPath: tls-key
+          - mountPath: /var/hyperledger/tls/ca.crt
+            name: tls-certs
+            readOnly: true
+            subPath: tls-cacert
+          - mountPath: /var/hyperledger/production
+            name: peer-couchdb-ledger
+      volumes:
+        peer-couchdb-ledger:
+          persistentVolumeClaim:
+            claimName: peer-ledger-couchdb-peer0-cbo-0
+        msp-certs:
+          secret:
+            secretName: peer0-cbo-certs
+        tls-certs:
+          secret:
+            secretName: peer0-cbo-certs
+        msp-config:
+          configMap:
+            name: peer0-cbo-config
+        current-msp-root:
+          configMap:
+            defaultMode: 420
+            name: cbo-current-root
+      serviceAccountName: peer0-cbo-fabric-peer
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/component: peer
+      app.kubernetes.io/instance: peer0-cbo
+      app.kubernetes.io/name: fabric-peer
+    podLabels:
+      app.kubernetes.io/component: peer
+      app.kubernetes.io/instance: peer0-cbo
+      app.kubernetes.io/name: fabric-peer
+      organization: cbo
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: peers
+    serviceName: peer0-cbo
+  peer0-greenstand:
+    pod:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: fabric-peer
+                  organization: greenstand
+              topologyKey: kubernetes.io/hostname
+      containers:
+        peer:
+          env:
+            CORE_PEER_ID:
+              value: peer0-greenstand
+            CORE_PEER_ADDRESS:
+              value: peer0-greenstand.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_CHAINCODEADDRESS:
+              value: peer0-greenstand.hlf-peer-org.svc.cluster.local:7052
+            CORE_PEER_GOSSIP_BOOTSTRAP:
+              value: peer0-greenstand.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_GOSSIP_EXTERNALENDPOINT:
+              value: peer0-greenstand.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_LOCALMSPID:
+              value: GreenstandMSP
+            CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS:
+              value: peer0-greenstand-couchdb:5984
+          volumeMounts:
+          - mountPath: /builders
+            name: builders
+            readOnly: true
+          - mountPath: /var/hyperledger/msp/signcerts/cert.pem
+            name: msp-certs
+            readOnly: true
+            subPath: msp-cert
+          - mountPath: /var/hyperledger/msp/keystore/priv_sk
+            name: msp-certs
+            readOnly: true
+            subPath: msp-key
+          - mountPath: /var/hyperledger/msp/cacerts/ca-cert.pem
+            name: msp-certs
+            readOnly: true
+            subPath: msp-cacert
+          - mountPath: /var/hyperledger/msp/cacerts/current-ca.pem
+            name: current-msp-root
+            readOnly: true
+            subPath: current-ca.pem
+          - mountPath: /var/hyperledger/msp/config.yaml
+            name: msp-config
+            readOnly: true
+            subPath: config.yaml
+          - mountPath: /var/hyperledger/tls/server.crt
+            name: tls-certs
+            readOnly: true
+            subPath: tls-cert
+          - mountPath: /var/hyperledger/tls/server.key
+            name: tls-certs
+            readOnly: true
+            subPath: tls-key
+          - mountPath: /var/hyperledger/tls/ca.crt
+            name: tls-certs
+            readOnly: true
+            subPath: tls-cacert
+          - mountPath: /var/hyperledger/production
+            name: peer-couchdb-ledger
+      volumes:
+        peer-couchdb-ledger:
+          persistentVolumeClaim:
+            claimName: peer-ledger-couchdb-peer0-greenstand-0
+        msp-certs:
+          secret:
+            secretName: peer0-greenstand-certs
+        tls-certs:
+          secret:
+            secretName: peer0-greenstand-certs
+        msp-config:
+          configMap:
+            name: peer0-greenstand-config
+        current-msp-root:
+          configMap:
+            defaultMode: 420
+            name: greenstand-current-root
+      serviceAccountName: peer0-greenstand-fabric-peer
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/component: peer
+      app.kubernetes.io/instance: peer0-greenstand
+      app.kubernetes.io/name: fabric-peer
+    podLabels:
+      app.kubernetes.io/component: peer
+      app.kubernetes.io/instance: peer0-greenstand
+      app.kubernetes.io/name: fabric-peer
+      organization: greenstand
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: peers
+    serviceName: peer0-greenstand
+  peer0-investor:
+    pod:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: fabric-peer
+                  organization: investor
+              topologyKey: kubernetes.io/hostname
+      containers:
+        peer:
+          env:
+            CORE_PEER_ID:
+              value: peer0-investor
+            CORE_PEER_ADDRESS:
+              value: peer0-investor.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_CHAINCODEADDRESS:
+              value: peer0-investor.hlf-peer-org.svc.cluster.local:7052
+            CORE_PEER_GOSSIP_BOOTSTRAP:
+              value: peer0-investor.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_GOSSIP_EXTERNALENDPOINT:
+              value: peer0-investor.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_LOCALMSPID:
+              value: InvestorMSP
+            CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS:
+              value: peer0-investor-couchdb:5984
+          volumeMounts:
+          - mountPath: /var/hyperledger/msp/signcerts/cert.pem
+            name: msp-certs
+            readOnly: true
+            subPath: msp-cert
+          - mountPath: /var/hyperledger/msp/keystore/priv_sk
+            name: msp-certs
+            readOnly: true
+            subPath: msp-key
+          - mountPath: /var/hyperledger/msp/cacerts/ca-cert.pem
+            name: msp-certs
+            readOnly: true
+            subPath: msp-cacert
+          - mountPath: /var/hyperledger/msp/config.yaml
+            name: msp-config
+            readOnly: true
+            subPath: config.yaml
+          - mountPath: /var/hyperledger/tls/server.crt
+            name: tls-certs
+            readOnly: true
+            subPath: tls-cert
+          - mountPath: /var/hyperledger/tls/server.key
+            name: tls-certs
+            readOnly: true
+            subPath: tls-key
+          - mountPath: /var/hyperledger/tls/ca.crt
+            name: tls-certs
+            readOnly: true
+            subPath: tls-cacert
+          - mountPath: /var/hyperledger/production
+            name: peer-couchdb-ledger
+          - mountPath: /builders
+            name: builders
+            readOnly: true
+      volumes:
+        peer-couchdb-ledger:
+          persistentVolumeClaim:
+            claimName: peer-ledger-couchdb-peer0-investor-0
+        msp-certs:
+          secret:
+            secretName: peer0-investor-certs
+        tls-certs:
+          secret:
+            secretName: peer0-investor-certs
+        msp-config:
+          configMap:
+            name: peer0-investor-config
+      serviceAccountName: peer0-investor-fabric-peer
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/component: peer
+      app.kubernetes.io/instance: peer0-investor
+      app.kubernetes.io/name: fabric-peer
+    podLabels:
+      app.kubernetes.io/component: peer
+      app.kubernetes.io/instance: peer0-investor
+      app.kubernetes.io/name: fabric-peer
+      organization: investor
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: peers
+    serviceName: peer0-investor
+  peer0-verifier:
+    pod:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: fabric-peer
+                  organization: verifier
+              topologyKey: kubernetes.io/hostname
+      containers:
+        peer:
+          env:
+            CORE_PEER_ID:
+              value: peer0-verifier
+            CORE_PEER_ADDRESS:
+              value: peer0-verifier.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_CHAINCODEADDRESS:
+              value: peer0-verifier.hlf-peer-org.svc.cluster.local:7052
+            CORE_PEER_GOSSIP_BOOTSTRAP:
+              value: peer0-verifier.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_GOSSIP_EXTERNALENDPOINT:
+              value: peer0-verifier.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_LOCALMSPID:
+              value: VerifierMSP
+            CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS:
+              value: peer0-verifier-couchdb:5984
+          volumeMounts:
+          - mountPath: /var/hyperledger/msp/signcerts/cert.pem
+            name: msp-certs
+            readOnly: true
+            subPath: msp-cert
+          - mountPath: /var/hyperledger/msp/keystore/priv_sk
+            name: msp-certs
+            readOnly: true
+            subPath: msp-key
+          - mountPath: /var/hyperledger/msp/cacerts/ca-cert.pem
+            name: msp-certs
+            readOnly: true
+            subPath: msp-cacert
+          - mountPath: /var/hyperledger/msp/config.yaml
+            name: msp-config
+            readOnly: true
+            subPath: config.yaml
+          - mountPath: /var/hyperledger/tls/server.crt
+            name: tls-certs
+            readOnly: true
+            subPath: tls-cert
+          - mountPath: /var/hyperledger/tls/server.key
+            name: tls-certs
+            readOnly: true
+            subPath: tls-key
+          - mountPath: /var/hyperledger/tls/ca.crt
+            name: tls-certs
+            readOnly: true
+            subPath: tls-cacert
+          - mountPath: /var/hyperledger/production
+            name: peer-couchdb-ledger
+          - mountPath: /builders
+            name: builders
+            readOnly: true
+      volumes:
+        peer-couchdb-ledger:
+          persistentVolumeClaim:
+            claimName: peer-ledger-couchdb-peer0-verifier-0
+        msp-certs:
+          secret:
+            secretName: peer0-verifier-certs
+        tls-certs:
+          secret:
+            secretName: peer0-verifier-certs
+        msp-config:
+          configMap:
+            name: peer0-verifier-config
+      serviceAccountName: peer0-verifier-fabric-peer
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/component: peer
+      app.kubernetes.io/instance: peer0-verifier
+      app.kubernetes.io/name: fabric-peer
+    podLabels:
+      app.kubernetes.io/component: peer
+      app.kubernetes.io/instance: peer0-verifier
+      app.kubernetes.io/name: fabric-peer
+      organization: verifier
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: peers
+    serviceName: peer0-verifier
+  peer1-cbo:
+    pod:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: fabric-peer
+                  organization: cbo
+              topologyKey: kubernetes.io/hostname
+      containers:
+        peer:
+          env:
+            CORE_PEER_ID:
+              value: peer1-cbo
+            CORE_PEER_ADDRESS:
+              value: peer1-cbo.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_CHAINCODEADDRESS:
+              value: peer1-cbo.hlf-peer-org.svc.cluster.local:7052
+            CORE_PEER_GOSSIP_BOOTSTRAP:
+              value: peer0-cbo.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_GOSSIP_EXTERNALENDPOINT:
+              value: peer1-cbo.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_LOCALMSPID:
+              value: CboMSP
+            CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS:
+              value: peer1-cbo-couchdb:5984
+          volumeMounts:
+          - mountPath: /builders
+            name: builders
+            readOnly: true
+          - mountPath: /var/hyperledger/msp/signcerts/cert.pem
+            name: msp-certs
+            readOnly: true
+            subPath: msp-cert
+          - mountPath: /var/hyperledger/msp/keystore/priv_sk
+            name: msp-certs
+            readOnly: true
+            subPath: msp-key
+          - mountPath: /var/hyperledger/msp/cacerts/ca-cert.pem
+            name: msp-certs
+            readOnly: true
+            subPath: msp-cacert
+          - mountPath: /var/hyperledger/msp/config.yaml
+            name: msp-config
+            readOnly: true
+            subPath: config.yaml
+          - mountPath: /var/hyperledger/tls/server.crt
+            name: tls-certs
+            readOnly: true
+            subPath: tls-cert
+          - mountPath: /var/hyperledger/tls/server.key
+            name: tls-certs
+            readOnly: true
+            subPath: tls-key
+          - mountPath: /var/hyperledger/tls/ca.crt
+            name: tls-certs
+            readOnly: true
+            subPath: tls-cacert
+          - mountPath: /var/hyperledger/production
+            name: peer-couchdb-ledger
+      volumes:
+        peer-couchdb-ledger:
+          persistentVolumeClaim:
+            claimName: peer-ledger-couchdb-peer1-cbo-0
+        msp-certs:
+          secret:
+            secretName: peer1-cbo-certs
+        tls-certs:
+          secret:
+            secretName: peer1-cbo-certs
+        msp-config:
+          configMap:
+            name: peer1-cbo-config
+      serviceAccountName: peer1-cbo-fabric-peer
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/component: peer
+      app.kubernetes.io/instance: peer1-cbo
+      app.kubernetes.io/name: fabric-peer
+    podLabels:
+      app.kubernetes.io/component: peer
+      app.kubernetes.io/instance: peer1-cbo
+      app.kubernetes.io/name: fabric-peer
+      organization: cbo
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: peers
+    serviceName: peer1-cbo
+  peer1-greenstand:
+    pod:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: fabric-peer
+                  organization: greenstand
+              topologyKey: kubernetes.io/hostname
+      containers:
+        peer:
+          env:
+            CORE_PEER_ID:
+              value: peer1-greenstand
+            CORE_PEER_ADDRESS:
+              value: peer1-greenstand.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_CHAINCODEADDRESS:
+              value: peer1-greenstand.hlf-peer-org.svc.cluster.local:7052
+            CORE_PEER_GOSSIP_BOOTSTRAP:
+              value: peer0-greenstand.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_GOSSIP_EXTERNALENDPOINT:
+              value: peer1-greenstand.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_LOCALMSPID:
+              value: GreenstandMSP
+            CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS:
+              value: peer1-greenstand-couchdb:5984
+          volumeMounts:
+          - mountPath: /builders
+            name: builders
+            readOnly: true
+          - mountPath: /var/hyperledger/msp/signcerts/cert.pem
+            name: msp-certs
+            readOnly: true
+            subPath: msp-cert
+          - mountPath: /var/hyperledger/msp/keystore/priv_sk
+            name: msp-certs
+            readOnly: true
+            subPath: msp-key
+          - mountPath: /var/hyperledger/msp/cacerts/ca-cert.pem
+            name: msp-certs
+            readOnly: true
+            subPath: msp-cacert
+          - mountPath: /var/hyperledger/msp/config.yaml
+            name: msp-config
+            readOnly: true
+            subPath: config.yaml
+          - mountPath: /var/hyperledger/tls/server.crt
+            name: tls-certs
+            readOnly: true
+            subPath: tls-cert
+          - mountPath: /var/hyperledger/tls/server.key
+            name: tls-certs
+            readOnly: true
+            subPath: tls-key
+          - mountPath: /var/hyperledger/tls/ca.crt
+            name: tls-certs
+            readOnly: true
+            subPath: tls-cacert
+          - mountPath: /var/hyperledger/production
+            name: peer-couchdb-ledger
+      volumes:
+        peer-couchdb-ledger:
+          persistentVolumeClaim:
+            claimName: peer-ledger-couchdb-peer1-greenstand-0
+        msp-certs:
+          secret:
+            secretName: peer1-greenstand-certs
+        tls-certs:
+          secret:
+            secretName: peer1-greenstand-certs
+        msp-config:
+          configMap:
+            name: peer1-greenstand-config
+      serviceAccountName: peer1-greenstand-fabric-peer
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/component: peer
+      app.kubernetes.io/instance: peer1-greenstand
+      app.kubernetes.io/name: fabric-peer
+    podLabels:
+      app.kubernetes.io/component: peer
+      app.kubernetes.io/instance: peer1-greenstand
+      app.kubernetes.io/name: fabric-peer
+      organization: greenstand
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: peers
+    serviceName: peer1-greenstand
+  peer1-investor:
+    pod:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: fabric-peer
+                  organization: investor
+              topologyKey: kubernetes.io/hostname
+      containers:
+        peer:
+          env:
+            CORE_PEER_ID:
+              value: peer1-investor
+            CORE_PEER_ADDRESS:
+              value: peer1-investor.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_CHAINCODEADDRESS:
+              value: peer1-investor.hlf-peer-org.svc.cluster.local:7052
+            CORE_PEER_GOSSIP_BOOTSTRAP:
+              value: peer0-investor.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_GOSSIP_EXTERNALENDPOINT:
+              value: peer1-investor.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_LOCALMSPID:
+              value: InvestorMSP
+            CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS:
+              value: peer1-investor-couchdb:5984
+          volumeMounts:
+          - mountPath: /builders
+            name: builders
+            readOnly: true
+          - mountPath: /var/hyperledger/msp/signcerts/cert.pem
+            name: msp-certs
+            readOnly: true
+            subPath: msp-cert
+          - mountPath: /var/hyperledger/msp/keystore/priv_sk
+            name: msp-certs
+            readOnly: true
+            subPath: msp-key
+          - mountPath: /var/hyperledger/msp/cacerts/ca-cert.pem
+            name: msp-certs
+            readOnly: true
+            subPath: msp-cacert
+          - mountPath: /var/hyperledger/msp/config.yaml
+            name: msp-config
+            readOnly: true
+            subPath: config.yaml
+          - mountPath: /var/hyperledger/tls/server.crt
+            name: tls-certs
+            readOnly: true
+            subPath: tls-cert
+          - mountPath: /var/hyperledger/tls/server.key
+            name: tls-certs
+            readOnly: true
+            subPath: tls-key
+          - mountPath: /var/hyperledger/tls/ca.crt
+            name: tls-certs
+            readOnly: true
+            subPath: tls-cacert
+          - mountPath: /var/hyperledger/production
+            name: peer-couchdb-ledger
+      volumes:
+        peer-couchdb-ledger:
+          persistentVolumeClaim:
+            claimName: peer-ledger-couchdb-peer1-investor-0
+        msp-certs:
+          secret:
+            secretName: peer1-investor-certs
+        tls-certs:
+          secret:
+            secretName: peer1-investor-certs
+        msp-config:
+          configMap:
+            name: peer1-investor-config
+      serviceAccountName: peer1-investor-fabric-peer
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/component: peer
+      app.kubernetes.io/instance: peer1-investor
+      app.kubernetes.io/name: fabric-peer
+    podLabels:
+      app.kubernetes.io/component: peer
+      app.kubernetes.io/instance: peer1-investor
+      app.kubernetes.io/name: fabric-peer
+      organization: investor
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: peers
+    serviceName: peer1-investor
+  peer2-greenstand:
+    pod:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: fabric-peer
+                  organization: greenstand
+              topologyKey: kubernetes.io/hostname
+      containers:
+        peer:
+          env:
+            CORE_PEER_ID:
+              value: peer2-greenstand
+            CORE_PEER_ADDRESS:
+              value: peer2-greenstand.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_CHAINCODEADDRESS:
+              value: peer2-greenstand.hlf-peer-org.svc.cluster.local:7052
+            CORE_PEER_GOSSIP_BOOTSTRAP:
+              value: peer0-greenstand.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_GOSSIP_EXTERNALENDPOINT:
+              value: peer2-greenstand.hlf-peer-org.svc.cluster.local:7051
+            CORE_PEER_LOCALMSPID:
+              value: GreenstandMSP
+            CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS:
+              value: peer2-greenstand-couchdb:5984
+          volumeMounts:
+          - mountPath: /builders
+            name: builders
+            readOnly: true
+          - mountPath: /var/hyperledger/msp/signcerts/cert.pem
+            name: msp-certs
+            readOnly: true
+            subPath: msp-cert
+          - mountPath: /var/hyperledger/msp/keystore/priv_sk
+            name: msp-certs
+            readOnly: true
+            subPath: msp-key
+          - mountPath: /var/hyperledger/msp/cacerts/ca-cert.pem
+            name: msp-certs
+            readOnly: true
+            subPath: msp-cacert
+          - mountPath: /var/hyperledger/msp/config.yaml
+            name: msp-config
+            readOnly: true
+            subPath: config.yaml
+          - mountPath: /var/hyperledger/tls/server.crt
+            name: tls-certs
+            readOnly: true
+            subPath: tls-cert
+          - mountPath: /var/hyperledger/tls/server.key
+            name: tls-certs
+            readOnly: true
+            subPath: tls-key
+          - mountPath: /var/hyperledger/tls/ca.crt
+            name: tls-certs
+            readOnly: true
+            subPath: tls-cacert
+          - mountPath: /var/hyperledger/production
+            name: peer-couchdb-ledger
+      volumes:
+        peer-couchdb-ledger:
+          persistentVolumeClaim:
+            claimName: peer-ledger-couchdb-peer2-greenstand-0
+        msp-certs:
+          secret:
+            secretName: peer2-greenstand-certs
+        tls-certs:
+          secret:
+            secretName: peer2-greenstand-certs
+        msp-config:
+          configMap:
+            name: peer2-greenstand-config
+      serviceAccountName: peer2-greenstand-fabric-peer
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/component: peer
+      app.kubernetes.io/instance: peer2-greenstand
+      app.kubernetes.io/name: fabric-peer
+    podLabels:
+      app.kubernetes.io/component: peer
+      app.kubernetes.io/instance: peer2-greenstand
+      app.kubernetes.io/name: fabric-peer
+      organization: greenstand
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: peers
+    serviceName: peer2-greenstand
+services:
+  peer0-cbo:
+    spec:
+      ports:
+      - name: peer-port
+        port: 7051
+        protocol: TCP
+        targetPort: peer-port
+      - name: chaincode-port
+        port: 7052
+        protocol: TCP
+        targetPort: chaincode-port
+      - name: operations-port
+        port: 9443
+        protocol: TCP
+        targetPort: operations-port
+      selector:
+        app.kubernetes.io/component: peer
+        app.kubernetes.io/instance: peer0-cbo
+        app.kubernetes.io/name: fabric-peer
+      type: ClusterIP
+  peer0-greenstand:
+    spec:
+      ports:
+      - name: peer-port
+        port: 7051
+        protocol: TCP
+        targetPort: peer-port
+      - name: chaincode-port
+        port: 7052
+        protocol: TCP
+        targetPort: chaincode-port
+      - name: operations-port
+        port: 9443
+        protocol: TCP
+        targetPort: operations-port
+      selector:
+        app.kubernetes.io/component: peer
+        app.kubernetes.io/instance: peer0-greenstand
+        app.kubernetes.io/name: fabric-peer
+      type: ClusterIP
+  peer0-investor:
+    spec:
+      ports:
+      - name: peer-port
+        port: 7051
+        protocol: TCP
+        targetPort: peer-port
+      - name: chaincode-port
+        port: 7052
+        protocol: TCP
+        targetPort: chaincode-port
+      - name: operations-port
+        port: 9443
+        protocol: TCP
+        targetPort: operations-port
+      selector:
+        app.kubernetes.io/component: peer
+        app.kubernetes.io/instance: peer0-investor
+        app.kubernetes.io/name: fabric-peer
+      type: ClusterIP
+  peer0-verifier:
+    spec:
+      ports:
+      - name: peer-port
+        port: 7051
+        protocol: TCP
+        targetPort: peer-port
+      - name: chaincode-port
+        port: 7052
+        protocol: TCP
+        targetPort: chaincode-port
+      - name: operations-port
+        port: 9443
+        protocol: TCP
+        targetPort: operations-port
+      selector:
+        app.kubernetes.io/component: peer
+        app.kubernetes.io/instance: peer0-verifier
+        app.kubernetes.io/name: fabric-peer
+      type: ClusterIP
+  peer1-cbo:
+    spec:
+      ports:
+      - name: peer-port
+        port: 7051
+        protocol: TCP
+        targetPort: peer-port
+      - name: chaincode-port
+        port: 7052
+        protocol: TCP
+        targetPort: chaincode-port
+      - name: operations-port
+        port: 9443
+        protocol: TCP
+        targetPort: operations-port
+      selector:
+        app.kubernetes.io/component: peer
+        app.kubernetes.io/instance: peer1-cbo
+        app.kubernetes.io/name: fabric-peer
+      type: ClusterIP
+  peer1-greenstand:
+    spec:
+      ports:
+      - name: peer-port
+        port: 7051
+        protocol: TCP
+        targetPort: peer-port
+      - name: chaincode-port
+        port: 7052
+        protocol: TCP
+        targetPort: chaincode-port
+      - name: operations-port
+        port: 9443
+        protocol: TCP
+        targetPort: operations-port
+      selector:
+        app.kubernetes.io/component: peer
+        app.kubernetes.io/instance: peer1-greenstand
+        app.kubernetes.io/name: fabric-peer
+      type: ClusterIP
+  peer1-investor:
+    spec:
+      ports:
+      - name: peer-port
+        port: 7051
+        protocol: TCP
+        targetPort: peer-port
+      - name: chaincode-port
+        port: 7052
+        protocol: TCP
+        targetPort: chaincode-port
+      - name: operations-port
+        port: 9443
+        protocol: TCP
+        targetPort: operations-port
+      selector:
+        app.kubernetes.io/component: peer
+        app.kubernetes.io/instance: peer1-investor
+        app.kubernetes.io/name: fabric-peer
+      type: ClusterIP
+  peer2-greenstand:
+    spec:
+      ports:
+      - name: peer-port
+        port: 7051
+        protocol: TCP
+        targetPort: peer-port
+      - name: chaincode-port
+        port: 7052
+        protocol: TCP
+        targetPort: chaincode-port
+      - name: operations-port
+        port: 9443
+        protocol: TCP
+        targetPort: operations-port
+      selector:
+        app.kubernetes.io/component: peer
+        app.kubernetes.io/instance: peer2-greenstand
+        app.kubernetes.io/name: fabric-peer
+      type: ClusterIP
+configMaps:
+  peer0-cbo-config:
+    config.yaml: |
+      NodeOUs:
+        Enable: true
+        ClientOUIdentifier:
+          OrganizationalUnitIdentifier: client
+        PeerOUIdentifier:
+          OrganizationalUnitIdentifier: peer
+        AdminOUIdentifier:
+          OrganizationalUnitIdentifier: admin
+        OrdererOUIdentifier:
+          OrganizationalUnitIdentifier: orderer
+  peer0-greenstand-config:
+    config.yaml: |
+      NodeOUs:
+        Enable: true
+        ClientOUIdentifier:
+          OrganizationalUnitIdentifier: client
+        PeerOUIdentifier:
+          OrganizationalUnitIdentifier: peer
+        AdminOUIdentifier:
+          OrganizationalUnitIdentifier: admin
+        OrdererOUIdentifier:
+          OrganizationalUnitIdentifier: orderer
+  peer0-investor-config:
+    config.yaml: |
+      NodeOUs:
+        Enable: true
+        ClientOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: client
+        PeerOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: peer
+        AdminOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: admin
+        OrdererOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: orderer
+  peer0-verifier-config:
+    config.yaml: |
+      NodeOUs:
+        Enable: true
+        ClientOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: client
+        PeerOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: peer
+        AdminOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: admin
+        OrdererOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: orderer
+  peer1-cbo-config:
+    config.yaml: |
+      NodeOUs:
+        Enable: true
+        ClientOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: client
+        PeerOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: peer
+        AdminOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: admin
+        OrdererOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: orderer
+  peer1-greenstand-config:
+    config.yaml: |
+      NodeOUs:
+        Enable: true
+        ClientOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: client
+        PeerOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: peer
+        AdminOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: admin
+        OrdererOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: orderer
+  peer1-investor-config:
+    config.yaml: |
+      NodeOUs:
+        Enable: true
+        ClientOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: client
+        PeerOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: peer
+        AdminOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: admin
+        OrdererOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: orderer
+  peer2-greenstand-config:
+    config.yaml: |
+      NodeOUs:
+        Enable: true
+        ClientOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: client
+        PeerOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: peer
+        AdminOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: admin
+        OrdererOUIdentifier:
+          Certificate: cacerts/ca-cert.pem
+          OrganizationalUnitIdentifier: orderer
+  fabric-external-builder:
+    detect: |
+      #!/bin/sh
+      set -eu
+      test -f "$2/metadata.json"
+      grep -Eq '"type"[[:space:]]*:[[:space:]]*"external"' "$2/metadata.json"
+    build: |
+      #!/bin/sh
+      set -eu
+      test -s "$1/connection.json"
+      cp "$1/connection.json" "$3/connection.json"
+      if [ -d "$1/metadata" ]; then cp -R "$1/metadata" "$3/metadata"; fi
+    release: |
+      #!/bin/sh
+      set -eu
+      test -s "$1/connection.json"
+      mkdir -p "$2/chaincode/server"
+      cp "$1/connection.json" "$2/chaincode/server/connection.json"
+      if [ -d "$1/metadata" ]; then cp -R "$1/metadata/." "$2/"; fi
+networkPolicy:
+  enabled: true
+  clientNamespaceSelector:
+    matchLabels:
+      fabric.treetracker.io/client: 'true'
+  adminNamespaceSelector:
+    matchLabels:
+      fabric.treetracker.io/admin: 'true'
+  monitoringNamespaceSelector:
+    matchLabels:
+      fabric.treetracker.io/monitoring: 'true'
+podDisruptionBudget:
+  enabled: true

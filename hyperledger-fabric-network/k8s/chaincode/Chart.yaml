@@ -1,0 +1,7 @@
+apiVersion: v2
+name: fabric-chaincode
+description: TreeTracker Fabric chaincode; externally managed identities and dedicated persistent storage
+type: application
+version: 1.0.0
+appVersion: '1.0'
+kubeVersion: '>=1.26.0-0'

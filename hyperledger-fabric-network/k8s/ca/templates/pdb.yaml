@@ -1,0 +1,18 @@
+{{- if .Values.podDisruptionBudget.enabled }}
+{{- range $name, $node := .Values.nodes }}
+{{- if $node.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "fabric-ca.labels" $ | nindent 4 }}
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      {{- toYaml $node.selectorLabels | nindent 6 }}
+{{- end }}
+{{- end }}
+{{- end }}

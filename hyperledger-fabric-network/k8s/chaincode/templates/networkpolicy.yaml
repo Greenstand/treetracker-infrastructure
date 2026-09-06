@@ -1,0 +1,41 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: fabric-chaincode
+  labels:
+    {{- include "fabric-chaincode.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      fabric.treetracker.io/component: chaincode
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchExpressions:
+              - key: kubernetes.io/metadata.name
+                operator: In
+                values: [hlf-ca, hlf-orderer, hlf-peer-org]
+      ports:
+        - protocol: TCP
+          port: 9998
+        - protocol: TCP
+          port: 9999
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    - to:
+        - namespaceSelector:
+            matchExpressions:
+              - key: kubernetes.io/metadata.name
+                operator: In
+                values: [hlf-ca, hlf-orderer, hlf-peer-org]
+{{- end }}

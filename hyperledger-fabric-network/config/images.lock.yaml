@@ -1,0 +1,28 @@
+observedAt: '2026-09-06'
+platform: linux/amd64
+source: Live kind-dev pod status imageID; not a supply-chain attestation
+images:
+- image: docker.io/hyperledger/fabric-ca@sha256:db814e013fc29f94f75a5df6e3920c08a4e96e53a079152df2ffa99e6db24861
+  observedImage: docker.io/hyperledger/fabric-ca:1.5.7
+  examplePod: verifier-ca-579478b489-ffvds
+  namespace: hlf-ca
+- image: registry.digitalocean.com/treetracker-registry/treetracker-web@sha256:711fc6fe07b6aec3026a38c22ad87c6e77f4edfad1b120e294c687af27916b57
+  observedImage: sha256:1b732bf5d9bbedcde08b5f684eb2d263da39b4137e088a3a02c67de75dcef3e9
+  examplePod: v2-raft-orderer-4-85c7554c8d-jv76h
+  namespace: hlf-orderer
+- image: docker.io/hyperledger/fabric-peer@sha256:09ee75042de9983bfde31ca88a5bf033386351f10a990e4c48264ee50172dee0
+  observedImage: docker.io/hyperledger/fabric-peer:2.5
+  examplePod: peer2-greenstand-0
+  namespace: hlf-peer-org
+- image: ghcr.io/hlf-enterprise-blockchain/couchdb@sha256:83a8bc6146f7a0a7dbe9e5dfeac0958b1178fcfdaa9f6d42a0c893eadd38b361
+  observedImage: sha256:09e2ad78211b1ac60618f2946b275db66b793a80e7af79515d68126e0b3d0366
+  examplePod: peer2-greenstand-couchdb-5f6d99fdc5-wbhp8
+  namespace: hlf-peer-org
+- image: registry.digitalocean.com/treetracker-registry/treetracker-web@sha256:4bfbaf82ea614eba26aae9ef050063f9205e7593a9622ae3d2ba7fa8abc4fc33
+  observedImage: registry.digitalocean.com/treetracker-registry/treetracker-web:token-contract-chaincode-v1
+  examplePod: token-contract-chaincode-5c8b97c6c-7trrx
+  namespace: hlf-peer-org
+- image: registry.digitalocean.com/treetracker-registry/treetracker-web@sha256:bda052b5a0ba51846d25ea3b299f9db1907c106d98cbb8ec13eea8706639615a
+  observedImage: registry.digitalocean.com/treetracker-registry/treetracker-web:tree-contract-chaincode-tls-v6
+  examplePod: tree-contract-chaincode-6bfcf75f44-62hd6
+  namespace: hlf-peer-org

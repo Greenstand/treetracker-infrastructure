@@ -1,0 +1,55 @@
+name: Fabric Helm validation
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned Helm
+        env:
+          HELM_VERSION: v3.21.3
+        run: |
+          set -euo pipefail
+          task_tmp=$(mktemp -d)
+          cd "$task_tmp"
+          curl --fail --silent --show-error --location --output helm.tar.gz "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz"
+          curl --fail --silent --show-error --location --output helm.sha256 "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz.sha256sum"
+          expected=$(awk '{print $1}' helm.sha256)
+          actual=$(sha256sum helm.tar.gz | awk '{print $1}')
+          test "$actual" = "$expected"
+          tar -xzf helm.tar.gz
+          sudo install -m 0755 linux-amd64/helm /usr/local/bin/helm
+      - name: Locate chart repository
+        run: |
+          if [ -f scripts/validate.sh ]; then
+            echo 'FABRIC_REPO=.' >> "$GITHUB_ENV"
+          elif [ -f hyperledger-fabric-network/scripts/validate.sh ]; then
+            echo 'FABRIC_REPO=hyperledger-fabric-network' >> "$GITHUB_ENV"
+          else
+            echo 'Cannot locate Fabric repository' >&2
+            exit 1
+          fi
+      - name: Install validation dependencies
+        run: pip install -r "$FABRIC_REPO/requirements.txt"
+      - name: Validate production and kind charts and wiring tests
+        run: make -C "$FABRIC_REPO" validate
+      - name: Shell syntax
+        run: |
+          for script in "$FABRIC_REPO"/scripts/*.sh; do
+            bash -n "$script"
+          done
+
+# When copying this directory into treetracker-infrastructure, place this workflow
+# in that repository's ROOT .github/workflows/; GitHub ignores nested workflows.
+# This workflow has no cluster credentials and cannot deploy anything.

@@ -1,0 +1,4 @@
+networkPolicy:
+  enabled: false
+podDisruptionBudget:
+  enabled: false

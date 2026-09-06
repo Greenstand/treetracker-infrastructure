@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "expectedNamespace",
+    "defaults",
+    "nodes",
+    "services",
+    "networkPolicy",
+    "podDisruptionBudget"
+  ],
+  "properties": {
+    "expectedNamespace": {
+      "const": "hlf-peer-org"
+    },
+    "commonLabels": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "imagePullSecrets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "nodeSelector": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "tolerations": {
+      "type": "array"
+    },
+    "podAnnotations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "defaults": {
+      "type": "object",
+      "required": [
+        "pod"
+      ]
+    },
+    "nodes": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "enabled",
+          "selectorLabels",
+          "podLabels"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "selectorLabels": {
+            "type": "object",
+            "minProperties": 1
+          },
+          "podLabels": {
+            "type": "object"
+          },
+          "pod": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "services": {
+      "type": "object"
+    },
+    "configMaps": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        }
+      }
+    },
+    "networkPolicy": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "clientNamespaceSelector",
+        "adminNamespaceSelector",
+        "monitoringNamespaceSelector"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "clientNamespaceSelector": {
+          "type": "object"
+        },
+        "adminNamespaceSelector": {
+          "type": "object"
+        },
+        "monitoringNamespaceSelector": {
+          "type": "object"
+        }
+      }
+    },
+    "podDisruptionBudget": {
+      "type": "object",
+      "required": [
+        "enabled"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

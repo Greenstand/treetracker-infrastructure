@@ -1,0 +1,135 @@
+networkPolicy:
+  enabled: false
+podDisruptionBudget:
+  enabled: false
+nodes:
+  raft-orderer-0:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution: null
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: raft-orderer
+                  fabric.greenstand.org/channel: treetracker
+              topologyKey: kubernetes.io/hostname
+  raft-orderer-1:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution: null
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: raft-orderer
+                  fabric.greenstand.org/channel: treetracker
+              topologyKey: kubernetes.io/hostname
+  raft-orderer-2:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution: null
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: raft-orderer
+                  fabric.greenstand.org/channel: treetracker
+              topologyKey: kubernetes.io/hostname
+  raft-orderer-3:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution: null
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: raft-orderer
+                  fabric.greenstand.org/channel: treetracker
+              topologyKey: kubernetes.io/hostname
+  raft-orderer-4:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution: null
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: raft-orderer
+                  fabric.greenstand.org/channel: treetracker
+              topologyKey: kubernetes.io/hostname
+  v2-raft-orderer-0:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution: null
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: raft-orderer
+                  fabric.greenstand.org/channel: treetracker-v2
+              topologyKey: kubernetes.io/hostname
+  v2-raft-orderer-1:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution: null
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: raft-orderer
+                  fabric.greenstand.org/channel: treetracker-v2
+              topologyKey: kubernetes.io/hostname
+  v2-raft-orderer-2:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution: null
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: raft-orderer
+                  fabric.greenstand.org/channel: treetracker-v2
+              topologyKey: kubernetes.io/hostname
+  v2-raft-orderer-3:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution: null
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: raft-orderer
+                  fabric.greenstand.org/channel: treetracker-v2
+              topologyKey: kubernetes.io/hostname
+  v2-raft-orderer-4:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution: null
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: raft-orderer
+                  fabric.greenstand.org/channel: treetracker-v2
+              topologyKey: kubernetes.io/hostname

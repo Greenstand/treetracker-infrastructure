@@ -1,0 +1,277 @@
+storageClass: fabric-retained
+keep: true
+includeLegacy: true
+claims:
+  cbo-ca-pvc:
+    namespace: hlf-ca
+    size: 2Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  fabric-root-ca-pvc:
+    namespace: hlf-ca
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  greenstand-ca-pvc:
+    namespace: hlf-ca
+    size: 2Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  investor-ca-pvc:
+    namespace: hlf-ca
+    size: 2Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  verifier-ca-pvc:
+    namespace: hlf-ca
+    size: 2Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  raft-orderer-data-0:
+    namespace: hlf-orderer
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  raft-orderer-data-1:
+    namespace: hlf-orderer
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  raft-orderer-data-2:
+    namespace: hlf-orderer
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  raft-orderer-data-3:
+    namespace: hlf-orderer
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  raft-orderer-data-4:
+    namespace: hlf-orderer
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  v2-raft-orderer-data-0:
+    namespace: hlf-orderer
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  v2-raft-orderer-data-1:
+    namespace: hlf-orderer
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  v2-raft-orderer-data-2:
+    namespace: hlf-orderer
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  v2-raft-orderer-data-3:
+    namespace: hlf-orderer
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  v2-raft-orderer-data-4:
+    namespace: hlf-orderer
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  couchdb-data-peer0-cbo-0:
+    namespace: hlf-peer-org
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  couchdb-data-peer0-greenstand-0:
+    namespace: hlf-peer-org
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  couchdb-data-peer0-investor-0:
+    namespace: hlf-peer-org
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  couchdb-data-peer0-verifier-0:
+    namespace: hlf-peer-org
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  couchdb-data-peer1-cbo-0:
+    namespace: hlf-peer-org
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  couchdb-data-peer1-greenstand-0:
+    namespace: hlf-peer-org
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  couchdb-data-peer1-investor-0:
+    namespace: hlf-peer-org
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  couchdb-data-peer2-greenstand-0:
+    namespace: hlf-peer-org
+    size: 5Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  peer-data-peer0-cbo-0:
+    namespace: hlf-peer-org
+    size: 10Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: true
+    create: true
+  peer-data-peer0-greenstand-0:
+    namespace: hlf-peer-org
+    size: 10Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: true
+    create: true
+  peer-data-peer0-investor-0:
+    namespace: hlf-peer-org
+    size: 10Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: true
+    create: true
+  peer-data-peer0-verifier-0:
+    namespace: hlf-peer-org
+    size: 10Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: true
+    create: true
+  peer-data-peer1-cbo-0:
+    namespace: hlf-peer-org
+    size: 10Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: true
+    create: true
+  peer-data-peer1-greenstand-0:
+    namespace: hlf-peer-org
+    size: 10Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: true
+    create: true
+  peer-data-peer1-investor-0:
+    namespace: hlf-peer-org
+    size: 10Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: true
+    create: true
+  peer-data-peer2-greenstand-0:
+    namespace: hlf-peer-org
+    size: 10Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: true
+    create: true
+  peer-ledger-couchdb-peer0-cbo-0:
+    namespace: hlf-peer-org
+    size: 10Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  peer-ledger-couchdb-peer0-greenstand-0:
+    namespace: hlf-peer-org
+    size: 10Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  peer-ledger-couchdb-peer0-investor-0:
+    namespace: hlf-peer-org
+    size: 10Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  peer-ledger-couchdb-peer0-verifier-0:
+    namespace: hlf-peer-org
+    size: 10Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  peer-ledger-couchdb-peer1-cbo-0:
+    namespace: hlf-peer-org
+    size: 10Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  peer-ledger-couchdb-peer1-greenstand-0:
+    namespace: hlf-peer-org
+    size: 10Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  peer-ledger-couchdb-peer1-investor-0:
+    namespace: hlf-peer-org
+    size: 10Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true
+  peer-ledger-couchdb-peer2-greenstand-0:
+    namespace: hlf-peer-org
+    size: 10Gi
+    accessModes:
+    - ReadWriteOnce
+    legacy: false
+    create: true

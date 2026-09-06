@@ -1,0 +1,434 @@
+expectedNamespace: hlf-ca
+commonLabels: {}
+imagePullSecrets: []
+nodeSelector: {}
+tolerations: []
+podAnnotations: {}
+defaults:
+  podAnnotations: {}
+  pod:
+    containers:
+      fabric-ca-server:
+        command:
+        - sh
+        - -ec
+        - |
+          if [ ! -f "$FABRIC_CA_HOME/fabric-ca-server-config.yaml" ]; then
+            fabric-ca-server init -b "$FABRIC_CA_BOOTSTRAP_USER:$FABRIC_CA_BOOTSTRAP_PASSWORD"
+          fi
+          exec fabric-ca-server start
+        env:
+          FABRIC_CA_HOME:
+            value: /var/hyperledger/fabric-ca-server
+          FABRIC_CA_SERVER_DEBUG:
+            value: 'false'
+          FABRIC_CA_SERVER_TLS_ENABLED:
+            value: 'true'
+          FABRIC_CA_SERVER_OPERATIONS_LISTENADDRESS:
+            value: 0.0.0.0:9443
+          FABRIC_CA_SERVER_OPERATIONS_TLS_ENABLED:
+            value: 'false'
+          FABRIC_CA_SERVER_METRICS_PROVIDER:
+            value: prometheus
+          FABRIC_CA_BOOTSTRAP_USER:
+            valueFrom:
+              secretKeyRef:
+                key: username
+          FABRIC_CA_BOOTSTRAP_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                key: password
+        image: docker.io/hyperledger/fabric-ca@sha256:db814e013fc29f94f75a5df6e3920c08a4e96e53a079152df2ffa99e6db24861
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /cainfo
+            scheme: HTTPS
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /cainfo
+            scheme: HTTPS
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          requests:
+            cpu: 100m
+        volumeMounts:
+        - mountPath: /var/hyperledger/fabric-ca-server
+          name: ca-storage
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+    securityContext:
+      fsGroup: 1000
+      runAsNonRoot: true
+      runAsUser: 1000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationGracePeriodSeconds: 30
+    automountServiceAccountToken: false
+nodes:
+  cbo-ca:
+    pod:
+      containers:
+        fabric-ca-server:
+          env:
+            FABRIC_CA_BOOTSTRAP_USER:
+              valueFrom:
+                secretKeyRef:
+                  name: cbo-ca-bootstrap
+            FABRIC_CA_BOOTSTRAP_PASSWORD:
+              valueFrom:
+                secretKeyRef:
+                  name: cbo-ca-bootstrap
+            FABRIC_CA_SERVER_CA_NAME:
+              value: cbo-ca
+            FABRIC_CA_SERVER_CSR_HOSTS:
+              value: cbo-ca-service,cbo-ca-service.hlf-ca.svc,cbo-ca-service.hlf-ca.svc.cluster.local,localhost
+            FABRIC_CA_SERVER_PORT:
+              value: '7055'
+          livenessProbe:
+            httpGet:
+              port: 7055
+          readinessProbe:
+            httpGet:
+              port: 7055
+          resources:
+            requests:
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          ports:
+          - containerPort: 7055
+            name: ca-port
+            protocol: TCP
+          - containerPort: 9443
+            name: operations
+            protocol: TCP
+      volumes:
+        ca-storage:
+          persistentVolumeClaim:
+            claimName: cbo-ca-pvc
+      serviceAccountName: cbo-ca
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/component: intermediate-ca
+      app.kubernetes.io/name: cbo-ca
+    podLabels:
+      app.kubernetes.io/component: intermediate-ca
+      app.kubernetes.io/name: cbo-ca
+      app.kubernetes.io/part-of: hyperledger-fabric
+      organization: cbo
+      fabric.treetracker.io/component: ca
+  fabric-root-ca:
+    pod:
+      containers:
+        fabric-ca-server:
+          env:
+            FABRIC_CA_BOOTSTRAP_USER:
+              valueFrom:
+                secretKeyRef:
+                  name: fabric-root-ca-bootstrap
+            FABRIC_CA_BOOTSTRAP_PASSWORD:
+              valueFrom:
+                secretKeyRef:
+                  name: fabric-root-ca-bootstrap
+            FABRIC_CA_SERVER_CA_NAME:
+              value: fabric-root-ca
+            FABRIC_CA_SERVER_CSR_HOSTS:
+              value: fabric-root-ca-service,fabric-root-ca-service.hlf-ca.svc,fabric-root-ca-service.hlf-ca.svc.cluster.local,localhost
+            FABRIC_CA_SERVER_PORT:
+              value: '7054'
+          livenessProbe:
+            httpGet:
+              port: 7054
+          readinessProbe:
+            httpGet:
+              port: 7054
+          resources:
+            requests:
+              memory: 256Mi
+            limits:
+              cpu: '1'
+              memory: 1Gi
+          ports:
+          - containerPort: 7054
+            name: ca-port
+            protocol: TCP
+          - containerPort: 9443
+            name: operations
+            protocol: TCP
+      volumes:
+        ca-storage:
+          persistentVolumeClaim:
+            claimName: fabric-root-ca-pvc
+      serviceAccountName: fabric-root-ca
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/component: root-ca
+      app.kubernetes.io/name: fabric-root-ca
+    podLabels:
+      app.kubernetes.io/component: root-ca
+      app.kubernetes.io/name: fabric-root-ca
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: ca
+  greenstand-ca:
+    pod:
+      containers:
+        fabric-ca-server:
+          env:
+            FABRIC_CA_BOOTSTRAP_USER:
+              valueFrom:
+                secretKeyRef:
+                  name: greenstand-ca-bootstrap
+            FABRIC_CA_BOOTSTRAP_PASSWORD:
+              valueFrom:
+                secretKeyRef:
+                  name: greenstand-ca-bootstrap
+            FABRIC_CA_SERVER_CA_NAME:
+              value: greenstand-ca
+            FABRIC_CA_SERVER_CSR_HOSTS:
+              value: greenstand-ca-service,greenstand-ca-service.hlf-ca.svc,greenstand-ca-service.hlf-ca.svc.cluster.local,localhost
+            FABRIC_CA_SERVER_PORT:
+              value: '7058'
+          livenessProbe:
+            httpGet:
+              port: 7058
+          readinessProbe:
+            httpGet:
+              port: 7058
+          resources:
+            requests:
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          ports:
+          - containerPort: 7058
+            name: ca-port
+            protocol: TCP
+          - containerPort: 9443
+            name: operations
+            protocol: TCP
+      volumes:
+        ca-storage:
+          persistentVolumeClaim:
+            claimName: greenstand-ca-pvc
+      serviceAccountName: greenstand-ca
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/component: intermediate-ca
+      app.kubernetes.io/name: greenstand-ca
+    podLabels:
+      app.kubernetes.io/component: intermediate-ca
+      app.kubernetes.io/name: greenstand-ca
+      app.kubernetes.io/part-of: hyperledger-fabric
+      organization: greenstand
+      fabric.treetracker.io/component: ca
+  investor-ca:
+    pod:
+      containers:
+        fabric-ca-server:
+          env:
+            FABRIC_CA_BOOTSTRAP_USER:
+              valueFrom:
+                secretKeyRef:
+                  name: investor-ca-bootstrap
+            FABRIC_CA_BOOTSTRAP_PASSWORD:
+              valueFrom:
+                secretKeyRef:
+                  name: investor-ca-bootstrap
+            FABRIC_CA_SERVER_CA_NAME:
+              value: investor-ca
+            FABRIC_CA_SERVER_CSR_HOSTS:
+              value: investor-ca-service,investor-ca-service.hlf-ca.svc,investor-ca-service.hlf-ca.svc.cluster.local,localhost
+            FABRIC_CA_SERVER_PORT:
+              value: '7056'
+          livenessProbe:
+            httpGet:
+              port: 7056
+          readinessProbe:
+            httpGet:
+              port: 7056
+          resources:
+            requests:
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          ports:
+          - containerPort: 7056
+            name: ca-port
+            protocol: TCP
+          - containerPort: 9443
+            name: operations
+            protocol: TCP
+      volumes:
+        ca-storage:
+          persistentVolumeClaim:
+            claimName: investor-ca-pvc
+      serviceAccountName: investor-ca
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/component: intermediate-ca
+      app.kubernetes.io/name: investor-ca
+    podLabels:
+      app.kubernetes.io/component: intermediate-ca
+      app.kubernetes.io/name: investor-ca
+      app.kubernetes.io/part-of: hyperledger-fabric
+      organization: investor
+      fabric.treetracker.io/component: ca
+  verifier-ca:
+    pod:
+      containers:
+        fabric-ca-server:
+          env:
+            FABRIC_CA_BOOTSTRAP_USER:
+              valueFrom:
+                secretKeyRef:
+                  name: verifier-ca-bootstrap
+            FABRIC_CA_BOOTSTRAP_PASSWORD:
+              valueFrom:
+                secretKeyRef:
+                  name: verifier-ca-bootstrap
+            FABRIC_CA_SERVER_CA_NAME:
+              value: verifier-ca
+            FABRIC_CA_SERVER_CSR_HOSTS:
+              value: verifier-ca-service,verifier-ca-service.hlf-ca.svc,verifier-ca-service.hlf-ca.svc.cluster.local,localhost
+            FABRIC_CA_SERVER_PORT:
+              value: '7057'
+          livenessProbe:
+            httpGet:
+              port: 7057
+          readinessProbe:
+            httpGet:
+              port: 7057
+          resources:
+            requests:
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          ports:
+          - containerPort: 7057
+            name: ca-port
+            protocol: TCP
+          - containerPort: 9443
+            name: operations
+            protocol: TCP
+      volumes:
+        ca-storage:
+          persistentVolumeClaim:
+            claimName: verifier-ca-pvc
+      serviceAccountName: verifier-ca
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/component: intermediate-ca
+      app.kubernetes.io/name: verifier-ca
+    podLabels:
+      app.kubernetes.io/component: intermediate-ca
+      app.kubernetes.io/name: verifier-ca
+      app.kubernetes.io/part-of: hyperledger-fabric
+      organization: verifier
+      fabric.treetracker.io/component: ca
+services:
+  cbo-ca-service:
+    spec:
+      ports:
+      - name: ca-port
+        port: 7055
+        protocol: TCP
+        targetPort: 7055
+      - name: operations
+        port: 9443
+        protocol: TCP
+        targetPort: operations
+      selector:
+        app.kubernetes.io/component: intermediate-ca
+        app.kubernetes.io/name: cbo-ca
+      type: ClusterIP
+  fabric-root-ca-service:
+    spec:
+      ports:
+      - name: ca-port
+        port: 7054
+        protocol: TCP
+        targetPort: 7054
+      - name: operations
+        port: 9443
+        protocol: TCP
+        targetPort: operations
+      selector:
+        app.kubernetes.io/component: root-ca
+        app.kubernetes.io/name: fabric-root-ca
+      type: ClusterIP
+  greenstand-ca-service:
+    spec:
+      ports:
+      - name: ca-port
+        port: 7058
+        protocol: TCP
+        targetPort: 7058
+      - name: operations
+        port: 9443
+        protocol: TCP
+        targetPort: operations
+      selector:
+        app.kubernetes.io/component: intermediate-ca
+        app.kubernetes.io/name: greenstand-ca
+      type: ClusterIP
+  investor-ca-service:
+    spec:
+      ports:
+      - name: ca-port
+        port: 7056
+        protocol: TCP
+        targetPort: 7056
+      - name: operations
+        port: 9443
+        protocol: TCP
+        targetPort: operations
+      selector:
+        app.kubernetes.io/component: intermediate-ca
+        app.kubernetes.io/name: investor-ca
+      type: ClusterIP
+  verifier-ca-service:
+    spec:
+      ports:
+      - name: ca-port
+        port: 7057
+        protocol: TCP
+        targetPort: 7057
+      - name: operations
+        port: 9443
+        protocol: TCP
+        targetPort: operations
+      selector:
+        app.kubernetes.io/component: intermediate-ca
+        app.kubernetes.io/name: verifier-ca
+      type: ClusterIP
+configMaps: {}
+networkPolicy:
+  enabled: true
+  clientNamespaceSelector:
+    matchLabels:
+      fabric.treetracker.io/client: 'true'
+  adminNamespaceSelector:
+    matchLabels:
+      fabric.treetracker.io/admin: 'true'
+  monitoringNamespaceSelector:
+    matchLabels:
+      fabric.treetracker.io/monitoring: 'true'
+podDisruptionBudget:
+  enabled: true

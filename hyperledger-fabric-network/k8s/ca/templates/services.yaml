@@ -1,0 +1,11 @@
+{{- range $name, $service := .Values.services }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "fabric-ca.labels" $ | nindent 4 }}
+spec:
+  {{- toYaml $service.spec | nindent 2 }}
+{{- end }}

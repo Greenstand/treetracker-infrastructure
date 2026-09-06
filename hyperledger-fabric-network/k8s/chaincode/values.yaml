@@ -1,0 +1,157 @@
+expectedNamespace: hlf-peer-org
+commonLabels: {}
+imagePullSecrets: []
+nodeSelector: {}
+tolerations: []
+podAnnotations: {}
+defaults:
+  podAnnotations: {}
+  pod:
+    containers:
+      chaincode:
+        env:
+          CHAINCODE_TLS_KEY:
+            value: /certs/tls.key
+          CHAINCODE_TLS_CERT:
+            value: /certs/tls.crt
+          CHAINCODE_TLS_DISABLED:
+            value: 'false'
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          tcpSocket:
+            port: chaincode
+          periodSeconds: 20
+          timeoutSeconds: 3
+          failureThreshold: 3
+        readinessProbe:
+          tcpSocket:
+            port: chaincode
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        volumeMounts:
+        - mountPath: /certs
+          name: tls-certs
+          readOnly: true
+        startupProbe:
+          tcpSocket:
+            port: chaincode
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 30
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+    imagePullSecrets:
+    - name: registry-treetracker-registry
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+    terminationGracePeriodSeconds: 30
+    volumes:
+      tls-certs:
+        secret:
+          defaultMode: 420
+          items:
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
+    automountServiceAccountToken: false
+nodes:
+  token-contract-chaincode:
+    pod:
+      containers:
+        chaincode:
+          env:
+            CHAINCODE_CCID:
+              value: token-contract_1.0:17b661185104c3d1894f20d56313e40179b466ef4d13f209da4392a04cb30112
+            CHAINCODE_ADDRESS:
+              value: 0.0.0.0:9998
+          image: registry.digitalocean.com/treetracker-registry/treetracker-web@sha256:4bfbaf82ea614eba26aae9ef050063f9205e7593a9622ae3d2ba7fa8abc4fc33
+          ports:
+          - containerPort: 9998
+            name: chaincode
+      volumes:
+        tls-certs:
+          secret:
+            secretName: token-chaincode-tls
+      serviceAccountName: token-contract-chaincode
+    enabled: true
+    selectorLabels:
+      app: token-contract-chaincode
+    podLabels:
+      app: token-contract-chaincode
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: chaincode
+  tree-contract-chaincode:
+    pod:
+      containers:
+        chaincode:
+          env:
+            CHAINCODE_CCID:
+              value: tree-contract_1.0:f896aab000b575f61c7bacdfb3f40ca49e02cab1dd4800bc4a807368d1b90e83
+            CHAINCODE_ADDRESS:
+              value: 0.0.0.0:9999
+          command:
+          - /app/chaincode
+          image: registry.digitalocean.com/treetracker-registry/treetracker-web@sha256:bda052b5a0ba51846d25ea3b299f9db1907c106d98cbb8ec13eea8706639615a
+          ports:
+          - containerPort: 9999
+            name: chaincode
+      volumes:
+        tls-certs:
+          secret:
+            secretName: chaincode-tls
+      serviceAccountName: tree-contract-chaincode
+    enabled: true
+    selectorLabels:
+      app: tree-contract-chaincode
+    podLabels:
+      app: tree-contract-chaincode
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: chaincode
+services:
+  token-contract-chaincode:
+    spec:
+      ports:
+      - name: chaincode
+        port: 9998
+        protocol: TCP
+        targetPort: 9998
+      selector:
+        app: token-contract-chaincode
+      type: ClusterIP
+  tree-contract-chaincode:
+    spec:
+      ports:
+      - name: chaincode
+        port: 9999
+        protocol: TCP
+        targetPort: 9999
+      selector:
+        app: tree-contract-chaincode
+      type: ClusterIP
+configMaps: {}
+networkPolicy:
+  enabled: true
+  clientNamespaceSelector:
+    matchLabels:
+      fabric.treetracker.io/client: 'true'
+  adminNamespaceSelector:
+    matchLabels:
+      fabric.treetracker.io/admin: 'true'
+  monitoringNamespaceSelector:
+    matchLabels:
+      fabric.treetracker.io/monitoring: 'true'
+podDisruptionBudget:
+  enabled: true

@@ -1,0 +1,80 @@
+name: treetracker-fabric
+namespaces:
+  ca: hlf-ca
+  orderer: hlf-orderer
+  peers: hlf-peer-org
+organizations:
+  GreenstandMSP:
+    peers:
+    - peer0-greenstand
+    - peer1-greenstand
+    - peer2-greenstand
+    ca: greenstand-ca
+  CboMSP:
+    peers:
+    - peer0-cbo
+    - peer1-cbo
+    ca: cbo-ca
+  InvestorMSP:
+    peers:
+    - peer0-investor
+    - peer1-investor
+    ca: investor-ca
+  VerifierMSP:
+    peers:
+    - peer0-verifier
+    ca: verifier-ca
+channels:
+  treetracker:
+    profile: TreetrackerChannel
+    role: legacy-audit-history
+    peers:
+    - peer0-cbo
+    - peer0-greenstand
+    - peer1-cbo
+    - peer1-greenstand
+    - peer2-greenstand
+    orderers:
+    - orderer0
+    - orderer1
+    - orderer2
+    - orderer3
+    - orderer4
+    observed: Greenstand height 22; CBO queries denied at 2026-09-06 06:05 UTC
+  treetracker-v2:
+    profile: TreetrackerV2Channel
+    role: active
+    peers:
+    - peer0-cbo
+    - peer0-greenstand
+    - peer1-cbo
+    - peer1-greenstand
+    - peer2-greenstand
+    orderers:
+    - v2-orderer0
+    - v2-orderer1
+    - v2-orderer2
+    - v2-orderer3
+    - v2-orderer4
+    observed: Five participating peers agreed at height 13 at 2026-09-06 06:05 UTC
+chaincode:
+  tree:
+    name: tree-contract
+    service: tree-contract-chaincode
+    port: 9999
+  token:
+    name: token-contract
+    service: token-contract-chaincode
+    port: 9998
+storage:
+  totalClaims: 39
+  activeClaims: 31
+  retainedLegacyPeerClaims: 8
+  totalRequestedGi: 263
+excluded:
+- Explorer
+- identity renewer
+- monitoring stack
+- REST gateways
+- TreeTracker application services
+- backup controllers

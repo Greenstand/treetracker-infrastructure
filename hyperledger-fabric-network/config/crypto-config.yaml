@@ -1,0 +1,56 @@
+OrdererOrgs:
+- Name: Orderer
+  Domain: hlf-orderer.svc.cluster.local
+  EnableNodeOUs: true
+  Specs:
+  - Hostname: orderer0
+  - Hostname: v2-orderer0
+  - Hostname: orderer1
+  - Hostname: v2-orderer1
+  - Hostname: orderer2
+  - Hostname: v2-orderer2
+  - Hostname: orderer3
+  - Hostname: v2-orderer3
+  - Hostname: orderer4
+  - Hostname: v2-orderer4
+PeerOrgs:
+- Name: Greenstand
+  Domain: greenstand.fabric.example.com
+  EnableNodeOUs: true
+  Specs:
+  - Hostname: peer0-greenstand
+    SANS: [peer0-greenstand, peer0-greenstand.hlf-peer-org.svc.cluster.local]
+  - Hostname: peer1-greenstand
+    SANS: [peer1-greenstand, peer1-greenstand.hlf-peer-org.svc.cluster.local]
+  - Hostname: peer2-greenstand
+    SANS: [peer2-greenstand, peer2-greenstand.hlf-peer-org.svc.cluster.local]
+  Users:
+    Count: 1
+- Name: Cbo
+  Domain: cbo.fabric.example.com
+  EnableNodeOUs: true
+  Specs:
+  - Hostname: peer0-cbo
+    SANS: [peer0-cbo, peer0-cbo.hlf-peer-org.svc.cluster.local]
+  - Hostname: peer1-cbo
+    SANS: [peer1-cbo, peer1-cbo.hlf-peer-org.svc.cluster.local]
+  Users:
+    Count: 1
+- Name: Investor
+  Domain: investor.fabric.example.com
+  EnableNodeOUs: true
+  Specs:
+  - Hostname: peer0-investor
+    SANS: [peer0-investor, peer0-investor.hlf-peer-org.svc.cluster.local]
+  - Hostname: peer1-investor
+    SANS: [peer1-investor, peer1-investor.hlf-peer-org.svc.cluster.local]
+  Users:
+    Count: 1
+- Name: Verifier
+  Domain: verifier.fabric.example.com
+  EnableNodeOUs: true
+  Specs:
+  - Hostname: peer0-verifier
+    SANS: [peer0-verifier, peer0-verifier.hlf-peer-org.svc.cluster.local]
+  Users:
+    Count: 1

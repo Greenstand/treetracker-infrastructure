@@ -1,0 +1,24 @@
+{{- range $name, $claim := .Values.claims }}
+{{- if and $claim.create (or (not $claim.legacy) $.Values.includeLegacy) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $name }}
+  namespace: {{ $claim.namespace }}
+  labels:
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+    app.kubernetes.io/part-of: hyperledger-fabric
+    fabric.treetracker.io/legacy: {{ $claim.legacy | quote }}
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  accessModes:
+    {{- toYaml $claim.accessModes | nindent 4 }}
+  storageClassName: {{ $.Values.storageClass | quote }}
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: {{ $claim.size }}
+{{- end }}
+{{- end }}

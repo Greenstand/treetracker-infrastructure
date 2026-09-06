@@ -179,6 +179,16 @@
           # How often (in seconds) the side car will sync files from dag git repo
           syncWait: "60"
       redis:
+        # Bitnami delisted its free public images in 2025, so the deployed
+        # public.ecr.aws/bitnami/redis:5.0.14-debian-10-r32 can no longer be
+        # pulled (issue #321). bitnamilegacy is Bitnami's read-only archive on
+        # Docker Hub. The archive does not carry the suffixed tag, only the
+        # bare version alias (verified against the Hub API 2026-07-03), which
+        # points at the final rebuild of the same Redis 5.0.14.
+        image:
+          registry: docker.io
+          repository: bitnamilegacy/redis
+          tag: "5.0.14"
         master:
           affinity: *affinity
       web:

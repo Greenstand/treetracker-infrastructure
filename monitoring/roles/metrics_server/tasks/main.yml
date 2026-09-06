@@ -25,4 +25,4 @@
               - key: doks.digitalocean.com/node-pool
                 operator: In
                 values:
-                - monitoring-node-pool
+                - cloud-services-node-pool

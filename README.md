@@ -21,3 +21,9 @@ Then run from the root folder of the repo:
 pre-commit install
 pre-commit run --all-files
 ```
+
+Install it as a tool with uv
+```sh
+uvx pre-commit install
+uvx pre-commit run -a
+```

@@ -6,14 +6,14 @@ terraform {
   required_providers {
     digitalocean = {
       source  = "digitalocean/digitalocean"
-      version = "1.22.2"
+      version = "~> 2.40"
     }
 
   }
 }
-#data "digitalocean_kubernetes_cluster" "kubernetes-cluster" {
-#  name = "dev-k8s-treetracker"
-#}
+data "digitalocean_kubernetes_cluster" "kubernetes-cluster" {
+  name = "dev-k8s-treetracker"
+}
 
 provider "kubernetes" {
   host  = data.digitalocean_kubernetes_cluster.kubernetes-cluster.endpoint

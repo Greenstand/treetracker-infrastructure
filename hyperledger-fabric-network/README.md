@@ -240,84 +240,6 @@ hyperledger-fabric-network/
 
 ---
 
-## 🤝 Contributing
-
-We welcome contributions from the community! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-### Development Workflow
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes with tests
-4. Submit a pull request
-
-### Code Standards
-- **Go**: Follow Go best practices for chaincode
-- **JavaScript**: ESLint configuration for API code
-- **Documentation**: Update docs for any API changes
-- **Testing**: Maintain 80%+ test coverage
-
----
-
-## 📞 Support & Community
-
-### Getting Help
-- **Documentation**: Comprehensive guides in `/docs`
-- **GitHub Issues**: Bug reports and feature requests
-- **Discord**: Real-time community support
-- **Email**: technical-support@greenstand.org
-
-### Community Resources
-- **Greenstand Website**: [https://greenstand.org](https://greenstand.org)
-- **Slack Channel**: [#treetracker-blockchain](https://greenstand.slack.com)
-- **Developer Forum**: [https://forum.greenstand.org](https://forum.greenstand.org)
-
----
-
-## 📈 Roadmap
-
-### Current Release (v1.0)
-- ✅ Multi-organization network
-- ✅ Tree tracking chaincode
-- ✅ Kubernetes deployment
-- ✅ Monitoring and alerting
-
-### Next Release (v1.1)
-- 🔄 Mobile wallet integration
-- 🔄 Carbon credit tokenization
-- 🔄 Enhanced analytics dashboard
-- 🔄 Multi-chain interoperability
-
-### Future Releases
-- 📋 IoT sensor integration
-- 📋 Satellite imagery verification
-- 📋 Machine learning analytics
-- 📋 Cross-border payment rails
-
----
-
-## 📄 License
-
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- **Hyperledger Foundation**: For the excellent Fabric framework
-- **Greenstand Team**: For environmental vision and leadership
-- **Open Source Community**: For tools, libraries, and inspiration
-- **Tree Planting Partners**: CBOs worldwide making real impact
-
----
-
-**🌱 Together, we're growing a more transparent and sustainable future through blockchain technology! 🌱**
-
-<div align="center">
-  <strong>Architected with ❤️ by <a href="https://github.com/imos64">Imos Aikoroje</a>  For Greenstand Community</strong><br>
-  <a href="https://greenstand.org">greenstand.org</a> | 
-  <a href="https://github.com/Greenstand">GitHub</a> 
-</div>
-
 # TreeTracker: Blockchain-Based Tree Tracking Network
 
 TreeTracker connects field observations, verification decisions and impact-token
@@ -709,3 +631,83 @@ test was performed as part of creating this repository.
 
 Explorer, identity renewal, monitoring stacks, backup controllers, REST gateways
 and application microservices are outside this repository's deployment scope.
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions from the community! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+
+### Development Workflow
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes with tests
+4. Submit a pull request
+
+### Code Standards
+- **Go**: Follow Go best practices for chaincode
+- **JavaScript**: ESLint configuration for API code
+- **Documentation**: Update docs for any API changes
+- **Testing**: Maintain 80%+ test coverage
+
+---
+
+## 📞 Support & Community
+
+### Getting Help
+- **Documentation**: Comprehensive guides in `/docs`
+- **GitHub Issues**: Bug reports and feature requests
+- **Discord**: Real-time community support
+- **Email**: technical-support@greenstand.org
+
+### Community Resources
+- **Greenstand Website**: [https://greenstand.org](https://greenstand.org)
+- **Slack Channel**: [#treetracker-blockchain](https://greenstand.slack.com)
+- **Developer Forum**: [https://forum.greenstand.org](https://forum.greenstand.org)
+
+---
+
+## 📈 Roadmap
+
+### Current Release (v1.0)
+- ✅ Multi-organization network
+- ✅ Tree tracking chaincode
+- ✅ Kubernetes deployment
+- ✅ Monitoring and alerting
+
+### Next Release (v1.1)
+- 🔄 Mobile wallet integration
+- 🔄 Carbon credit tokenization
+- 🔄 Enhanced analytics dashboard
+- 🔄 Multi-chain interoperability
+
+### Future Releases
+- 📋 IoT sensor integration
+- 📋 Satellite imagery verification
+- 📋 Machine learning analytics
+- 📋 Cross-border payment rails
+
+---
+
+## 📄 License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **Hyperledger Foundation**: For the excellent Fabric framework
+- **Greenstand Team**: For environmental vision and leadership
+- **Open Source Community**: For tools, libraries, and inspiration
+- **Tree Planting Partners**: CBOs worldwide making real impact
+
+---
+
+**🌱 Together, we're growing a more transparent and sustainable future through blockchain technology! 🌱**
+
+<div align="center">
+  <strong>Architected with ❤️ by <a href="https://github.com/imos64">Imos Aikoroje</a>  For Greenstand Community</strong><br>
+  <a href="https://greenstand.org">greenstand.org</a> | 
+  <a href="https://github.com/Greenstand">GitHub</a> 
+</div>

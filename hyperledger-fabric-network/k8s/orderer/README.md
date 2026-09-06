@@ -10,9 +10,9 @@ endorsement and committing peer validation provide those other checks.
 
 ## Two independent five-member groups
 
-| Group | Deployments | Client services | Channel role |
-| --- | --- | --- | --- |
-| Original | raft-orderer-0 through raft-orderer-4 | orderer0 through orderer4 | Original `treetracker` history |
+| Group     | Deployments                                 | Client services                 | Channel role                        |
+| --------- | ------------------------------------------- | ------------------------------- | ----------------------------------- |
+| Original  | raft-orderer-0 through raft-orderer-4       | orderer0 through orderer4       | Original `treetracker` history      |
 | Successor | v2-raft-orderer-0 through v2-raft-orderer-4 | v2-orderer0 through v2-orderer4 | Active `treetracker-v2` integration |
 
 Namespace: `hlf-orderer`. Each node has its own MSP, TLS identity and 5 GiB
@@ -34,7 +34,7 @@ sequenceDiagram
     O->>O: Agree on transaction order with Raft
     O-->>C: Deliver ordered blocks
     C->>C: Validate policy and state versions
-    C->>C: Append ledger; apply valid writes
+    C->>C: Append ledger and apply valid writes
     C-->>API: Commit outcome / events
 ```
 
@@ -44,15 +44,15 @@ rather than using orderer availability alone as proof of business success.
 
 ## Ports, identities and storage
 
-| Port / input | Use |
-| --- | --- |
-| 7050 / TLS | SDK broadcast and peer block delivery |
-| 9443 / HTTP | Internal health and metrics |
-| 9444 / mutual TLS | Channel participation administration |
-| `ordererN-msp`, `v2-ordererN-msp` | Signing certificate, CA, admin certificate and signing key |
-| `ordererN-tls`, `v2-ordererN-tls` | Server/cluster TLS certificate, key and root |
-| `orderer-admin-client-ca/ca.crt` | Approved issuer of administration client identities |
-| `raft-orderer-data-N`, `v2-raft-orderer-data-N` | Ledger, WAL and snapshot persistence |
+| Port / input                                    | Use                                                        |
+| ----------------------------------------------- | ---------------------------------------------------------- |
+| 7050 / TLS                                      | SDK broadcast and peer block delivery                      |
+| 9443 / HTTP                                     | Internal health and metrics                                |
+| 9444 / mutual TLS                               | Channel participation administration                       |
+| `ordererN-msp`, `v2-ordererN-msp`               | Signing certificate, CA, admin certificate and signing key |
+| `ordererN-tls`, `v2-ordererN-tls`               | Server/cluster TLS certificate, key and root               |
+| `orderer-admin-client-ca/ca.crt`                | Approved issuer of administration client identities        |
+| `raft-orderer-data-N`, `v2-raft-orderer-data-N` | Ledger, WAL and snapshot persistence                       |
 
 The chart defaults enable channel participation with no bootstrap block.
 Starting on empty storage does not create a channel. Operators join the proper

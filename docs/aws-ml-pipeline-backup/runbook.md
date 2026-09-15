@@ -1,8 +1,21 @@
-# Backup runbook - dormant ML pipeline (account <ACCOUNT_ID>)
+# Backup runbook - dormant ML pipeline (account $ACCOUNT_ID)
 
 The destination deliverable of the `aws-data-backup` wayfinder effort. It assembles the decisions in `map.md` (tickets 01-09) into one executable procedure: back up all real data as portable files to a new S3 archive, restore-verify each artifact, then gate deletion of the sources on a manifest. Execution is a separate effort; this document is what the executor follows.
 
-Supporting artifacts: [manifest.template.json](manifest.template.json), [iam-execution-policy.json](iam-execution-policy.json), [data-loss-risk-register.md](data-loss-risk-register.md).
+Supporting reference: [data-loss-risk-register.md](data-loss-risk-register.md). The manifest template and the executor IAM policy template are kept with the team's internal backup plan (not in this docs set).
+
+## Configuration - set these before you start
+
+Fill in these values for your AWS account. Keep them in a private place. Do not commit real values to git. Every step below uses the token, not the real value.
+
+| Token | Set it to |
+|-------|-----------|
+| `$ACCOUNT_ID` | your 12-digit AWS account ID |
+| `$ARCHIVE_BUCKET` | your archive bucket name (globally unique, for example an organisation prefix plus the account ID) |
+| `$UNLOAD_ROLE_ARN` | the full ARN of your redshift-unload-role |
+| `$BREAKGLASS_ROLE_ARN` | the full ARN of the admin role that may delete from the bucket |
+
+Replace each `$TOKEN` with its real value at run time.
 
 ## 0. Principles (non-negotiable)
 
@@ -34,14 +47,14 @@ Out of scope: S3-resident ML buckets (already durable in S3), SageMaker metadata
 ## 2. Prerequisite: one-time SETUP (admin) - ticket 09
 
 `arnold-cli` is ReadOnly and cannot do this. An admin must:
-1. Create archive bucket `greenstand-ml-pipeline-archive-<ACCOUNT_ID>` (eu-central-1): Block Public Access ON; default SSE-S3; TLS-only + `Deny s3:DeleteObject` + `s3:DeleteObjectVersion` bucket policy (break-glass admin excepted); NO versioning, NO Object Lock; lifecycle = transition to Glacier Instant Retrieval after the restore-test window, NO Expiration rule.
+1. Create archive bucket `$ARCHIVE_BUCKET` (eu-central-1): Block Public Access ON; default SSE-S3; TLS-only + `Deny s3:DeleteObject` + `s3:DeleteObjectVersion` bucket policy (break-glass admin excepted); NO versioning, NO Object Lock; lifecycle = transition to Glacier Instant Retrieval after the restore-test window, NO Expiration rule.
 2. Create 3 service roles: `redshift-unload-role` (trust redshift), `datasync-s3-write-role` (trust datasync), `backup-helper-ec2-profile` (trust ec2 + kms:Decrypt) - each with S3 write to the bucket.
-3. Create `aws-data-backup-executor` role with [iam-execution-policy.json](iam-execution-policy.json); grant to the operator/agent.
+3. Create `aws-data-backup-executor` role with the executor IAM policy template; grant to the operator/agent.
 All backup commands below run as `aws-data-backup-executor`.
 
 ## 3. Backup steps (per service)
 
-Prefix scheme: `s3://greenstand-ml-pipeline-archive-<ACCOUNT_ID>/backup-2026-09/<service>/...`.
+Prefix scheme: `s3://$ARCHIVE_BUCKET/backup-2026-09/<service>/...`.
 
 ### 3.1 RDS (resources 1-2) - pg_dump
 
@@ -65,7 +78,7 @@ Do NOT pipe pg_dump to s3. Export parameter-group settings separately (config, n
 ```
 UNLOAD ('SELECT * FROM "schema"."table"')
 TO 's3://.../backup-2026-09/redshift/dev/schema/table/'
-IAM_ROLE 'arn:aws:iam::<ACCOUNT_ID>:role/redshift-unload-role'
+IAM_ROLE '$UNLOAD_ROLE_ARN'
 FORMAT PARQUET ALLOWOVERWRITE PARALLEL ON MANIFEST VERBOSE REGION 'eu-central-1';
 ```
 4. Reconcile the archived table list vs `SVV_TABLES` (empty tables write no file - catch them). Script all DDL/views/procs/UDFs/grants to `_ddl/` (UNLOAD is row-data only). Type traps: unload VARBYTE/GEOMETRY/GEOGRAPHY/HLLSKETCH as CSV/JSON; SUPER as JSON; convert TIMESTAMPTZ to UTC or store the offset (Parquet drops it).
@@ -96,7 +109,7 @@ echo "${PIPESTATUS[@]}"                          # both must be 0
 
 ## 4. Manifest & integrity (ticket 06)
 
-Fill [manifest.template.json](manifest.template.json) as you go: one row per resource with `artifact_s3_keys`, `object_count`, `total_bytes`, `checksums` (SHA-256 for single files, tool-manifest + aggregate for multi-object sets), `source_metric`, and the `status` booleans. Write it to `s3://.../backup-2026-09/manifest.json` (write-once) AND commit a copy into this repo dir. It is the single source of truth.
+Fill the manifest template as you go: one row per resource with `artifact_s3_keys`, `object_count`, `total_bytes`, `checksums` (SHA-256 for single files, tool-manifest + aggregate for multi-object sets), `source_metric`, and the `status` booleans. Write it to `s3://.../backup-2026-09/manifest.json` (write-once) AND commit a copy into this repo dir. It is the single source of truth.
 
 ## 5. Restore-verification (ticket 07)
 

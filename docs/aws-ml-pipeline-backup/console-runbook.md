@@ -1,6 +1,6 @@
 # Console runbook - backup before deletion (AWS Console UI)
 
-The console (web UI) version of [runbook.md](runbook.md). Same decisions, same safeguards, expressed as click-by-click steps. Console navigation validated against AWS docs via the AWS Knowledge MCP on 2026-09-14. Account 053061259712.
+The console (web UI) version of [runbook.md](runbook.md). Same decisions, same safeguards, expressed as click-by-click steps. Console navigation validated against AWS docs via the AWS Knowledge MCP on 2026-09-14. Account <ACCOUNT_ID>.
 
 ## 0. Read first - what the console can and cannot do
 
@@ -10,7 +10,7 @@ Three operations cannot be pure console clicks because they need a shell: **pg_d
 
 Non-negotiable safeguards carry over: never pipe `pg_dump`/`tar` straight to `aws s3 cp -` (write to a file or use `set -o pipefail`, then verify); full-filesystem tar; DataSync Basic mode with "Verify all data" + "Transfer all data"; a source is deleted only after its manifest row passes and a human signs the gate.
 
-Scope = the 18 resources frozen in ticket 08 (see [runbook.md](runbook.md) section 1). Prefix scheme: `s3://greenstand-ml-pipeline-archive-053061259712/backup-2026-09/<service>/...`.
+Scope = the 18 resources frozen in ticket 08 (see [runbook.md](runbook.md) section 1). Prefix scheme: `s3://greenstand-ml-pipeline-archive-<ACCOUNT_ID>/backup-2026-09/<service>/...`.
 
 ---
 
@@ -19,7 +19,7 @@ Scope = the 18 resources frozen in ticket 08 (see [runbook.md](runbook.md) secti
 ### 1.1 [CONSOLE] Create the archive bucket
 S3 console -> **General purpose buckets** -> **Create bucket**.
 1. **AWS Region**: Europe (Frankfurt) eu-central-1.
-2. **Bucket name**: `greenstand-ml-pipeline-archive-053061259712`.
+2. **Bucket name**: `greenstand-ml-pipeline-archive-<ACCOUNT_ID>`.
 3. **Object Ownership**: ACLs disabled (recommended).
 4. **Block Public Access**: keep **Block all public access** checked (all 4 ON).
 5. **Bucket Versioning**: **Disable**.
@@ -34,12 +34,12 @@ Open the bucket -> **Permissions** tab -> **Bucket policy** -> **Edit** -> paste
   "Version": "2012-10-17",
   "Statement": [
     {"Sid":"DenyInsecureTransport","Effect":"Deny","Principal":"*","Action":"s3:*",
-     "Resource":["arn:aws:s3:::greenstand-ml-pipeline-archive-053061259712","arn:aws:s3:::greenstand-ml-pipeline-archive-053061259712/*"],
+     "Resource":["arn:aws:s3:::greenstand-ml-pipeline-archive-<ACCOUNT_ID>","arn:aws:s3:::greenstand-ml-pipeline-archive-<ACCOUNT_ID>/*"],
      "Condition":{"Bool":{"aws:SecureTransport":"false"}}},
     {"Sid":"DenyDeleteExceptBreakGlass","Effect":"Deny","Principal":"*",
      "Action":["s3:DeleteObject","s3:DeleteObjectVersion"],
-     "Resource":"arn:aws:s3:::greenstand-ml-pipeline-archive-053061259712/*",
-     "Condition":{"ArnNotEquals":{"aws:PrincipalArn":"arn:aws:iam::053061259712:role/BreakGlassAdmin"}}}
+     "Resource":"arn:aws:s3:::greenstand-ml-pipeline-archive-<ACCOUNT_ID>/*",
+     "Condition":{"ArnNotEquals":{"aws:PrincipalArn":"arn:aws:iam::<ACCOUNT_ID>:role/BreakGlassAdmin"}}}
   ]
 }
 ```
@@ -82,7 +82,7 @@ Open **CloudShell** (console footer/top-bar icon) or connect to the helper EC2 (
 # dump to a FILE (not a pipe), confirm exit 0
 PGPASSWORD=<pw> pg_dump -h <endpoint> -p 5432 -U <user> -d <db> -Fc -Z 6 -v -f <db>.dump
 pg_restore --list <db>.dump >/dev/null      # must succeed = not truncated
-aws s3 cp <db>.dump s3://greenstand-ml-pipeline-archive-053061259712/backup-2026-09/rds/<region>/<db>/ --checksum-algorithm SHA256
+aws s3 cp <db>.dump s3://greenstand-ml-pipeline-archive-<ACCOUNT_ID>/backup-2026-09/rds/<region>/<db>/ --checksum-algorithm SHA256
 # once, cluster-wide globals:
 PGPASSWORD=<pw> pg_dumpall -h <endpoint> -U <user> --globals-only --no-role-passwords -f globals.sql
 aws s3 cp globals.sql s3://.../backup-2026-09/rds/<region>/<db>/ --checksum-algorithm SHA256
@@ -110,8 +110,8 @@ WHERE table_type IN ('base tables','BASE TABLE')          -- use whichever the l
 Per table:
 ```sql
 UNLOAD ('SELECT * FROM "schema"."table"')
-TO 's3://greenstand-ml-pipeline-archive-053061259712/backup-2026-09/redshift/dev/schema/table/'
-IAM_ROLE 'arn:aws:iam::053061259712:role/redshift-unload-role'
+TO 's3://greenstand-ml-pipeline-archive-<ACCOUNT_ID>/backup-2026-09/redshift/dev/schema/table/'
+IAM_ROLE 'arn:aws:iam::<ACCOUNT_ID>:role/redshift-unload-role'
 FORMAT PARQUET ALLOWOVERWRITE PARALLEL ON MANIFEST VERBOSE REGION 'eu-central-1';
 ```
 `REGION 'eu-central-1'` is required (bucket region != cluster region). Empty tables write NO file, so reconcile the archived prefixes against the table list. Type traps: unload VARBYTE/GEOMETRY/GEOGRAPHY/HLLSKETCH as CSV/JSON, SUPER as FORMAT JSON, and convert TIMESTAMPTZ to UTC (Parquet drops the tz offset).
@@ -129,7 +129,7 @@ For **fs-0b44** (resource 12): first stop its SageMaker Studio app (SageMaker co
 DataSync console, set Region = the filesystem's Region (us-east-1 for resource 10) -> **Data transfer -> Locations -> Create location** -> Location type **Amazon EFS file system** -> pick the file system, **Mount path** `/`, a **Subnet** in the same AZ as a mount target, a **Security group** allowing inbound NFS TCP 2049 -> **Create location**.
 
 ### 4.2 Create the S3 destination location
-**Create location** -> **Amazon S3** -> **General purpose bucket** -> pick `greenstand-ml-pipeline-archive-053061259712` (eu-central-1) -> **S3 URI** folder `backup-2026-09/efs/<fs-id>/` -> **Storage class** = Standard -> **IAM role** = Autogenerate (or `datasync-s3-write-role`) -> **Create location**.
+**Create location** -> **Amazon S3** -> **General purpose bucket** -> pick `greenstand-ml-pipeline-archive-<ACCOUNT_ID>` (eu-central-1) -> **S3 URI** folder `backup-2026-09/efs/<fs-id>/` -> **Storage class** = Standard -> **IAM role** = Autogenerate (or `datasync-s3-write-role`) -> **Create location**.
 
 ### 4.3 Create the task (Basic mode - required for full verification)
 **Tasks -> Create task** -> source + destination locations from above -> **Configure settings**:
@@ -169,7 +169,7 @@ sudo mkdir -p /mnt/src
 sudo mount -o ro,nouuid /dev/nvme1n1p1 /mnt/src                 # nouuid for XFS clone; use ext4 without nouuid
 set -o pipefail
 sudo tar -S --acls --xattrs --numeric-owner -czf - -C /mnt/src . \
-  | aws s3 cp - s3://greenstand-ml-pipeline-archive-053061259712/backup-2026-09/ebs/<VOL>/data.tar.gz \
+  | aws s3 cp - s3://greenstand-ml-pipeline-archive-<ACCOUNT_ID>/backup-2026-09/ebs/<VOL>/data.tar.gz \
       --expected-size <BYTES> --checksum-algorithm SHA256
 echo "${PIPESTATUS[@]}"                                          # BOTH must be 0
 ```

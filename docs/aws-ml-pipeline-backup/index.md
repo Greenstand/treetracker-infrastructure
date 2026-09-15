@@ -10,7 +10,7 @@ This is a **plan**. It has not run yet. Running it is a separate task that needs
 
 ## 1. What this is
 
-Our AWS account (number 053061259712) holds an old machine-learning system. The system was used to label tree images and train models. Nobody has used it for about 15 months. It still runs, so it still costs money every month.
+Our AWS account (number <ACCOUNT_ID>) holds an old machine-learning system. The system was used to label tree images and train models. Nobody has used it for about 15 months. It still runs, so it still costs money every month.
 
 We want to **delete** this old system to save money. But first we must **make a safe copy** of any real data it holds. This guide is that backup plan.
 
@@ -40,7 +40,7 @@ We do **not** back up: the live Treetracker product data, the machine-learning f
 
 All backups go into **one new S3 bucket** (a bucket is a storage folder in AWS):
 
-- **Name:** `greenstand-ml-pipeline-archive-053061259712`
+- **Name:** `greenstand-ml-pipeline-archive-<ACCOUNT_ID>`
 - **Region:** Europe (Frankfurt)
 - **Cost class:** Glacier Instant Retrieval. This is cheap, long-term storage. You can still read it right away when you need it.
 - **How long we keep it:** forever, unless we decide otherwise later.

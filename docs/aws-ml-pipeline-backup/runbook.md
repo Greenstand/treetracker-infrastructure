@@ -1,4 +1,4 @@
-# Backup runbook - dormant ML pipeline (account 053061259712)
+# Backup runbook - dormant ML pipeline (account <ACCOUNT_ID>)
 
 The destination deliverable of the `aws-data-backup` wayfinder effort. It assembles the decisions in `map.md` (tickets 01-09) into one executable procedure: back up all real data as portable files to a new S3 archive, restore-verify each artifact, then gate deletion of the sources on a manifest. Execution is a separate effort; this document is what the executor follows.
 
@@ -34,14 +34,14 @@ Out of scope: S3-resident ML buckets (already durable in S3), SageMaker metadata
 ## 2. Prerequisite: one-time SETUP (admin) - ticket 09
 
 `arnold-cli` is ReadOnly and cannot do this. An admin must:
-1. Create archive bucket `greenstand-ml-pipeline-archive-053061259712` (eu-central-1): Block Public Access ON; default SSE-S3; TLS-only + `Deny s3:DeleteObject` + `s3:DeleteObjectVersion` bucket policy (break-glass admin excepted); NO versioning, NO Object Lock; lifecycle = transition to Glacier Instant Retrieval after the restore-test window, NO Expiration rule.
+1. Create archive bucket `greenstand-ml-pipeline-archive-<ACCOUNT_ID>` (eu-central-1): Block Public Access ON; default SSE-S3; TLS-only + `Deny s3:DeleteObject` + `s3:DeleteObjectVersion` bucket policy (break-glass admin excepted); NO versioning, NO Object Lock; lifecycle = transition to Glacier Instant Retrieval after the restore-test window, NO Expiration rule.
 2. Create 3 service roles: `redshift-unload-role` (trust redshift), `datasync-s3-write-role` (trust datasync), `backup-helper-ec2-profile` (trust ec2 + kms:Decrypt) - each with S3 write to the bucket.
 3. Create `aws-data-backup-executor` role with [iam-execution-policy.json](iam-execution-policy.json); grant to the operator/agent.
 All backup commands below run as `aws-data-backup-executor`.
 
 ## 3. Backup steps (per service)
 
-Prefix scheme: `s3://greenstand-ml-pipeline-archive-053061259712/backup-2026-09/<service>/...`.
+Prefix scheme: `s3://greenstand-ml-pipeline-archive-<ACCOUNT_ID>/backup-2026-09/<service>/...`.
 
 ### 3.1 RDS (resources 1-2) - pg_dump
 
@@ -65,7 +65,7 @@ Do NOT pipe pg_dump to s3. Export parameter-group settings separately (config, n
 ```
 UNLOAD ('SELECT * FROM "schema"."table"')
 TO 's3://.../backup-2026-09/redshift/dev/schema/table/'
-IAM_ROLE 'arn:aws:iam::053061259712:role/redshift-unload-role'
+IAM_ROLE 'arn:aws:iam::<ACCOUNT_ID>:role/redshift-unload-role'
 FORMAT PARQUET ALLOWOVERWRITE PARALLEL ON MANIFEST VERBOSE REGION 'eu-central-1';
 ```
 4. Reconcile the archived table list vs `SVV_TABLES` (empty tables write no file - catch them). Script all DDL/views/procs/UDFs/grants to `_ddl/` (UNLOAD is row-data only). Type traps: unload VARBYTE/GEOMETRY/GEOGRAPHY/HLLSKETCH as CSV/JSON; SUPER as JSON; convert TIMESTAMPTZ to UTC or store the offset (Parquet drops it).

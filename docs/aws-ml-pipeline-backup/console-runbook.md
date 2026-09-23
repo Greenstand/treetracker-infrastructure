@@ -21,7 +21,7 @@ Fill in these values for your AWS account. Keep them in a private place. Do not 
 | `$ACCOUNT_ID` | your 12-digit AWS account ID |
 | `$ARCHIVE_BUCKET` | your archive bucket name (globally unique, for example an organisation prefix plus the account ID) |
 | `$UNLOAD_ROLE_ARN` | the full ARN of your redshift-unload-role |
-| `$BREAKGLASS_ROLE_ARN` | the full ARN of the admin role that may delete from the bucket |
+| `$BREAKGLASS_ROLE_ARN` | the full ARN of the `archive-breakglass` role, the only role that may delete from the bucket or change its protection |
 
 Replace each `$TOKEN` with its real value at run time.
 
@@ -40,7 +40,33 @@ S3 console -> **General purpose buckets** -> **Create bucket**.
 7. **Advanced settings -> Object Lock**: **Disable**. (Versioning keeps the option to turn on Object Lock later.)
 8. **Create bucket**.
 
-### 1.2 [CONSOLE] Bucket policy (TLS-only + delete protection)
+### 1.2 [CONSOLE] Lifecycle rule (Standard -> Glacier Instant Retrieval, no expiry)
+Bucket -> **Management** tab -> **Create lifecycle rule**.
+1. Name it; scope = **Apply to all objects** (tick the acknowledgement).
+2. Actions: check **Move current versions of objects between storage classes** AND **Move noncurrent versions of objects between storage classes** ONLY. Do NOT check any Expire, Permanently delete, or Delete action.
+3. Current versions: storage class = **Glacier Instant Retrieval**; **Days after object creation** = e.g. 14 (after the restore test).
+4. Noncurrent versions: storage class = **Glacier Instant Retrieval**; **Days after objects become noncurrent** = 14. Leave **Number of newer versions to retain** empty.
+5. **Create rule**.
+
+Do not turn on MFA Delete: S3 does not allow it on a bucket with a lifecycle rule.
+
+### 1.3 [CONSOLE] IAM policy + roles
+IAM console -> **Policies** -> **Create policy** -> **JSON** tab. Create:
+- `greenstand-ml-archive-s3-write` = PutObject/AbortMultipartUpload/ListBucket/GetBucketLocation on the bucket + `/*`.
+- `aws-data-backup-executor-policy` = paste the executor IAM policy template.
+
+IAM -> **Roles** -> **Create role** for each (Select trusted entity -> then Add permissions):
+- **redshift-unload-role**: AWS service -> Redshift use case (or **Custom trust policy** with `redshift.amazonaws.com` + `redshift-serverless.amazonaws.com`); attach the s3-write policy.
+- **datasync-s3-write-role**: **Custom trust policy** with `datasync.amazonaws.com` (DataSync is not in the service list); attach the s3-write policy. (You can also let DataSync autogenerate this in step 4.2.)
+- **backup-helper-ec2-profile**: AWS service -> **EC2** use case (this auto-creates the matching instance profile); attach s3-write + a `kms:Decrypt`/`DescribeKey` policy; also attach **AmazonSSMManagedInstanceCore** (for Session Manager).
+- **aws-data-backup-executor**: **Custom trust policy** naming the operator user/role ARN; attach the executor policy. Also give the operator `sts:AssumeRole` on this role.
+- **archive-breakglass** (its ARN is `$BREAKGLASS_ROLE_ARN`): **Custom trust policy** naming the IAM user ARN of each named break-glass owner, with the condition `"Bool": {"aws:MultiFactorAuthPresent": "true"}`, so only an MFA session can assume it. Attach an inline policy that allows `s3:*` on `arn:aws:s3:::$ARCHIVE_BUCKET` and `arn:aws:s3:::$ARCHIVE_BUCKET/*`. Create it at the root path (no custom path), so its ARN matches the bucket policy exactly. Use it only to repair the bucket.
+
+Edit a trust later: role -> **Trust relationships** tab -> **Edit trust policy** -> **Update policy**.
+
+### 1.4 [CONSOLE] Bucket policy (TLS-only + delete and configuration protection) - apply LAST
+Apply this policy only after 1.1-1.3: after it is in place, only `archive-breakglass` (and the account root user) can change versioning, the lifecycle rule, or the policy itself.
+
 Open the bucket -> **Permissions** tab -> **Bucket policy** -> **Edit** -> paste, then **Save changes**:
 ```json
 {
@@ -52,34 +78,21 @@ Open the bucket -> **Permissions** tab -> **Bucket policy** -> **Edit** -> paste
     {"Sid":"DenyDeleteExceptBreakGlass","Effect":"Deny","Principal":"*",
      "Action":["s3:DeleteObject","s3:DeleteObjectVersion"],
      "Resource":"arn:aws:s3:::$ARCHIVE_BUCKET/*",
+     "Condition":{"ArnNotEquals":{"aws:PrincipalArn":"$BREAKGLASS_ROLE_ARN"}}},
+    {"Sid":"DenyProtectionChangesExceptBreakGlass","Effect":"Deny","Principal":"*",
+     "Action":["s3:PutLifecycleConfiguration","s3:PutBucketVersioning","s3:PutBucketPolicy","s3:DeleteBucketPolicy","s3:DeleteBucket"],
+     "Resource":"arn:aws:s3:::$ARCHIVE_BUCKET",
      "Condition":{"ArnNotEquals":{"aws:PrincipalArn":"$BREAKGLASS_ROLE_ARN"}}}
   ]
 }
 ```
-Note: `s3:DeleteObject*` is NOT valid policy syntax; enumerate the two actions as above.
+Why each statement:
+- `DenyDeleteExceptBreakGlass` blocks the delete APIs. `s3:DeleteObject*` is NOT valid policy syntax; enumerate the two actions as above.
+- `DenyProtectionChangesExceptBreakGlass` closes the other delete paths. A lifecycle Expiration rule deletes objects without the delete APIs, so AWS requires a Deny on `s3:PutLifecycleConfiguration` too (this action also covers deleting the lifecycle rule). The policy and versioning actions stop an admin from removing this protection first.
+- The account root user can always edit or delete a bucket policy (AWS lockout protection), so this policy cannot lock you out. It also means the policy does not stop root; only Object Lock does.
+- An admin with IAM permissions can still edit the `archive-breakglass` trust policy. This policy stops accidents, not a determined admin.
 
-### 1.3 [CONSOLE] Lifecycle rule (Standard -> Glacier Instant Retrieval, no expiry)
-Bucket -> **Management** tab -> **Create lifecycle rule**.
-1. Name it; scope = **Apply to all objects** (tick the acknowledgement).
-2. Actions: check **Move current versions of objects between storage classes** AND **Move noncurrent versions of objects between storage classes** ONLY. Do NOT check any Expire, Permanently delete, or Delete action.
-3. Current versions: storage class = **Glacier Instant Retrieval**; **Days after object creation** = e.g. 14 (after the restore test).
-4. Noncurrent versions: storage class = **Glacier Instant Retrieval**; **Days after objects become noncurrent** = 14. Leave **Number of newer versions to retain** empty.
-5. **Create rule**.
-
-Do not turn on MFA Delete: S3 does not allow it on a bucket with a lifecycle rule.
-
-### 1.4 [CONSOLE] IAM policy + roles
-IAM console -> **Policies** -> **Create policy** -> **JSON** tab. Create:
-- `greenstand-ml-archive-s3-write` = PutObject/AbortMultipartUpload/ListBucket/GetBucketLocation on the bucket + `/*`.
-- `aws-data-backup-executor-policy` = paste the executor IAM policy template.
-
-IAM -> **Roles** -> **Create role** for each (Select trusted entity -> then Add permissions):
-- **redshift-unload-role**: AWS service -> Redshift use case (or **Custom trust policy** with `redshift.amazonaws.com` + `redshift-serverless.amazonaws.com`); attach the s3-write policy.
-- **datasync-s3-write-role**: **Custom trust policy** with `datasync.amazonaws.com` (DataSync is not in the service list); attach the s3-write policy. (You can also let DataSync autogenerate this in step 3.2.)
-- **backup-helper-ec2-profile**: AWS service -> **EC2** use case (this auto-creates the matching instance profile); attach s3-write + a `kms:Decrypt`/`DescribeKey` policy; also attach **AmazonSSMManagedInstanceCore** (for Session Manager).
-- **aws-data-backup-executor**: **Custom trust policy** naming the operator user/role ARN; attach the executor policy. Also give the operator `sts:AssumeRole` on this role.
-
-Edit a trust later: role -> **Trust relationships** tab -> **Edit trust policy** -> **Update policy**.
+Validated 2026-09-23 with IAM Access Analyzer `ValidatePolicy` (resource policy, `AWS::S3::Bucket`): 0 findings.
 
 ### 1.5 [CONSOLE] + [BROWSER SHELL] Protect the sources until the deletion gate
 On 2026-09-23 no source had protection: RDS deletion protection was off on both databases, the eu-north-1 automated backup retention was 1 day, all 4 EBS root volumes had `DeleteOnTermination=true`, and only i-036 had termination protection.

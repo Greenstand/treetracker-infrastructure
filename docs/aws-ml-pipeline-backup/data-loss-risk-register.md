@@ -96,7 +96,7 @@ A live re-check found a 9th high-severity vector: **a source can be deleted befo
 - All 4 EBS root volumes had `DeleteOnTermination=true`. Only i-036 had termination protection.
 - i-04b is a persistent Spot instance. If you cancel its `disabled` Spot request while the instance is stopped, AWS terminates the instance, and with it the root volume. AWS does not allow termination protection on Spot instances.
 
-FIX: runbook SETUP step 4 (console-runbook 1.5) turns on RDS deletion protection, sets 7-day retention on eu-north-1, sets `DeleteOnTermination=false` on the 4 root volumes, and turns on termination protection for i-08f and i-0e1. Never cancel the Spot request of a stopped i-04b. Source: AWS EC2 User Guide, "Manage your Spot Instances" and `ModifyInstanceAttribute` `DisableApiTermination`.
+FIX: runbook SETUP step 5 (console-runbook 1.5) turns on RDS deletion protection, sets 7-day retention on eu-north-1, sets `DeleteOnTermination=false` on the 4 root volumes, and turns on termination protection for i-08f and i-0e1. Never cancel the Spot request of a stopped i-04b. Source: AWS EC2 User Guide, "Manage your Spot Instances" and `ModifyInstanceAttribute` `DisableApiTermination`.
 
 The same re-check made vector 7 (crash-consistent snapshot) concrete: the running instances i-04b and i-0e1 each write 0.2-0.8 GB per day. Stopping them before the snapshot is mandatory.
 
@@ -106,3 +106,11 @@ Owner turned versioning ON for the archive bucket (Object Lock still NONE). Cons
 - E2 (accidental delete/overwrite): a simple delete or a same-key overwrite is now undoable (the previous version stays as a noncurrent version). A permanent version delete (`DeleteObjectVersion`) is still possible for a principal that can edit the bucket policy. Residual risk reduced, not removed.
 - E3 (lifecycle expiry): unchanged. Zero Expiration rules and no NoncurrentVersionExpiration.
 - MFA Delete stays out: S3 does not allow it with a lifecycle rule.
+
+## Update 2026-09-23 - archive bucket policy hardened (validation)
+
+IAM Access Analyzer `ValidatePolicy` found no syntax issue, but a logic review against AWS docs found that the Deny on the delete APIs alone does not stop deletes (E2/E3):
+- A lifecycle Expiration rule deletes objects without `DeleteObject`/`DeleteObjectVersion`. AWS states that blocking deletes needs a Deny on `s3:PutLifecycleConfiguration` too.
+- `PutBucketPolicy`/`DeleteBucketPolicy` were not denied, so an admin could remove the Deny first. `PutBucketVersioning` was not denied, so versioning could be suspended.
+
+FIX: a third statement `DenyProtectionChangesExceptBreakGlass` denies these 5 bucket actions to all principals except `archive-breakglass`; the policy is applied LAST in SETUP. Residual risk: the account root user can always edit a bucket policy, and an IAM admin can edit the break-glass trust policy. Only Object Lock stops root.

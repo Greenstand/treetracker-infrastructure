@@ -13,7 +13,7 @@ Fill in these values for your AWS account. Keep them in a private place. Do not 
 | `$ACCOUNT_ID` | your 12-digit AWS account ID |
 | `$ARCHIVE_BUCKET` | your archive bucket name (globally unique, for example an organisation prefix plus the account ID) |
 | `$UNLOAD_ROLE_ARN` | the full ARN of your redshift-unload-role |
-| `$BREAKGLASS_ROLE_ARN` | the full ARN of the admin role that may delete from the bucket |
+| `$BREAKGLASS_ROLE_ARN` | the full ARN of the `archive-breakglass` role, the only role that may delete from the bucket or change its protection |
 
 Replace each `$TOKEN` with its real value at run time.
 
@@ -49,10 +49,15 @@ Out of scope: S3-resident ML buckets (already durable in S3), SageMaker metadata
 ## 2. Prerequisite: one-time SETUP (admin) - ticket 09
 
 `arnold-cli` is ReadOnly and cannot do this. An admin must:
-1. Create archive bucket `$ARCHIVE_BUCKET` (eu-central-1): Block Public Access ON; default SSE-S3; TLS-only + `Deny s3:DeleteObject` + `s3:DeleteObjectVersion` bucket policy (break-glass admin excepted); versioning ENABLED at creation (it cannot be turned off later), NO Object Lock, NO MFA Delete (S3 does not allow it with a lifecycle rule); lifecycle = transition current AND noncurrent versions to Glacier Instant Retrieval after the restore-test window, NO Expiration rule, NO NoncurrentVersionExpiration.
-2. Create 3 service roles: `redshift-unload-role` (trust redshift), `datasync-s3-write-role` (trust datasync), `backup-helper-ec2-profile` (trust ec2 + kms:Decrypt) - each with S3 write to the bucket.
+1. Create archive bucket `$ARCHIVE_BUCKET` (eu-central-1): Block Public Access ON; default SSE-S3; versioning ENABLED at creation (it cannot be turned off later), NO Object Lock, NO MFA Delete (S3 does not allow it with a lifecycle rule). Add the lifecycle rule: transition current AND noncurrent versions to Glacier Instant Retrieval after the restore-test window, NO Expiration rule, NO NoncurrentVersionExpiration.
+2. Create 3 service roles: `redshift-unload-role` (trust redshift), `datasync-s3-write-role` (trust datasync), `backup-helper-ec2-profile` (trust ec2 + kms:Decrypt) - each with S3 write to the bucket. Create the break-glass role `archive-breakglass` (`$BREAKGLASS_ROLE_ARN`, root path, no custom path): trust = the named break-glass owners' IAM user ARNs with `aws:MultiFactorAuthPresent=true`; inline `s3:*` on the bucket and its objects. Use it only to repair the bucket.
 3. Create `aws-data-backup-executor` role with the executor IAM policy template; grant to the operator/agent.
-4. Protect the sources until the deletion gate (section 6). On 2026-09-23 no source had protection: RDS deletion protection was off on both databases, the eu-north-1 automated backup retention was 1 day, all 4 EBS root volumes had `DeleteOnTermination=true`, and only i-036 had termination protection.
+4. Apply the bucket policy LAST (full JSON in console-runbook.md section 1.4). After it is in place, only `archive-breakglass` and the account root user can change versioning, the lifecycle rule, or the policy. It has 3 Deny statements:
+   - `DenyInsecureTransport`: `s3:*` when `aws:SecureTransport=false`.
+   - `DenyDeleteExceptBreakGlass`: `s3:DeleteObject` + `s3:DeleteObjectVersion` on `$ARCHIVE_BUCKET/*`.
+   - `DenyProtectionChangesExceptBreakGlass`: `s3:PutLifecycleConfiguration` + `s3:PutBucketVersioning` + `s3:PutBucketPolicy` + `s3:DeleteBucketPolicy` + `s3:DeleteBucket` on the bucket. AWS requires the lifecycle Deny: an Expiration rule deletes objects without the delete APIs.
+   The two break-glass statements use `ArnNotEquals` on `aws:PrincipalArn` = `$BREAKGLASS_ROLE_ARN`. The root user can always edit the bucket policy (AWS lockout protection), so the policy cannot lock you out, and it does not stop root.
+5. Protect the sources until the deletion gate (section 6). On 2026-09-23 no source had protection: RDS deletion protection was off on both databases, the eu-north-1 automated backup retention was 1 day, all 4 EBS root volumes had `DeleteOnTermination=true`, and only i-036 had termination protection.
 ```
 # RDS: block deletion (apply immediately, no downtime)
 aws rds modify-db-instance --region eu-north-1 --db-instance-identifier database-1 --deletion-protection --backup-retention-period 7 --apply-immediately
@@ -113,7 +118,7 @@ For fs-0b44 (resource 12), STOP its SageMaker Studio app first (live writes = to
 
 One helper Linux EC2 per region (eu-central-1, us-east-2, us-west-2). For resources 8-9, mount read-only and INSPECT first; skip only if provably empty, else back up. For running instances (i-04b, i-0e1), STOP the instance before the snapshot. This step is mandatory, not optional: on 2026-09-23 both root volumes wrote 0.2-0.8 GB per day, so a live snapshot can capture torn files. Ask the owners what writes this data before you stop the instance.
 
-**i-04b is a persistent Spot instance (request `sir-ftc8krtp`).** When you stop it, its Spot request goes to `disabled`. **Do NOT cancel the Spot request while the instance is stopped: AWS then terminates the instance automatically.** Do not terminate the instance. If a termination occurs, the `DeleteOnTermination=false` setting from SETUP step 4 keeps the root volume, but the instance is lost.
+**i-04b is a persistent Spot instance (request `sir-ftc8krtp`).** When you stop it, its Spot request goes to `disabled`. **Do NOT cancel the Spot request while the instance is stopped: AWS then terminates the instance automatically.** Do not terminate the instance. If a termination occurs, the `DeleteOnTermination=false` setting from SETUP step 5 keeps the root volume, but the instance is lost.
 ```
 aws ec2 create-snapshot --region <SRC> --volume-id <VOL>; aws ec2 wait snapshot-completed ...
 aws ec2 create-volume --region <HELPER> --availability-zone <HELPER_AZ> --snapshot-id <SNAP> --volume-type gp3
@@ -142,7 +147,7 @@ Each pass sets `restore_verified=true` + evidence in the manifest.
 
 ## 6. Deletion gate (ticket 06)
 
-A source may be deleted ONLY when its manifest row is `backed_up && integrity_verified && restore_verified` (or `skipped && skip_confirmed`). The deletion effort may begin ONLY when EVERY in-scope row passes AND a named human records `gate.all_rows_satisfied=true` + `gate_approved_by` + `gate_approved_at`. Deletion itself is a separate effort. That effort must first remove the SETUP step 4 protections (RDS deletion protection, EC2 termination protection). The root volumes then stay after instance termination (`DeleteOnTermination=false`), so it must delete them explicitly.
+A source may be deleted ONLY when its manifest row is `backed_up && integrity_verified && restore_verified` (or `skipped && skip_confirmed`). The deletion effort may begin ONLY when EVERY in-scope row passes AND a named human records `gate.all_rows_satisfied=true` + `gate_approved_by` + `gate_approved_at`. Deletion itself is a separate effort. That effort must first remove the SETUP step 5 protections (RDS deletion protection, EC2 termination protection). The root volumes then stay after instance termination (`DeleteOnTermination=false`), so it must delete them explicitly.
 
 ## 7. Ordering & teardown
 

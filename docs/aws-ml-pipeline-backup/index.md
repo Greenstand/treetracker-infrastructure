@@ -58,6 +58,8 @@ We never delete anything from AWS until **all** of these are true for that item,
 
 Only when every one of the 18 items passes all three checks, and a named person signs off, may the delete work begin. The backup bucket has no version history, so the manifest and the restore test are our main safety net. Treat them as required, not optional.
 
+Until the backup is proven, we also protect the old resources from accidental deletion. The one-time setup turns on deletion protection for the databases and keeps each server disk if its server is deleted. Do not cancel the Spot request of a stopped server: AWS then deletes that server.
+
 ## 6. How the backup works, part by part
 
 Each part uses the safest standard AWS method. Full commands are in the [runbook](runbook.md); click-by-click console steps are in the [console runbook](console-runbook.md).
@@ -65,7 +67,7 @@ Each part uses the safest standard AWS method. Full commands are in the [runbook
 - **Databases (RDS):** we use `pg_dump` to make a single restorable dump file, then upload it. We do not use the AWS "export to S3" feature, because that format cannot be loaded back into a database.
 - **Data warehouse (Redshift):** we use the `UNLOAD` command to write every table to the bucket as Parquet files. We also save the table definitions, because `UNLOAD` saves only the rows, not the structure.
 - **File systems (EFS):** we use AWS DataSync, a managed copy service, in "Basic mode" so it can fully verify every file after the copy.
-- **Disks (EBS):** we take a snapshot, make a copy volume, attach it to a small helper server, and copy the whole file system to a compressed file. We check every disk partition so we miss nothing.
+- **Disks (EBS):** we take a snapshot, make a copy volume, attach it to a small helper server, and copy the whole file system to a compressed file. We check every disk partition so we miss nothing. We stop a running server before the snapshot, because two of them write data every day.
 
 For the 2 disks unused since 2021, we cannot see inside them yet, because the current login is read-only. A person with write access must attach and inspect them first, then decide to back up or skip.
 
@@ -78,7 +80,7 @@ This is very small next to the 350 to 425 US dollars each month that the cleanup
 
 ## 8. Who does what
 
-- **A person with AWS admin access** must first create the bucket and the security roles (the current login cannot). This is the one-time setup.
+- **A person with AWS admin access** must first create the bucket and the security roles, and turn on deletion protection for the old resources (the current login cannot). This is the one-time setup.
 - **After setup**, the backup steps can run, either by a person or by an automated agent that holds the correct role.
 - **Deleting the old system** is a separate, later task. It starts only after the manifest sign-off.
 

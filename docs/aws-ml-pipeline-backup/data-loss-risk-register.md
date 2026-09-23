@@ -88,3 +88,14 @@ Validated 2026-09-14 against AWS docs via the AWS Knowledge MCP. Scope: silent d
 Owner chose NO versioning and NO Object Lock for the archive bucket. Consequence for E1/E2/E3:
 - E1 (KMS key loss): N/A - default SSE-S3, no customer key. Risk removed.
 - E2 (accidental delete/overwrite) + E3 (lifecycle expiry): the recommended Object Lock mitigation is NOT applied. Compensating controls only: BPA on, `Deny s3:DeleteObject*` bucket policy (soft - editable via `s3:PutBucketPolicy`), zero Expiration rules, unique dated write-once prefixes. A same-key overwrite is unrecoverable without versioning. Residual risk ACCEPTED by owner; the source-independent deletion gate (issue 06) + test-restore (issue 07) are now the primary safety net.
+
+## Update 2026-09-23 - sources have no deletion protection (live re-check)
+
+A live re-check found a 9th high-severity vector: **a source can be deleted before its backup by an unrelated action.**
+- Both RDS databases had deletion protection off. The eu-north-1 automated backup retention was 1 day.
+- All 4 EBS root volumes had `DeleteOnTermination=true`. Only i-036 had termination protection.
+- i-04b is a persistent Spot instance. If you cancel its `disabled` Spot request while the instance is stopped, AWS terminates the instance, and with it the root volume. AWS does not allow termination protection on Spot instances.
+
+FIX: runbook SETUP step 4 (console-runbook 1.5) turns on RDS deletion protection, sets 7-day retention on eu-north-1, sets `DeleteOnTermination=false` on the 4 root volumes, and turns on termination protection for i-08f and i-0e1. Never cancel the Spot request of a stopped i-04b. Source: AWS EC2 User Guide, "Manage your Spot Instances" and `ModifyInstanceAttribute` `DisableApiTermination`.
+
+The same re-check made vector 7 (crash-consistent snapshot) concrete: the running instances i-04b and i-0e1 each write 0.2-0.8 GB per day. Stopping them before the snapshot is mandatory.

@@ -78,6 +78,20 @@ IAM -> **Roles** -> **Create role** for each (Select trusted entity -> then Add 
 
 Edit a trust later: role -> **Trust relationships** tab -> **Edit trust policy** -> **Update policy**.
 
+### 1.5 [CONSOLE] + [BROWSER SHELL] Protect the sources until the deletion gate
+On 2026-09-23 no source had protection: RDS deletion protection was off on both databases, the eu-north-1 automated backup retention was 1 day, all 4 EBS root volumes had `DeleteOnTermination=true`, and only i-036 had termination protection.
+1. **[CONSOLE] RDS, eu-north-1:** RDS console -> **Databases** -> select `database-1` -> **Modify** -> **Deletion protection**: select **Enable deletion protection**; **Backup retention period** = 7 days -> **Continue** -> **Apply immediately** -> **Modify DB instance**.
+2. **[CONSOLE] Aurora, eu-central-1:** select the cluster `database-1` (not its instance) -> **Modify** -> **Enable deletion protection** -> **Continue** -> **Apply immediately** -> **Modify cluster**.
+3. **[CONSOLE] EC2 termination protection** (On-Demand only; AWS does not allow it on the Spot instance i-04b): EC2 -> **Instances** -> select i-08f (us-east-2), then i-0e1 (us-west-2) -> **Actions -> Instance settings -> Change termination protection** -> **Enable** -> **Save**.
+4. **[BROWSER SHELL] Keep the root volumes** if an instance is terminated. The console has no option for an existing instance, so use CloudShell:
+```
+aws ec2 modify-instance-attribute --region eu-central-1 --instance-id i-036ee8c22d5fb646a --block-device-mappings '[{"DeviceName":"/dev/xvda","Ebs":{"DeleteOnTermination":false}}]'
+aws ec2 modify-instance-attribute --region eu-central-1 --instance-id i-04bb0c9954b2fb870 --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{"DeleteOnTermination":false}}]'
+aws ec2 modify-instance-attribute --region us-east-2    --instance-id i-08f3d846b35606e62 --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{"DeleteOnTermination":false}}]'
+aws ec2 modify-instance-attribute --region us-west-2    --instance-id i-0e1753f684b3971e7 --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{"DeleteOnTermination":false}}]'
+```
+Confirm: each instance -> **Storage** tab -> root volume shows **Delete on termination: No**; each database -> **Configuration** tab shows **Deletion protection: Enabled**.
+
 ---
 
 ## 2. RDS (resources 1-2) - [BROWSER SHELL]
@@ -161,7 +175,11 @@ Select the task -> **Start** (start with defaults). When done, open the task exe
 
 ## 5. EBS firm volumes (resources 4-7) - [CONSOLE] + [BROWSER SHELL]
 
-Run per Region (eu-central-1, us-east-2, us-west-2). For running instances (i-04b, i-0e1): stop them first (EC2 -> Instances -> Instance state -> Stop) for a clean snapshot.
+Run per Region (eu-central-1, us-east-2, us-west-2).
+
+**Stop the running instances first (mandatory).** For i-04b and i-0e1: EC2 -> **Instances** -> **Instance state** -> **Stop instance**. On 2026-09-23 both root volumes wrote 0.2-0.8 GB per day, so a live snapshot can capture torn files. Ask the owners what writes this data before you stop the instance.
+
+**i-04b is a persistent Spot instance (request `sir-ftc8krtp`).** When you stop it, its Spot request goes to `disabled`. **Do NOT cancel the Spot request (EC2 -> Spot Requests) while the instance is stopped: AWS then terminates the instance automatically.** Do not terminate the instance.
 
 ### 5.1 [CONSOLE] Snapshot the source volume
 EC2 console -> **Elastic Block Store -> Volumes** -> select the volume -> **Actions -> Create snapshot** -> **Create snapshot**.
@@ -223,7 +241,7 @@ Set `restore_verified=true` + evidence per row.
 - Set each manifest row `backed_up && integrity_verified && restore_verified` (or `skipped && skip_confirmed`). A named human records `gate.all_rows_satisfied`, `gate_approved_by`, `gate_approved_at`.
 - Let the lifecycle rule transition artifacts to Glacier Instant Retrieval.
 - Teardown: terminate helper instances, delete clone volumes + copied snapshots, delete scratch verify resources, delete the temporary RDS inbound rule. Leave the SOURCES untouched.
-- Deleting the sources is a SEPARATE effort, allowed only after the gate is signed.
+- Deleting the sources is a SEPARATE effort, allowed only after the gate is signed. That effort must first remove the section 1.5 protections. The root volumes then stay after instance termination (`Delete on termination: No`), so it must delete them explicitly.
 
 ---
 

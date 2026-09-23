@@ -99,3 +99,10 @@ A live re-check found a 9th high-severity vector: **a source can be deleted befo
 FIX: runbook SETUP step 4 (console-runbook 1.5) turns on RDS deletion protection, sets 7-day retention on eu-north-1, sets `DeleteOnTermination=false` on the 4 root volumes, and turns on termination protection for i-08f and i-0e1. Never cancel the Spot request of a stopped i-04b. Source: AWS EC2 User Guide, "Manage your Spot Instances" and `ModifyInstanceAttribute` `DisableApiTermination`.
 
 The same re-check made vector 7 (crash-consistent snapshot) concrete: the running instances i-04b and i-0e1 each write 0.2-0.8 GB per day. Stopping them before the snapshot is mandatory.
+
+## Update 2026-09-23 - archive versioning ON (ticket 05 amendment)
+
+Owner turned versioning ON for the archive bucket (Object Lock still NONE). Consequence for E2/E3:
+- E2 (accidental delete/overwrite): a simple delete or a same-key overwrite is now undoable (the previous version stays as a noncurrent version). A permanent version delete (`DeleteObjectVersion`) is still possible for a principal that can edit the bucket policy. Residual risk reduced, not removed.
+- E3 (lifecycle expiry): unchanged. Zero Expiration rules and no NoncurrentVersionExpiration.
+- MFA Delete stays out: S3 does not allow it with a lifecycle rule.

@@ -19,7 +19,7 @@ Replace each `$TOKEN` with its real value at run time.
 
 ## 0. Principles (non-negotiable)
 
-1. **Never delete a source until its manifest row is `backed_up && integrity_verified && restore_verified`** (or `skipped && skip_confirmed`), and the whole in-scope list has a named human sign-off (section 6). The bucket has no versioning/Object Lock (ticket 05), so the manifest gate + restore test are the ONLY safety net.
+1. **Never delete a source until its manifest row is `backed_up && integrity_verified && restore_verified`** (or `skipped && skip_confirmed`), and the whole in-scope list has a named human sign-off (section 6). The bucket has versioning but no Object Lock (ticket 05), so a simple delete or overwrite is undoable, but a permanent version delete is not. The manifest gate + restore test stay the primary safety net.
 2. **Never pipe a producer straight to `aws s3 cp -`.** `pg_dump | s3 cp` and `tar | s3 cp` return the uploader exit code and hide a truncated artifact. Write to a local file (or `set -o pipefail` + check `PIPESTATUS`), then verify.
 3. **Capture everything.** Full-filesystem tar (not curated dirs) for EBS; enumerate all partitions/LVM. `TransferMode=ALL` for DataSync. Reconcile Redshift tables vs `SVV_TABLES`.
 4. **Reproduce before you trust.** Dry-run each method on ONE resource and pass its restore test before running the rest.
@@ -49,7 +49,7 @@ Out of scope: S3-resident ML buckets (already durable in S3), SageMaker metadata
 ## 2. Prerequisite: one-time SETUP (admin) - ticket 09
 
 `arnold-cli` is ReadOnly and cannot do this. An admin must:
-1. Create archive bucket `$ARCHIVE_BUCKET` (eu-central-1): Block Public Access ON; default SSE-S3; TLS-only + `Deny s3:DeleteObject` + `s3:DeleteObjectVersion` bucket policy (break-glass admin excepted); NO versioning, NO Object Lock; lifecycle = transition to Glacier Instant Retrieval after the restore-test window, NO Expiration rule.
+1. Create archive bucket `$ARCHIVE_BUCKET` (eu-central-1): Block Public Access ON; default SSE-S3; TLS-only + `Deny s3:DeleteObject` + `s3:DeleteObjectVersion` bucket policy (break-glass admin excepted); versioning ENABLED at creation (it cannot be turned off later), NO Object Lock, NO MFA Delete (S3 does not allow it with a lifecycle rule); lifecycle = transition current AND noncurrent versions to Glacier Instant Retrieval after the restore-test window, NO Expiration rule, NO NoncurrentVersionExpiration.
 2. Create 3 service roles: `redshift-unload-role` (trust redshift), `datasync-s3-write-role` (trust datasync), `backup-helper-ec2-profile` (trust ec2 + kms:Decrypt) - each with S3 write to the bucket.
 3. Create `aws-data-backup-executor` role with the executor IAM policy template; grant to the operator/agent.
 4. Protect the sources until the deletion gate (section 6). On 2026-09-23 no source had protection: RDS deletion protection was off on both databases, the eu-north-1 automated backup retention was 1 day, all 4 EBS root volumes had `DeleteOnTermination=true`, and only i-036 had termination protection.

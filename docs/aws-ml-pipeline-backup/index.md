@@ -44,7 +44,7 @@ All backups go into **one new S3 bucket** (a bucket is a storage folder in AWS):
 - **Region:** Europe (Frankfurt)
 - **Cost class:** Glacier Instant Retrieval. This is cheap, long-term storage. You can still read it right away when you need it.
 - **How long we keep it:** forever, unless we decide otherwise later.
-- **Protection:** the bucket blocks public access, blocks accidental deletion with a policy, and forces secure (HTTPS) connections.
+- **Protection:** the bucket blocks public access, blocks accidental deletion with a policy, keeps a version history of every file, and forces secure (HTTPS) connections.
 
 We save the data as **normal files** (for example a database dump file, or a compressed folder). This means the files do not depend on the old AWS service. We can restore them anywhere.
 
@@ -56,7 +56,7 @@ We never delete anything from AWS until **all** of these are true for that item,
 2. **Integrity checked:** the file's checksum (a digital fingerprint) matches, so we know it is not damaged.
 3. **Restore tested:** we actually opened the backup and confirmed the data is usable.
 
-Only when every one of the 18 items passes all three checks, and a named person signs off, may the delete work begin. The backup bucket has no version history, so the manifest and the restore test are our main safety net. Treat them as required, not optional.
+Only when every one of the 18 items passes all three checks, and a named person signs off, may the delete work begin. The backup bucket keeps a version history, so we can undo an accidental delete or overwrite. It cannot stop every kind of delete, so the manifest and the restore test stay our main safety net. Treat them as required, not optional.
 
 Until the backup is proven, we also protect the old resources from accidental deletion. The one-time setup turns on deletion protection for the databases and keeps each server disk if its server is deleted. Do not cancel the Spot request of a stopped server: AWS then deletes that server.
 

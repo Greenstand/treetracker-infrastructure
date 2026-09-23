@@ -35,9 +35,9 @@ S3 console -> **General purpose buckets** -> **Create bucket**.
 2. **Bucket name**: `$ARCHIVE_BUCKET`.
 3. **Object Ownership**: ACLs disabled (recommended).
 4. **Block Public Access**: keep **Block all public access** checked (all 4 ON).
-5. **Bucket Versioning**: **Disable**.
+5. **Bucket Versioning**: **Enable**. (You cannot turn it off later, only suspend it.)
 6. **Default encryption -> Encryption type**: **Server-side encryption with Amazon S3 managed keys (SSE-S3)** (already the console default; confirm the radio).
-7. **Advanced settings -> Object Lock**: **Disable**.
+7. **Advanced settings -> Object Lock**: **Disable**. (Versioning keeps the option to turn on Object Lock later.)
 8. **Create bucket**.
 
 ### 1.2 [CONSOLE] Bucket policy (TLS-only + delete protection)
@@ -61,9 +61,12 @@ Note: `s3:DeleteObject*` is NOT valid policy syntax; enumerate the two actions a
 ### 1.3 [CONSOLE] Lifecycle rule (Standard -> Glacier Instant Retrieval, no expiry)
 Bucket -> **Management** tab -> **Create lifecycle rule**.
 1. Name it; scope = **Apply to all objects** (tick the acknowledgement).
-2. Action: check **Move current versions of objects between storage classes** ONLY (do NOT check any Expire/Delete action).
-3. Transition storage class = **Glacier Instant Retrieval**; **Days after object creation** = e.g. 14 (after the restore test).
-4. **Create rule**.
+2. Actions: check **Move current versions of objects between storage classes** AND **Move noncurrent versions of objects between storage classes** ONLY. Do NOT check any Expire, Permanently delete, or Delete action.
+3. Current versions: storage class = **Glacier Instant Retrieval**; **Days after object creation** = e.g. 14 (after the restore test).
+4. Noncurrent versions: storage class = **Glacier Instant Retrieval**; **Days after objects become noncurrent** = 14. Leave **Number of newer versions to retain** empty.
+5. **Create rule**.
+
+Do not turn on MFA Delete: S3 does not allow it on a bucket with a lifecycle rule.
 
 ### 1.4 [CONSOLE] IAM policy + roles
 IAM console -> **Policies** -> **Create policy** -> **JSON** tab. Create:

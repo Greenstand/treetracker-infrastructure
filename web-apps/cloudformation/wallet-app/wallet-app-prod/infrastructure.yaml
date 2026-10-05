@@ -1,5 +1,6 @@
+# Update the stack with a change set and check Replacement=False on the distribution before executing.
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Private S3 origin + CloudFront (OAC) with named origin, aliases, and ACM cert (add later)
+Description: Private S3 origin + CloudFront (OAC) with named origin, aliases, ACM cert and .html path rewrite
 
 Parameters:
   BucketName:
@@ -11,6 +12,14 @@ Parameters:
     Type: String
     Default: S3OriginMain
     Description: Friendly name for the CloudFront Origin (Origin Id).
+
+  DomainName:
+    Type: String
+    Description: Alternate domain name (CNAME) served by the distribution.
+
+  AcmCertificateArn:
+    Type: String
+    Description: ACM certificate in us-east-1 covering DomainName.
 
   PriceClass:
     Type: String
@@ -51,6 +60,45 @@ Resources:
         SigningProtocol: sigv4
         Description: OAC for private S3 origin
 
+  PathRewriteFunction:
+    Type: AWS::CloudFront::Function
+    Properties:
+      Name: !Sub ${AWS::StackName}-path-rewrite
+      AutoPublish: true
+      FunctionConfig:
+        Comment: Append .html to extension-less paths (Next.js static export on an S3 REST origin)
+        Runtime: cloudfront-js-2.0
+      FunctionCode: |
+        // CloudFront Function (viewer-request) for the Greenstand wallet web app.
+        //
+        // The app is a Next.js `output: "export"` build with flat .html files (claim.html,
+        // auth/callback.html, ...). The origin is an S3 REST endpoint, which does no index-document
+        // resolution and no ".html" appending. This function does that job, so that
+        //   /                    -> /index.html
+        //   /claim               -> /claim.html            (query string is untouched, lives in request.querystring)
+        //   /auth/callback       -> /auth/callback.html
+        //   /_next/static/x.js   -> unchanged (has a file extension)
+        function handler(event) {
+            var request = event.request;
+            var uri = request.uri;
+
+            // "/" and any directory-style path -> index.html
+            if (uri.endsWith('/')) {
+                request.uri = uri + 'index.html';
+                return request;
+            }
+
+            // Anything whose last segment has a dot is a real file: pass through untouched.
+            var lastSegment = uri.substring(uri.lastIndexOf('/') + 1);
+            if (lastSegment.indexOf('.') !== -1) {
+                return request;
+            }
+
+            // Extension-less route -> the flat file the export produced
+            request.uri = uri + '.html';
+            return request;
+        }
+
   CloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -59,6 +107,24 @@ Resources:
         Comment: !Sub S3 origin for ${AWS::StackName}
         DefaultRootObject: index.html
         PriceClass: !Ref PriceClass
+
+        Aliases:
+          - !Ref DomainName
+        ViewerCertificate:
+          AcmCertificateArn: !Ref AcmCertificateArn
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
+
+        # The S3 REST origin answers 403 for a missing key; show the app's 404 page instead of raw XML.
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 404
+            ResponsePagePath: /404.html
+            ErrorCachingMinTTL: 10
+          - ErrorCode: 404
+            ResponseCode: 404
+            ResponsePagePath: /404.html
+            ErrorCachingMinTTL: 10
 
         Origins:
           - Id: !Ref OriginId
@@ -80,6 +146,9 @@ Resources:
             QueryString: false
             Cookies:
               Forward: none
+          FunctionAssociations:
+            - EventType: viewer-request
+              FunctionARN: !GetAtt PathRewriteFunction.FunctionMetadata.FunctionARN
 
   BucketPolicy:
     Type: AWS::S3::BucketPolicy

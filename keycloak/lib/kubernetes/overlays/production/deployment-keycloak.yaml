@@ -1,0 +1,25 @@
+# Production Keycloak: pin the image that is live in prod and keep warm database connections.
+#
+# Why the pool settings: with no minimum pool size Keycloak closes idle connections, so every
+# scheduled task and every login after an idle period must open a new connection (DNS lookup of
+# the DO database host + TLS + auth) inside the 5 s acquisition timeout. Prod CoreDNS has
+# intermittent upstream "i/o timeout" errors, which produced "Acquisition timeout while waiting
+# for new connection" errors in the Keycloak log (Oct 2026). A warm pool takes DNS off the login path.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: treetracker-keycloak
+  namespace: keycloak
+spec:
+  template:
+    spec:
+      containers:
+        - name: treetracker-keycloak
+          image: dadiorchen/keycloak:1.5
+          env:
+            - name: KC_DB_POOL_INITIAL_SIZE
+              value: "5"
+            - name: KC_DB_POOL_MIN_SIZE
+              value: "5"
+            - name: KC_DB_POOL_MAX_SIZE
+              value: "20"

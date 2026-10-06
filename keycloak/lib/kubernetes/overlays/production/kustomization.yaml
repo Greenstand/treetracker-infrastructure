@@ -7,3 +7,4 @@ resources:
 #patch
 patchesStrategicMerge:
   - deployment-raw-client.yaml
+  - deployment-keycloak.yaml

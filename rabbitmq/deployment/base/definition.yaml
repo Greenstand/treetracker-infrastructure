@@ -6,8 +6,8 @@ spec:
   replicas: 3
   resources: #these are the defaults
     requests:
-      cpu: 1000m
-      memory: 2Gi
+      cpu: 300m
+      memory: 400Mi
     limits:
       cpu: 1000m
       memory: 2Gi

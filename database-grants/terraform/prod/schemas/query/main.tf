@@ -52,21 +52,7 @@ resource "postgresql_grant" "query_stakeholder_tables" {
   privileges  = ["SELECT"]
 }
 
-resource "postgresql_grant" "query_regions_schema" {
-  database    = "treetracker"
-  role        = "s_query"
-  schema      = "regions"
-  object_type = "schema"
-  privileges  = ["USAGE"]
-}
 
-resource "postgresql_grant" "query_regions_tables" {
-  database    = "treetracker"
-  role        = "s_query"
-  schema      = "regions"
-  object_type = "table"
-  privileges  = ["SELECT"]
-}
 
 resource "postgresql_grant" "query_public_schema" {
   database    = "treetracker"

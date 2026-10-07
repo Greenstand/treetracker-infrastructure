@@ -12,12 +12,6 @@ module "treetracker_schema" {
   }
 }
 
-module "webmap_schema" {
-  source = "./schemas/webmap"
-  providers = {
-    postgresql = postgresql.treetracker
-  }
-}
 
 module "stakeholder_schema" {
   source = "./schemas/stakeholder"
@@ -33,12 +27,6 @@ module "earnings_schema" {
   }
 }
 
-module "regions_schema" {
-  source = "./schemas/regions"
-  providers = {
-    postgresql = postgresql.treetracker
-  }
-}
 
 module "messaging_schema" {
   source = "./schemas/messaging"
@@ -68,12 +56,6 @@ module "reporting_schema" {
   }
 }
 
-module "contracts_schema" {
-  source = "./schemas/contracts"
-  providers = {
-    postgresql = postgresql.treetracker
-  }
-}
 
 module "keycloak_schema" {
   source = "./schemas/keycloak"

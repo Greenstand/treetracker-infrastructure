@@ -33,3 +33,9 @@ div.kc-logo-text {
         margin-right: 20px;
     }
 }
+
+/* The web-map banner is fixed to the bottom of the viewport (js/treetracker.js).
+   Keep the form clear of it so it cannot cover the submit button on short screens. */
+#kc-content {
+  padding-bottom: 90px;
+}

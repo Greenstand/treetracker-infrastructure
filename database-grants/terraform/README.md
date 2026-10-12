@@ -12,19 +12,21 @@ Reference: [Terraform version constraints](https://developer.hashicorp.com/terra
 Find your DigitalOcean Spaces access key and secret key here:
 https://cloud.digitalocean.com/account/api/spaces
 
-Save them to your local `~/.netrc` file:
+Use the keys for the selected environment and export them in your current Bash shell:
 
 ```bash
-echo "machine sfo2.digitaloceanspaces.com login $SPACES_KEY password $SPACES_SECRET" >> ~/.netrc
+read -r -p "Spaces access key: " AWS_ACCESS_KEY_ID
+read -r -s -p "Spaces secret key: " AWS_SECRET_ACCESS_KEY
+printf '\n'
+export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
 ```
 
 The examples below use the dev environment. For test or prod, use the corresponding environment directory and variable file.
 
-Go to the environment directory and load the keys:
+Go to the environment directory:
 
 ```bash
 cd dev
-source setup_keys.sh
 ```
 
 # How to run Terraform
@@ -51,6 +53,17 @@ The selected version must satisfy `required_version` in `provider.tf`.
 
 The test environment's `provider.tf` is a symbolic link to `../prod/provider.tf`, so both environments share the same Terraform version constraint.
 
+The test environment also shares `main.tf`, `schemas`, `modules`, and `extra` with prod through symbolic links. Preserve these links when checking out the repository.
+
+To check the configuration without initializing the remote backend or connecting to PostgreSQL:
+
+```bash
+terraform init -backend=false
+terraform validate
+```
+
+These checks do not establish compatibility with an existing remote state or replace a reviewed plan. Use a fresh checkout or separate working directory for this validation, then initialize the intended backend before any operational plan or apply.
+
 Initialize the backend:
 
 ```bash
@@ -72,6 +85,8 @@ terraform apply -var-file=dev.env.tfvars
 # About the `extra` folder
 
 Put additional grants here rather than in the main folder. Creation order matters: grants must be applied after the corresponding schema exists.
+
+Directory placement alone does not set creation order. Use resource references or explicit dependencies to establish the required order.
 
 # Troubleshooting
 

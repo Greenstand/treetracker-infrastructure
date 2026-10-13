@@ -52,6 +52,20 @@ https://github.com/bitnami-labs/sealed-secrets/releases
 
 Run scripts/create-secret.sh to perform an interactive, automated sealed secret creation routine.  You will need kubectl access to the k8s cluster to successfully run this script.
 
+```bash
+bash scripts/create-secret.sh -n development -c YOUR_CONTEXT -r example-secret -k password
+```
+
+The script prompts for the secret value with input hidden. It preserves spaces and backslashes in a single-line value, streams the raw Secret directly to kubeseal, and writes only the sealed manifest to `example-secret-sealed-secret.yaml`. It does not apply resources or change your current Kubernetes context. Existing output files are not overwritten, and temporary output is removed on exit or failure.
+
+The legacy `-s` option is retained for compatibility but exposes its argument in shell history and process listings. Prefer the hidden prompt. Command tracing is disabled while handling the secret. If sealing fails, diagnostics from kubectl and kubeseal are suppressed to avoid exposing Secret content; check the selected context, controller availability, and access separately.
+
+Offline regression tests use fictional values and substitute tools; they require Bash and Python 3 and do not access a cluster:
+
+```bash
+python3 scripts/tests/test_create_secret.py
+```
+
 ## Manually:
 
 ### 1. Creating a temporary k8s secret to be encrypted

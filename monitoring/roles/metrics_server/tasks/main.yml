@@ -1,20 +1,42 @@
 ---
-- name: Add bitnami repository
+# Migrated off the Bitnami chart: Bitnami retired its free public catalog in
+# Aug 2025, so bitnami/metrics-server 5.8.3 (app v0.4.2) could no longer pull
+# its image (public.ecr.aws/bitnami/metrics-server:0.4.2-debian-10-r30 -> gone),
+# leaving the pod stuck in ImagePullBackOff. v0.4.2 also predates K8s 1.33.
+# Now using the upstream kubernetes-sigs chart (chart 3.13.1 -> app v0.8.1).
+- name: Add metrics-server repository
   community.kubernetes.helm_repository:
-    name: bitnami
-    repo_url: https://charts.bitnami.com/bitnami
+    name: metrics-server
+    repo_url: https://kubernetes-sigs.github.io/metrics-server/
 
 - name: Install metrics server
   community.kubernetes.helm:
     name: metrics-server
-    chart_ref: bitnami/metrics-server
-    chart_version: 5.8.3
+    chart_ref: metrics-server/metrics-server
+    chart_version: 3.13.1
     release_namespace: metrics-server
     create_namespace: true
+    # Fail loudly instead of reporting success on a broken rollout: wait blocks
+    # until the pods are Ready, atomic rolls the release back if it does not
+    # converge. This directly guards against a silent ImagePullBackOff-style
+    # outage going unnoticed (see PR description).
+    wait: true
+    atomic: true
     release_values:
-      extraArgs:
-        kubelet-insecure-tls: true
-        kubelet-preferred-address-types: InternalIP
+      # The upstream chart renders defaultArgs first, then args. It appends any
+      # duplicate flag, so we override defaultArgs to set
+      # --kubelet-preferred-address-types once to InternalIP (the DO node
+      # network). The stock defaultArgs would add ExternalIP,Hostname and leave
+      # a duplicate entry. The other three defaults are kept as-is.
+      defaultArgs:
+        - --cert-dir=/tmp
+        - --kubelet-preferred-address-types=InternalIP
+        - --kubelet-use-node-status-port
+        - --metric-resolution=15s
+      # --kubelet-insecure-tls is required on DigitalOcean (kubelet serving certs
+      # lack IP SANs). It is a bool flag with no default, so it stays in args.
+      args:
+        - --kubelet-insecure-tls
       apiService:
         create: true
       affinity:

@@ -30,6 +30,10 @@ For how our services are monitored, monitoring is split among three pieces
 
 Kubernetes is the open source version of Google's container management infrastructure. It allows us to monitor services in a more generic/ cleaner way, and also deal with scaling and lifecycle issues at a level above the application. It also means we don't have to manage our own boxes (i.e. our own Digital Ocean droplets).
 
+### Guides
+
+* [AWS ML pipeline backup and cleanup (volunteer guide)](aws-ml-pipeline-backup/) - how we safely back up an old, unused machine-learning system in AWS before we delete it to save cost.
+
 ### Support or Contact
 
 Want to reach out to the team? Come hit us up on our [slack channel](https://app.slack.com/client/T6WR1QS8J/CH79F6W8G)

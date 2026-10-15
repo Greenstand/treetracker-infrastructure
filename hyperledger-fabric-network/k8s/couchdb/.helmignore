@@ -1,0 +1,5 @@
+values-kind.yaml
+README.md
+tests/
+*.tgz
+.git/

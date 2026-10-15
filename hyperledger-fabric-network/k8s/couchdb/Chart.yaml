@@ -1,0 +1,7 @@
+apiVersion: v2
+name: fabric-couchdb
+description: TreeTracker Fabric couchdb; externally managed identities and dedicated persistent storage
+type: application
+version: 1.0.0
+appVersion: 3.4.3
+kubeVersion: '>=1.26.0-0'

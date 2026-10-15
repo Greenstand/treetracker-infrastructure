@@ -1,0 +1,311 @@
+description: Externally provisioned inputs. Keys only; no credentials or certificate bodies are stored
+  here.
+inputs:
+- kind: ConfigMap
+  namespace: hlf-peer-org
+  name: cbo-current-root
+  keys:
+  - current-ca.pem
+- kind: ConfigMap
+  namespace: hlf-peer-org
+  name: greenstand-current-root
+  keys:
+  - current-ca.pem
+- kind: Secret
+  namespace: hlf-ca
+  name: cbo-ca-bootstrap
+  keys:
+  - password
+  - username
+- kind: Secret
+  namespace: hlf-ca
+  name: fabric-root-ca-bootstrap
+  keys:
+  - password
+  - username
+- kind: Secret
+  namespace: hlf-ca
+  name: greenstand-ca-bootstrap
+  keys:
+  - password
+  - username
+- kind: Secret
+  namespace: hlf-ca
+  name: investor-ca-bootstrap
+  keys:
+  - password
+  - username
+- kind: Secret
+  namespace: hlf-ca
+  name: verifier-ca-bootstrap
+  keys:
+  - password
+  - username
+- kind: Secret
+  namespace: hlf-orderer
+  name: orderer-admin-client-ca
+  keys:
+  - ca.crt
+- kind: Secret
+  namespace: hlf-orderer
+  name: orderer0-msp
+  keys:
+  - admincerts.cert.pem
+  - cacerts.cert.pem
+  - keystore.key
+  - signcerts.cert.pem
+- kind: Secret
+  namespace: hlf-orderer
+  name: orderer0-tls
+  keys:
+  - ca.crt
+  - server.crt
+  - server.key
+- kind: Secret
+  namespace: hlf-orderer
+  name: orderer1-msp
+  keys:
+  - admincerts.cert.pem
+  - cacerts.cert.pem
+  - keystore.key
+  - signcerts.cert.pem
+- kind: Secret
+  namespace: hlf-orderer
+  name: orderer1-tls
+  keys:
+  - ca.crt
+  - server.crt
+  - server.key
+- kind: Secret
+  namespace: hlf-orderer
+  name: orderer2-msp
+  keys:
+  - admincerts.cert.pem
+  - cacerts.cert.pem
+  - keystore.key
+  - signcerts.cert.pem
+- kind: Secret
+  namespace: hlf-orderer
+  name: orderer2-tls
+  keys:
+  - ca.crt
+  - server.crt
+  - server.key
+- kind: Secret
+  namespace: hlf-orderer
+  name: orderer3-msp
+  keys:
+  - admincerts.cert.pem
+  - cacerts.cert.pem
+  - keystore.key
+  - signcerts.cert.pem
+- kind: Secret
+  namespace: hlf-orderer
+  name: orderer3-tls
+  keys:
+  - ca.crt
+  - server.crt
+  - server.key
+- kind: Secret
+  namespace: hlf-orderer
+  name: orderer4-msp
+  keys:
+  - admincerts.cert.pem
+  - cacerts.cert.pem
+  - keystore.key
+  - signcerts.cert.pem
+- kind: Secret
+  namespace: hlf-orderer
+  name: orderer4-tls
+  keys:
+  - ca.crt
+  - server.crt
+  - server.key
+- kind: Secret
+  namespace: hlf-orderer
+  name: registry-treetracker-registry
+  keys:
+  - .dockerconfigjson
+- kind: Secret
+  namespace: hlf-orderer
+  name: v2-orderer0-msp
+  keys:
+  - admincerts.cert.pem
+  - cacerts.cert.pem
+  - keystore.key
+  - signcerts.cert.pem
+- kind: Secret
+  namespace: hlf-orderer
+  name: v2-orderer0-tls
+  keys:
+  - ca.crt
+  - server.crt
+  - server.key
+- kind: Secret
+  namespace: hlf-orderer
+  name: v2-orderer1-msp
+  keys:
+  - admincerts.cert.pem
+  - cacerts.cert.pem
+  - keystore.key
+  - signcerts.cert.pem
+- kind: Secret
+  namespace: hlf-orderer
+  name: v2-orderer1-tls
+  keys:
+  - ca.crt
+  - server.crt
+  - server.key
+- kind: Secret
+  namespace: hlf-orderer
+  name: v2-orderer2-msp
+  keys:
+  - admincerts.cert.pem
+  - cacerts.cert.pem
+  - keystore.key
+  - signcerts.cert.pem
+- kind: Secret
+  namespace: hlf-orderer
+  name: v2-orderer2-tls
+  keys:
+  - ca.crt
+  - server.crt
+  - server.key
+- kind: Secret
+  namespace: hlf-orderer
+  name: v2-orderer3-msp
+  keys:
+  - admincerts.cert.pem
+  - cacerts.cert.pem
+  - keystore.key
+  - signcerts.cert.pem
+- kind: Secret
+  namespace: hlf-orderer
+  name: v2-orderer3-tls
+  keys:
+  - ca.crt
+  - server.crt
+  - server.key
+- kind: Secret
+  namespace: hlf-orderer
+  name: v2-orderer4-msp
+  keys:
+  - admincerts.cert.pem
+  - cacerts.cert.pem
+  - keystore.key
+  - signcerts.cert.pem
+- kind: Secret
+  namespace: hlf-orderer
+  name: v2-orderer4-tls
+  keys:
+  - ca.crt
+  - server.crt
+  - server.key
+- kind: Secret
+  namespace: hlf-peer-org
+  name: chaincode-tls
+  keys:
+  - tls.crt
+  - tls.key
+- kind: Secret
+  namespace: hlf-peer-org
+  name: couchdb-credentials
+  keys:
+  - password
+  - username
+- kind: Secret
+  namespace: hlf-peer-org
+  name: ghcr-pull
+  keys:
+  - .dockerconfigjson
+- kind: Secret
+  namespace: hlf-peer-org
+  name: peer0-cbo-certs
+  keys:
+  - msp-cacert
+  - msp-cert
+  - msp-key
+  - tls-cacert
+  - tls-cert
+  - tls-key
+- kind: Secret
+  namespace: hlf-peer-org
+  name: peer0-greenstand-certs
+  keys:
+  - msp-cacert
+  - msp-cert
+  - msp-key
+  - tls-cacert
+  - tls-cert
+  - tls-key
+- kind: Secret
+  namespace: hlf-peer-org
+  name: peer0-investor-certs
+  keys:
+  - msp-cacert
+  - msp-cert
+  - msp-key
+  - tls-cacert
+  - tls-cert
+  - tls-key
+- kind: Secret
+  namespace: hlf-peer-org
+  name: peer0-verifier-certs
+  keys:
+  - msp-cacert
+  - msp-cert
+  - msp-key
+  - tls-cacert
+  - tls-cert
+  - tls-key
+- kind: Secret
+  namespace: hlf-peer-org
+  name: peer1-cbo-certs
+  keys:
+  - msp-cacert
+  - msp-cert
+  - msp-key
+  - tls-cacert
+  - tls-cert
+  - tls-key
+- kind: Secret
+  namespace: hlf-peer-org
+  name: peer1-greenstand-certs
+  keys:
+  - msp-cacert
+  - msp-cert
+  - msp-key
+  - tls-cacert
+  - tls-cert
+  - tls-key
+- kind: Secret
+  namespace: hlf-peer-org
+  name: peer1-investor-certs
+  keys:
+  - msp-cacert
+  - msp-cert
+  - msp-key
+  - tls-cacert
+  - tls-cert
+  - tls-key
+- kind: Secret
+  namespace: hlf-peer-org
+  name: peer2-greenstand-certs
+  keys:
+  - msp-cacert
+  - msp-cert
+  - msp-key
+  - tls-cacert
+  - tls-cert
+  - tls-key
+- kind: Secret
+  namespace: hlf-peer-org
+  name: registry-treetracker-registry
+  keys:
+  - .dockerconfigjson
+- kind: Secret
+  namespace: hlf-peer-org
+  name: token-chaincode-tls
+  keys:
+  - tls.crt
+  - tls.key

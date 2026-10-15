@@ -1,0 +1,986 @@
+expectedNamespace: hlf-orderer
+commonLabels: {}
+imagePullSecrets: []
+nodeSelector: {}
+tolerations: []
+podAnnotations: {}
+defaults:
+  podAnnotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: '9443'
+    prometheus.io/scrape: 'true'
+  pod:
+    containers:
+      orderer:
+        env:
+          FABRIC_LOGGING_SPEC:
+            value: info
+          ORDERER_GENERAL_LISTENADDRESS:
+            value: 0.0.0.0
+          ORDERER_GENERAL_LISTENPORT:
+            value: '7050'
+          ORDERER_GENERAL_LOCALMSPID:
+            value: OrdererMSP
+          ORDERER_GENERAL_LOCALMSPDIR:
+            value: /var/hyperledger/orderer/msp
+          ORDERER_GENERAL_TLS_ENABLED:
+            value: 'true'
+          ORDERER_GENERAL_TLS_PRIVATEKEY:
+            value: /var/hyperledger/orderer/tls/server.key
+          ORDERER_GENERAL_TLS_CERTIFICATE:
+            value: /var/hyperledger/orderer/tls/server.crt
+          ORDERER_GENERAL_TLS_ROOTCAS:
+            value: '[/var/hyperledger/orderer/tls/ca.crt]'
+          ORDERER_OPERATIONS_LISTENADDRESS:
+            value: 0.0.0.0:9443
+          ORDERER_OPERATIONS_TLS_ENABLED:
+            value: 'false'
+          ORDERER_METRICS_PROVIDER:
+            value: prometheus
+          ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY:
+            value: /var/hyperledger/orderer/tls/server.key
+          ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE:
+            value: /var/hyperledger/orderer/tls/server.crt
+          ORDERER_GENERAL_CLUSTER_ROOTCAS:
+            value: '[/var/hyperledger/orderer/tls/ca.crt]'
+          FABRIC_CFG_PATH:
+            value: /var/hyperledger/orderer
+          ORDERER_FILELEDGER_LOCATION:
+            value: /var/hyperledger/production/orderer
+          ORDERER_ADMIN_LISTENADDRESS:
+            value: 0.0.0.0:9444
+          ORDERER_ADMIN_TLS_ENABLED:
+            value: 'true'
+          ORDERER_CHANNELPARTICIPATION_ENABLED:
+            value: 'true'
+          ORDERER_GENERAL_BOOTSTRAPMETHOD:
+            value: none
+          ORDERER_CHANNELPARTICIPATION_MAXREQUESTBODYSIZE:
+            value: '104857600'
+          ORDERER_ADMIN_TLS_PRIVATEKEY:
+            value: /var/hyperledger/orderer/tls/server.key
+          ORDERER_ADMIN_TLS_CERTIFICATE:
+            value: /var/hyperledger/orderer/tls/server.crt
+          ORDERER_ADMIN_TLS_CLIENTROOTCAS:
+            value: '[/var/hyperledger/orderer/admin-client-ca/ca.crt]'
+        image: registry.digitalocean.com/treetracker-registry/treetracker-web@sha256:711fc6fe07b6aec3026a38c22ad87c6e77f4edfad1b120e294c687af27916b57
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 9443
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 15
+          successThreshold: 1
+          timeoutSeconds: 5
+        ports:
+        - containerPort: 7050
+          name: orderer
+          protocol: TCP
+        - containerPort: 9443
+          name: operations
+          protocol: TCP
+        - containerPort: 9444
+          name: admin
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 9443
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 3
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 512Mi
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - mountPath: /var/hyperledger/orderer/msp/signcerts/cert.pem
+          name: msp-signcerts
+          readOnly: true
+          subPath: signcerts.cert.pem
+        - mountPath: /var/hyperledger/orderer/msp/cacerts/ca-cert.pem
+          name: msp-cacerts
+          readOnly: true
+          subPath: cacerts.cert.pem
+        - mountPath: /var/hyperledger/orderer/msp/admincerts/admin-cert.pem
+          name: msp-admincerts
+          readOnly: true
+          subPath: admincerts.cert.pem
+        - mountPath: /var/hyperledger/orderer/msp/keystore/key.pem
+          name: msp-keystore
+          readOnly: true
+          subPath: keystore.key
+        - mountPath: /var/hyperledger/orderer/tls
+          name: tls
+          readOnly: true
+        - mountPath: /var/hyperledger/production/orderer
+          name: data
+        - mountPath: /var/hyperledger/orderer/orderer.yaml
+          name: config
+          readOnly: true
+          subPath: orderer.yaml
+        - name: admin-client-ca
+          mountPath: /var/hyperledger/orderer/admin-client-ca
+          readOnly: true
+        workingDir: /var/hyperledger/production/orderer
+    imagePullSecrets:
+    - name: registry-treetracker-registry
+    securityContext:
+      fsGroup: 1000
+      fsGroupChangePolicy: Always
+      runAsNonRoot: true
+      runAsUser: 1000
+      seccompProfile:
+        type: RuntimeDefault
+    terminationGracePeriodSeconds: 90
+    volumes:
+      msp-signcerts:
+        secret:
+          defaultMode: 420
+          items:
+          - key: signcerts.cert.pem
+            path: signcerts.cert.pem
+      msp-cacerts:
+        secret:
+          defaultMode: 420
+          items:
+          - key: cacerts.cert.pem
+            path: cacerts.cert.pem
+      msp-admincerts:
+        secret:
+          defaultMode: 420
+          items:
+          - key: admincerts.cert.pem
+            path: admincerts.cert.pem
+      msp-keystore:
+        secret:
+          defaultMode: 420
+          items:
+          - key: keystore.key
+            path: keystore.key
+      tls:
+        secret:
+          defaultMode: 420
+          items:
+          - key: server.crt
+            path: server.crt
+          - key: server.key
+            path: server.key
+          - key: ca.crt
+            path: ca.crt
+      config:
+        configMap:
+          defaultMode: 420
+      admin-client-ca:
+        secret:
+          secretName: orderer-admin-client-ca
+          items:
+          - key: ca.crt
+            path: ca.crt
+    automountServiceAccountToken: false
+nodes:
+  raft-orderer-0:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: raft-orderer
+                fabric.greenstand.org/channel: treetracker
+            topologyKey: kubernetes.io/hostname
+      volumes:
+        msp-signcerts:
+          secret:
+            secretName: orderer0-msp
+        msp-cacerts:
+          secret:
+            secretName: orderer0-msp
+        msp-admincerts:
+          secret:
+            secretName: orderer0-msp
+        msp-keystore:
+          secret:
+            secretName: orderer0-msp
+        tls:
+          secret:
+            secretName: orderer0-tls
+        config:
+          configMap:
+            name: raft-orderer-config
+        data:
+          persistentVolumeClaim:
+            claimName: raft-orderer-data-0
+      serviceAccountName: raft-orderer
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/instance: orderer0
+      app.kubernetes.io/name: raft-orderer
+      fabric.greenstand.org/channel: treetracker
+    podLabels:
+      app.kubernetes.io/component: orderer
+      app.kubernetes.io/instance: orderer0
+      app.kubernetes.io/name: raft-orderer
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.greenstand.org/channel: treetracker
+      orderer-node: orderer0
+      fabric.treetracker.io/component: orderer
+  raft-orderer-1:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: raft-orderer
+                fabric.greenstand.org/channel: treetracker
+            topologyKey: kubernetes.io/hostname
+      volumes:
+        msp-signcerts:
+          secret:
+            secretName: orderer1-msp
+        msp-cacerts:
+          secret:
+            secretName: orderer1-msp
+        msp-admincerts:
+          secret:
+            secretName: orderer1-msp
+        msp-keystore:
+          secret:
+            secretName: orderer1-msp
+        tls:
+          secret:
+            secretName: orderer1-tls
+        config:
+          configMap:
+            name: raft-orderer-config
+        data:
+          persistentVolumeClaim:
+            claimName: raft-orderer-data-1
+      serviceAccountName: raft-orderer
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/instance: orderer1
+      app.kubernetes.io/name: raft-orderer
+      fabric.greenstand.org/channel: treetracker
+    podLabels:
+      app.kubernetes.io/component: orderer
+      app.kubernetes.io/instance: orderer1
+      app.kubernetes.io/name: raft-orderer
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.greenstand.org/channel: treetracker
+      orderer-node: orderer1
+      fabric.treetracker.io/component: orderer
+  raft-orderer-2:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: raft-orderer
+                fabric.greenstand.org/channel: treetracker
+            topologyKey: kubernetes.io/hostname
+      volumes:
+        msp-signcerts:
+          secret:
+            secretName: orderer2-msp
+        msp-cacerts:
+          secret:
+            secretName: orderer2-msp
+        msp-admincerts:
+          secret:
+            secretName: orderer2-msp
+        msp-keystore:
+          secret:
+            secretName: orderer2-msp
+        tls:
+          secret:
+            secretName: orderer2-tls
+        config:
+          configMap:
+            name: raft-orderer-config
+        data:
+          persistentVolumeClaim:
+            claimName: raft-orderer-data-2
+      serviceAccountName: raft-orderer
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/instance: orderer2
+      app.kubernetes.io/name: raft-orderer
+      fabric.greenstand.org/channel: treetracker
+    podLabels:
+      app.kubernetes.io/component: orderer
+      app.kubernetes.io/instance: orderer2
+      app.kubernetes.io/name: raft-orderer
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.greenstand.org/channel: treetracker
+      orderer-node: orderer2
+      fabric.treetracker.io/component: orderer
+  raft-orderer-3:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: raft-orderer
+                fabric.greenstand.org/channel: treetracker
+            topologyKey: kubernetes.io/hostname
+      volumes:
+        msp-signcerts:
+          secret:
+            secretName: orderer3-msp
+        msp-cacerts:
+          secret:
+            secretName: orderer3-msp
+        msp-admincerts:
+          secret:
+            secretName: orderer3-msp
+        msp-keystore:
+          secret:
+            secretName: orderer3-msp
+        tls:
+          secret:
+            secretName: orderer3-tls
+        config:
+          configMap:
+            name: raft-orderer-config
+        data:
+          persistentVolumeClaim:
+            claimName: raft-orderer-data-3
+      serviceAccountName: raft-orderer
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/instance: orderer3
+      app.kubernetes.io/name: raft-orderer
+      fabric.greenstand.org/channel: treetracker
+    podLabels:
+      app.kubernetes.io/component: orderer
+      app.kubernetes.io/instance: orderer3
+      app.kubernetes.io/name: raft-orderer
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.greenstand.org/channel: treetracker
+      orderer-node: orderer3
+      fabric.treetracker.io/component: orderer
+  raft-orderer-4:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: raft-orderer
+                fabric.greenstand.org/channel: treetracker
+            topologyKey: kubernetes.io/hostname
+      volumes:
+        msp-signcerts:
+          secret:
+            secretName: orderer4-msp
+        msp-cacerts:
+          secret:
+            secretName: orderer4-msp
+        msp-admincerts:
+          secret:
+            secretName: orderer4-msp
+        msp-keystore:
+          secret:
+            secretName: orderer4-msp
+        tls:
+          secret:
+            secretName: orderer4-tls
+        config:
+          configMap:
+            name: raft-orderer-config
+        data:
+          persistentVolumeClaim:
+            claimName: raft-orderer-data-4
+      serviceAccountName: raft-orderer
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/instance: orderer4
+      app.kubernetes.io/name: raft-orderer
+      fabric.greenstand.org/channel: treetracker
+    podLabels:
+      app.kubernetes.io/component: orderer
+      app.kubernetes.io/instance: orderer4
+      app.kubernetes.io/name: raft-orderer
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.greenstand.org/channel: treetracker
+      orderer-node: orderer4
+      fabric.treetracker.io/component: orderer
+  v2-raft-orderer-0:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: raft-orderer
+                fabric.greenstand.org/channel: treetracker-v2
+            topologyKey: kubernetes.io/hostname
+      volumes:
+        msp-signcerts:
+          secret:
+            secretName: v2-orderer0-msp
+        msp-cacerts:
+          secret:
+            secretName: v2-orderer0-msp
+        msp-admincerts:
+          secret:
+            secretName: v2-orderer0-msp
+        msp-keystore:
+          secret:
+            secretName: v2-orderer0-msp
+        tls:
+          secret:
+            secretName: v2-orderer0-tls
+        config:
+          configMap:
+            name: v2-raft-orderer-config
+        data:
+          persistentVolumeClaim:
+            claimName: v2-raft-orderer-data-0
+      serviceAccountName: v2-raft-orderer
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/instance: orderer0
+      app.kubernetes.io/name: raft-orderer
+      fabric.greenstand.org/channel: treetracker-v2
+    podLabels:
+      app.kubernetes.io/component: orderer
+      app.kubernetes.io/instance: orderer0
+      app.kubernetes.io/name: raft-orderer
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.greenstand.org/channel: treetracker-v2
+      orderer-node: orderer0
+      fabric.treetracker.io/component: orderer
+  v2-raft-orderer-1:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: raft-orderer
+                fabric.greenstand.org/channel: treetracker-v2
+            topologyKey: kubernetes.io/hostname
+      volumes:
+        msp-signcerts:
+          secret:
+            secretName: v2-orderer1-msp
+        msp-cacerts:
+          secret:
+            secretName: v2-orderer1-msp
+        msp-admincerts:
+          secret:
+            secretName: v2-orderer1-msp
+        msp-keystore:
+          secret:
+            secretName: v2-orderer1-msp
+        tls:
+          secret:
+            secretName: v2-orderer1-tls
+        config:
+          configMap:
+            name: v2-raft-orderer-config
+        data:
+          persistentVolumeClaim:
+            claimName: v2-raft-orderer-data-1
+      serviceAccountName: v2-raft-orderer
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/instance: orderer1
+      app.kubernetes.io/name: raft-orderer
+      fabric.greenstand.org/channel: treetracker-v2
+    podLabels:
+      app.kubernetes.io/component: orderer
+      app.kubernetes.io/instance: orderer1
+      app.kubernetes.io/name: raft-orderer
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.greenstand.org/channel: treetracker-v2
+      orderer-node: orderer1
+      fabric.treetracker.io/component: orderer
+  v2-raft-orderer-2:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: raft-orderer
+                fabric.greenstand.org/channel: treetracker-v2
+            topologyKey: kubernetes.io/hostname
+      volumes:
+        msp-signcerts:
+          secret:
+            secretName: v2-orderer2-msp
+        msp-cacerts:
+          secret:
+            secretName: v2-orderer2-msp
+        msp-admincerts:
+          secret:
+            secretName: v2-orderer2-msp
+        msp-keystore:
+          secret:
+            secretName: v2-orderer2-msp
+        tls:
+          secret:
+            secretName: v2-orderer2-tls
+        config:
+          configMap:
+            name: v2-raft-orderer-config
+        data:
+          persistentVolumeClaim:
+            claimName: v2-raft-orderer-data-2
+      serviceAccountName: v2-raft-orderer
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/instance: orderer2
+      app.kubernetes.io/name: raft-orderer
+      fabric.greenstand.org/channel: treetracker-v2
+    podLabels:
+      app.kubernetes.io/component: orderer
+      app.kubernetes.io/instance: orderer2
+      app.kubernetes.io/name: raft-orderer
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.greenstand.org/channel: treetracker-v2
+      orderer-node: orderer2
+      fabric.treetracker.io/component: orderer
+  v2-raft-orderer-3:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: raft-orderer
+                fabric.greenstand.org/channel: treetracker-v2
+            topologyKey: kubernetes.io/hostname
+      volumes:
+        msp-signcerts:
+          secret:
+            secretName: v2-orderer3-msp
+        msp-cacerts:
+          secret:
+            secretName: v2-orderer3-msp
+        msp-admincerts:
+          secret:
+            secretName: v2-orderer3-msp
+        msp-keystore:
+          secret:
+            secretName: v2-orderer3-msp
+        tls:
+          secret:
+            secretName: v2-orderer3-tls
+        config:
+          configMap:
+            name: v2-raft-orderer-config
+        data:
+          persistentVolumeClaim:
+            claimName: v2-raft-orderer-data-3
+      serviceAccountName: v2-raft-orderer
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/instance: orderer3
+      app.kubernetes.io/name: raft-orderer
+      fabric.greenstand.org/channel: treetracker-v2
+    podLabels:
+      app.kubernetes.io/component: orderer
+      app.kubernetes.io/instance: orderer3
+      app.kubernetes.io/name: raft-orderer
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.greenstand.org/channel: treetracker-v2
+      orderer-node: orderer3
+      fabric.treetracker.io/component: orderer
+  v2-raft-orderer-4:
+    pod:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: raft-orderer
+                fabric.greenstand.org/channel: treetracker-v2
+            topologyKey: kubernetes.io/hostname
+      volumes:
+        msp-signcerts:
+          secret:
+            secretName: v2-orderer4-msp
+        msp-cacerts:
+          secret:
+            secretName: v2-orderer4-msp
+        msp-admincerts:
+          secret:
+            secretName: v2-orderer4-msp
+        msp-keystore:
+          secret:
+            secretName: v2-orderer4-msp
+        tls:
+          secret:
+            secretName: v2-orderer4-tls
+        config:
+          configMap:
+            name: v2-raft-orderer-config
+        data:
+          persistentVolumeClaim:
+            claimName: v2-raft-orderer-data-4
+      serviceAccountName: v2-raft-orderer
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/instance: orderer4
+      app.kubernetes.io/name: raft-orderer
+      fabric.greenstand.org/channel: treetracker-v2
+    podLabels:
+      app.kubernetes.io/component: orderer
+      app.kubernetes.io/instance: orderer4
+      app.kubernetes.io/name: raft-orderer
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.greenstand.org/channel: treetracker-v2
+      orderer-node: orderer4
+      fabric.treetracker.io/component: orderer
+services:
+  orderer0:
+    spec:
+      ports:
+      - name: orderer
+        port: 7050
+        protocol: TCP
+        targetPort: 7050
+      - name: operations
+        port: 9443
+        protocol: TCP
+        targetPort: 9443
+      - name: admin
+        port: 9444
+        protocol: TCP
+        targetPort: 9444
+      selector:
+        app.kubernetes.io/instance: orderer0
+        app.kubernetes.io/name: raft-orderer
+        fabric.greenstand.org/channel: treetracker
+      type: ClusterIP
+  orderer1:
+    spec:
+      ports:
+      - name: orderer
+        port: 7050
+        protocol: TCP
+        targetPort: 7050
+      - name: operations
+        port: 9443
+        protocol: TCP
+        targetPort: 9443
+      - name: admin
+        port: 9444
+        protocol: TCP
+        targetPort: 9444
+      selector:
+        app.kubernetes.io/instance: orderer1
+        app.kubernetes.io/name: raft-orderer
+        fabric.greenstand.org/channel: treetracker
+      type: ClusterIP
+  orderer2:
+    spec:
+      ports:
+      - name: orderer
+        port: 7050
+        protocol: TCP
+        targetPort: 7050
+      - name: operations
+        port: 9443
+        protocol: TCP
+        targetPort: 9443
+      - name: admin
+        port: 9444
+        protocol: TCP
+        targetPort: 9444
+      selector:
+        app.kubernetes.io/instance: orderer2
+        app.kubernetes.io/name: raft-orderer
+        fabric.greenstand.org/channel: treetracker
+      type: ClusterIP
+  orderer3:
+    spec:
+      ports:
+      - name: orderer
+        port: 7050
+        protocol: TCP
+        targetPort: 7050
+      - name: operations
+        port: 9443
+        protocol: TCP
+        targetPort: 9443
+      - name: admin
+        port: 9444
+        protocol: TCP
+        targetPort: 9444
+      selector:
+        app.kubernetes.io/instance: orderer3
+        app.kubernetes.io/name: raft-orderer
+        fabric.greenstand.org/channel: treetracker
+      type: ClusterIP
+  orderer4:
+    spec:
+      ports:
+      - name: orderer
+        port: 7050
+        protocol: TCP
+        targetPort: 7050
+      - name: operations
+        port: 9443
+        protocol: TCP
+        targetPort: 9443
+      - name: admin
+        port: 9444
+        protocol: TCP
+        targetPort: 9444
+      selector:
+        app.kubernetes.io/instance: orderer4
+        app.kubernetes.io/name: raft-orderer
+        fabric.greenstand.org/channel: treetracker
+      type: ClusterIP
+  raft-orderer-headless:
+    spec:
+      ports:
+      - name: orderer
+        port: 7050
+        protocol: TCP
+        targetPort: 7050
+      - name: operations
+        port: 9443
+        protocol: TCP
+        targetPort: 9443
+      selector:
+        app.kubernetes.io/name: raft-orderer
+        fabric.greenstand.org/channel: treetracker
+      type: ClusterIP
+      clusterIP: None
+  v2-orderer0:
+    spec:
+      ports:
+      - name: orderer
+        port: 7050
+        protocol: TCP
+        targetPort: 7050
+      - name: operations
+        port: 9443
+        protocol: TCP
+        targetPort: 9443
+      - name: admin
+        port: 9444
+        protocol: TCP
+        targetPort: 9444
+      selector:
+        app.kubernetes.io/instance: orderer0
+        app.kubernetes.io/name: raft-orderer
+        fabric.greenstand.org/channel: treetracker-v2
+      type: ClusterIP
+  v2-orderer1:
+    spec:
+      ports:
+      - name: orderer
+        port: 7050
+        protocol: TCP
+        targetPort: 7050
+      - name: operations
+        port: 9443
+        protocol: TCP
+        targetPort: 9443
+      - name: admin
+        port: 9444
+        protocol: TCP
+        targetPort: 9444
+      selector:
+        app.kubernetes.io/instance: orderer1
+        app.kubernetes.io/name: raft-orderer
+        fabric.greenstand.org/channel: treetracker-v2
+      type: ClusterIP
+  v2-orderer2:
+    spec:
+      ports:
+      - name: orderer
+        port: 7050
+        protocol: TCP
+        targetPort: 7050
+      - name: operations
+        port: 9443
+        protocol: TCP
+        targetPort: 9443
+      - name: admin
+        port: 9444
+        protocol: TCP
+        targetPort: 9444
+      selector:
+        app.kubernetes.io/instance: orderer2
+        app.kubernetes.io/name: raft-orderer
+        fabric.greenstand.org/channel: treetracker-v2
+      type: ClusterIP
+  v2-orderer3:
+    spec:
+      ports:
+      - name: orderer
+        port: 7050
+        protocol: TCP
+        targetPort: 7050
+      - name: operations
+        port: 9443
+        protocol: TCP
+        targetPort: 9443
+      - name: admin
+        port: 9444
+        protocol: TCP
+        targetPort: 9444
+      selector:
+        app.kubernetes.io/instance: orderer3
+        app.kubernetes.io/name: raft-orderer
+        fabric.greenstand.org/channel: treetracker-v2
+      type: ClusterIP
+  v2-orderer4:
+    spec:
+      ports:
+      - name: orderer
+        port: 7050
+        protocol: TCP
+        targetPort: 7050
+      - name: operations
+        port: 9443
+        protocol: TCP
+        targetPort: 9443
+      - name: admin
+        port: 9444
+        protocol: TCP
+        targetPort: 9444
+      selector:
+        app.kubernetes.io/instance: orderer4
+        app.kubernetes.io/name: raft-orderer
+        fabric.greenstand.org/channel: treetracker-v2
+      type: ClusterIP
+  v2-raft-orderer-headless:
+    spec:
+      ports:
+      - name: orderer
+        port: 7050
+        protocol: TCP
+        targetPort: 7050
+      - name: operations
+        port: 9443
+        protocol: TCP
+        targetPort: 9443
+      selector:
+        app.kubernetes.io/name: raft-orderer
+        fabric.greenstand.org/channel: treetracker-v2
+      type: ClusterIP
+      clusterIP: None
+configMaps:
+  raft-orderer-config:
+    orderer.yaml: |
+      General:
+        ListenAddress: 0.0.0.0
+        ListenPort: 7050
+        BootstrapMethod: none
+        LocalMSPID: OrdererMSP
+        LocalMSPDir: /var/hyperledger/orderer/msp
+        TLS:
+          Enabled: true
+          PrivateKey: /var/hyperledger/orderer/tls/server.key
+          Certificate: /var/hyperledger/orderer/tls/server.crt
+          RootCAs:
+            - /var/hyperledger/orderer/tls/ca.crt
+        Cluster:
+          ClientCertificate: /var/hyperledger/orderer/tls/server.crt
+          ClientPrivateKey: /var/hyperledger/orderer/tls/server.key
+          RootCAs:
+            - /var/hyperledger/orderer/tls/ca.crt
+      FileLedger:
+        Location: /var/hyperledger/production/orderer
+      Consensus:
+        WALDir: /var/hyperledger/production/orderer/etcdraft/wal
+        SnapDir: /var/hyperledger/production/orderer/etcdraft/snapshot
+      Operations:
+        ListenAddress: 0.0.0.0:9443
+        TLS:
+          Enabled: false
+      Metrics:
+        Provider: prometheus
+      Admin:
+        ListenAddress: 0.0.0.0:9444
+        TLS:
+          Enabled: true
+          PrivateKey: /var/hyperledger/orderer/tls/server.key
+          Certificate: /var/hyperledger/orderer/tls/server.crt
+          ClientRootCAs:
+            - /var/hyperledger/orderer/admin-client-ca/ca.crt
+      ChannelParticipation:
+        Enabled: true
+        MaxRequestBodySize: 104857600
+  v2-raft-orderer-config:
+    orderer.yaml: |
+      General:
+        ListenAddress: 0.0.0.0
+        ListenPort: 7050
+        BootstrapMethod: none
+        LocalMSPID: OrdererMSP
+        LocalMSPDir: /var/hyperledger/orderer/msp
+        TLS:
+          Enabled: true
+          PrivateKey: /var/hyperledger/orderer/tls/server.key
+          Certificate: /var/hyperledger/orderer/tls/server.crt
+          RootCAs:
+            - /var/hyperledger/orderer/tls/ca.crt
+        Cluster:
+          ClientCertificate: /var/hyperledger/orderer/tls/server.crt
+          ClientPrivateKey: /var/hyperledger/orderer/tls/server.key
+          RootCAs:
+            - /var/hyperledger/orderer/tls/ca.crt
+      FileLedger:
+        Location: /var/hyperledger/production/orderer
+      Consensus:
+        WALDir: /var/hyperledger/production/orderer/etcdraft/wal
+        SnapDir: /var/hyperledger/production/orderer/etcdraft/snapshot
+      Operations:
+        ListenAddress: 0.0.0.0:9443
+        TLS:
+          Enabled: false
+      Metrics:
+        Provider: prometheus
+      Admin:
+        ListenAddress: 0.0.0.0:9444
+        TLS:
+          Enabled: true
+          PrivateKey: /var/hyperledger/orderer/tls/server.key
+          Certificate: /var/hyperledger/orderer/tls/server.crt
+          ClientRootCAs:
+            - /var/hyperledger/orderer/admin-client-ca/ca.crt
+      ChannelParticipation:
+        Enabled: true
+        MaxRequestBodySize: 104857600
+networkPolicy:
+  enabled: true
+  clientNamespaceSelector:
+    matchLabels:
+      fabric.treetracker.io/client: 'true'
+  adminNamespaceSelector:
+    matchLabels:
+      fabric.treetracker.io/admin: 'true'
+  monitoringNamespaceSelector:
+    matchLabels:
+      fabric.treetracker.io/monitoring: 'true'
+podDisruptionBudget:
+  enabled: true

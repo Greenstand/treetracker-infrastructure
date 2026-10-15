@@ -1,0 +1,7 @@
+apiVersion: v2
+name: fabric-orderer
+description: TreeTracker Fabric orderer; externally managed identities and dedicated persistent storage
+type: application
+version: 1.0.0
+appVersion: 2.5.4
+kubeVersion: '>=1.26.0-0'

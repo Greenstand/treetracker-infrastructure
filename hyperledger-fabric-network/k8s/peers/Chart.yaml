@@ -1,0 +1,7 @@
+apiVersion: v2
+name: fabric-peers
+description: TreeTracker Fabric peers; externally managed identities and dedicated persistent storage
+type: application
+version: 1.0.0
+appVersion: 2.5.16
+kubeVersion: '>=1.26.0-0'

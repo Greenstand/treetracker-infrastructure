@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: treetracker-keycloak
-          image: dadiorchen/keycloak:1.5
+          image: mahdibenayed1/keycloak:1.6
           env:
             - name: KC_DB_POOL_INITIAL_SIZE
               value: "5"

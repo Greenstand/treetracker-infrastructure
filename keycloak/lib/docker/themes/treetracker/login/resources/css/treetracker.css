@@ -54,3 +54,8 @@ div.kc-logo-text {
     max-width: calc(100% - 40px);
   }
 }
+
+/* Keep the form clear of the fixed banner (upstream) */
+#kc-content {
+  padding-bottom: 90px;
+}

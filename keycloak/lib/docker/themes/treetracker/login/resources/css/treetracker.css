@@ -34,8 +34,28 @@ div.kc-logo-text {
     }
 }
 
-/* The web-map banner is fixed to the bottom of the viewport (js/treetracker.js).
-   Keep the form clear of it so it cannot cover the submit button on short screens. */
+/* Background photo credit banner (injected by js/treetracker.js) */
+.tt-bg-credit {
+  position: fixed;
+  bottom: 0;
+  margin: 10px 20px;
+  background-color: #09090980;
+  color: white;
+  font-size: 16px;
+  padding: 5px;
+}
+
+/* On small or short screens, let the banner flow below the form instead of covering it (#905) */
+@media (max-width: 767px), (max-height: 800px) {
+  .tt-bg-credit {
+    position: static;
+    margin: 16px auto;
+    width: fit-content;
+    max-width: calc(100% - 40px);
+  }
+}
+
+/* Keep the form clear of the fixed banner (upstream) */
 #kc-content {
   padding-bottom: 90px;
 }

@@ -9,7 +9,7 @@ newDiv.innerHTML = `
     color: white;
     font-size: 16px;
     padding: 5px;
-">Find <a href="https://map.treetracker.org/planters/17356/trees/6282936" target="_blank" >the tree on the background</a> on our web map.</div>
+">Find <a href="https://map.treetracker.org/planters/17356/trees/6282936" target="_blank" style="color: white; text-decoration: underline;">the tree on the background</a> on our web map.</div>
 `;
 
 // Append new div to body when the DOM is loaded

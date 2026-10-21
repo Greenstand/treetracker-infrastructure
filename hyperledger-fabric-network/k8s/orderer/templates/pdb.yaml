@@ -1,0 +1,17 @@
+{{- if .Values.podDisruptionBudget.enabled }}
+{{- range $channel := list "treetracker" "treetracker-v2" }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: fabric-orderer-{{ $channel }}
+  labels:
+    {{- include "fabric-orderer.labels" $ | nindent 4 }}
+spec:
+  minAvailable: 3
+  selector:
+    matchLabels:
+      fabric.treetracker.io/component: orderer
+      fabric.greenstand.org/channel: {{ $channel }}
+{{- end }}
+{{- end }}

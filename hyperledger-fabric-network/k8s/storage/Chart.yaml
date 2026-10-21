@@ -1,0 +1,7 @@
+apiVersion: v2
+name: fabric-storage
+description: All 39 Fabric PVCs; retained independently from compute releases
+type: application
+version: 1.0.0
+appVersion: '1.0'
+kubeVersion: '>=1.26.0-0'

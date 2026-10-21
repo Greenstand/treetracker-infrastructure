@@ -1,0 +1,357 @@
+expectedNamespace: hlf-peer-org
+commonLabels: {}
+imagePullSecrets: []
+nodeSelector: {}
+tolerations: []
+podAnnotations: {}
+defaults:
+  podAnnotations: {}
+  pod:
+    automountServiceAccountToken: false
+    containers:
+      couchdb:
+        env:
+          COUCHDB_USER:
+            valueFrom:
+              secretKeyRef:
+                key: username
+                name: couchdb-credentials
+          COUCHDB_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: couchdb-credentials
+        image: ghcr.io/hlf-enterprise-blockchain/couchdb@sha256:83a8bc6146f7a0a7dbe9e5dfeac0958b1178fcfdaa9f6d42a0c893eadd38b361
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          tcpSocket:
+            port: couchdb
+          timeoutSeconds: 3
+        ports:
+        - containerPort: 5984
+          name: couchdb
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 6
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: couchdb
+          timeoutSeconds: 2
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        startupProbe:
+          failureThreshold: 30
+          periodSeconds: 5
+          successThreshold: 1
+          tcpSocket:
+            port: couchdb
+          timeoutSeconds: 2
+        volumeMounts:
+        - mountPath: /opt/couchdb/data
+          name: couchdb-data
+        - mountPath: /opt/couchdb/etc/local.d/10-single-node.ini
+          name: couchdb-config
+          readOnly: true
+          subPath: 10-single-node.ini
+    imagePullSecrets:
+    - name: ghcr-pull
+    securityContext:
+      fsGroup: 5984
+      fsGroupChangePolicy: OnRootMismatch
+      runAsGroup: 5984
+      runAsNonRoot: true
+      runAsUser: 5984
+      seccompProfile:
+        type: RuntimeDefault
+    terminationGracePeriodSeconds: 30
+    volumes:
+      couchdb-config:
+        configMap:
+          defaultMode: 420
+          items:
+          - key: 10-single-node.ini
+            path: 10-single-node.ini
+          name: couchdb-config
+nodes:
+  peer0-cbo-couchdb:
+    pod:
+      volumes:
+        couchdb-data:
+          persistentVolumeClaim:
+            claimName: couchdb-data-peer0-cbo-0
+      serviceAccountName: peer0-cbo-couchdb
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/instance: peer0-cbo-couchdb
+      app.kubernetes.io/name: couchdb
+    podLabels:
+      app.kubernetes.io/component: state-database
+      app.kubernetes.io/instance: peer0-cbo-couchdb
+      app.kubernetes.io/name: couchdb
+      fabric-peer: peer0-cbo
+      organization: cbo
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: couchdb
+  peer0-greenstand-couchdb:
+    pod:
+      volumes:
+        couchdb-data:
+          persistentVolumeClaim:
+            claimName: couchdb-data-peer0-greenstand-0
+      serviceAccountName: peer0-greenstand-couchdb
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/instance: peer0-greenstand-couchdb
+      app.kubernetes.io/name: couchdb
+    podLabels:
+      app.kubernetes.io/component: state-database
+      app.kubernetes.io/instance: peer0-greenstand-couchdb
+      app.kubernetes.io/name: couchdb
+      fabric-peer: peer0-greenstand
+      organization: greenstand
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: couchdb
+  peer0-investor-couchdb:
+    pod:
+      volumes:
+        couchdb-data:
+          persistentVolumeClaim:
+            claimName: couchdb-data-peer0-investor-0
+      serviceAccountName: peer0-investor-couchdb
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/instance: peer0-investor-couchdb
+      app.kubernetes.io/name: couchdb
+    podLabels:
+      app.kubernetes.io/component: state-database
+      app.kubernetes.io/instance: peer0-investor-couchdb
+      app.kubernetes.io/name: couchdb
+      fabric-peer: peer0-investor
+      organization: investor
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: couchdb
+  peer0-verifier-couchdb:
+    pod:
+      volumes:
+        couchdb-data:
+          persistentVolumeClaim:
+            claimName: couchdb-data-peer0-verifier-0
+      serviceAccountName: peer0-verifier-couchdb
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/instance: peer0-verifier-couchdb
+      app.kubernetes.io/name: couchdb
+    podLabels:
+      app.kubernetes.io/component: state-database
+      app.kubernetes.io/instance: peer0-verifier-couchdb
+      app.kubernetes.io/name: couchdb
+      fabric-peer: peer0-verifier
+      organization: verifier
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: couchdb
+  peer1-cbo-couchdb:
+    pod:
+      volumes:
+        couchdb-data:
+          persistentVolumeClaim:
+            claimName: couchdb-data-peer1-cbo-0
+      serviceAccountName: peer1-cbo-couchdb
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/instance: peer1-cbo-couchdb
+      app.kubernetes.io/name: couchdb
+    podLabels:
+      app.kubernetes.io/component: state-database
+      app.kubernetes.io/instance: peer1-cbo-couchdb
+      app.kubernetes.io/name: couchdb
+      fabric-peer: peer1-cbo
+      organization: cbo
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: couchdb
+  peer1-greenstand-couchdb:
+    pod:
+      volumes:
+        couchdb-data:
+          persistentVolumeClaim:
+            claimName: couchdb-data-peer1-greenstand-0
+      serviceAccountName: peer1-greenstand-couchdb
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/instance: peer1-greenstand-couchdb
+      app.kubernetes.io/name: couchdb
+    podLabels:
+      app.kubernetes.io/component: state-database
+      app.kubernetes.io/instance: peer1-greenstand-couchdb
+      app.kubernetes.io/name: couchdb
+      fabric-peer: peer1-greenstand
+      organization: greenstand
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: couchdb
+  peer1-investor-couchdb:
+    pod:
+      volumes:
+        couchdb-data:
+          persistentVolumeClaim:
+            claimName: couchdb-data-peer1-investor-0
+      serviceAccountName: peer1-investor-couchdb
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/instance: peer1-investor-couchdb
+      app.kubernetes.io/name: couchdb
+    podLabels:
+      app.kubernetes.io/component: state-database
+      app.kubernetes.io/instance: peer1-investor-couchdb
+      app.kubernetes.io/name: couchdb
+      fabric-peer: peer1-investor
+      organization: investor
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: couchdb
+  peer2-greenstand-couchdb:
+    pod:
+      volumes:
+        couchdb-data:
+          persistentVolumeClaim:
+            claimName: couchdb-data-peer2-greenstand-0
+      serviceAccountName: peer2-greenstand-couchdb
+    enabled: true
+    selectorLabels:
+      app.kubernetes.io/instance: peer2-greenstand-couchdb
+      app.kubernetes.io/name: couchdb
+    podLabels:
+      app.kubernetes.io/component: state-database
+      app.kubernetes.io/instance: peer2-greenstand-couchdb
+      app.kubernetes.io/name: couchdb
+      fabric-peer: peer2-greenstand
+      organization: greenstand
+      app.kubernetes.io/part-of: hyperledger-fabric
+      fabric.treetracker.io/component: couchdb
+services:
+  peer0-cbo-couchdb:
+    spec:
+      ports:
+      - name: couchdb
+        port: 5984
+        protocol: TCP
+        targetPort: couchdb
+      selector:
+        app.kubernetes.io/instance: peer0-cbo-couchdb
+        app.kubernetes.io/name: couchdb
+      type: ClusterIP
+  peer0-greenstand-couchdb:
+    spec:
+      ports:
+      - name: couchdb
+        port: 5984
+        protocol: TCP
+        targetPort: couchdb
+      selector:
+        app.kubernetes.io/instance: peer0-greenstand-couchdb
+        app.kubernetes.io/name: couchdb
+      type: ClusterIP
+  peer0-investor-couchdb:
+    spec:
+      ports:
+      - name: couchdb
+        port: 5984
+        protocol: TCP
+        targetPort: couchdb
+      selector:
+        app.kubernetes.io/instance: peer0-investor-couchdb
+        app.kubernetes.io/name: couchdb
+      type: ClusterIP
+  peer0-verifier-couchdb:
+    spec:
+      ports:
+      - name: couchdb
+        port: 5984
+        protocol: TCP
+        targetPort: couchdb
+      selector:
+        app.kubernetes.io/instance: peer0-verifier-couchdb
+        app.kubernetes.io/name: couchdb
+      type: ClusterIP
+  peer1-cbo-couchdb:
+    spec:
+      ports:
+      - name: couchdb
+        port: 5984
+        protocol: TCP
+        targetPort: couchdb
+      selector:
+        app.kubernetes.io/instance: peer1-cbo-couchdb
+        app.kubernetes.io/name: couchdb
+      type: ClusterIP
+  peer1-greenstand-couchdb:
+    spec:
+      ports:
+      - name: couchdb
+        port: 5984
+        protocol: TCP
+        targetPort: couchdb
+      selector:
+        app.kubernetes.io/instance: peer1-greenstand-couchdb
+        app.kubernetes.io/name: couchdb
+      type: ClusterIP
+  peer1-investor-couchdb:
+    spec:
+      ports:
+      - name: couchdb
+        port: 5984
+        protocol: TCP
+        targetPort: couchdb
+      selector:
+        app.kubernetes.io/instance: peer1-investor-couchdb
+        app.kubernetes.io/name: couchdb
+      type: ClusterIP
+  peer2-greenstand-couchdb:
+    spec:
+      ports:
+      - name: couchdb
+        port: 5984
+        protocol: TCP
+        targetPort: couchdb
+      selector:
+        app.kubernetes.io/instance: peer2-greenstand-couchdb
+        app.kubernetes.io/name: couchdb
+      type: ClusterIP
+configMaps:
+  couchdb-config:
+    10-single-node.ini: |
+      [couchdb]
+      single_node = true
+
+      [chttpd]
+      require_valid_user = true
+
+      [httpd]
+      WWW-Authenticate = Basic realm="couchdb"
+      enable_cors = false
+networkPolicy:
+  enabled: true
+  clientNamespaceSelector:
+    matchLabels:
+      fabric.treetracker.io/client: 'true'
+  adminNamespaceSelector:
+    matchLabels:
+      fabric.treetracker.io/admin: 'true'
+  monitoringNamespaceSelector:
+    matchLabels:
+      fabric.treetracker.io/monitoring: 'true'
+podDisruptionBudget:
+  enabled: true

@@ -1,0 +1,40 @@
+{{- if ne .Release.Namespace .Values.expectedNamespace }}
+{{- fail (printf "Install this chart into %s; Fabric DNS names and certificate SANs are namespace-bound" .Values.expectedNamespace) }}
+{{- end }}
+{{- range $name, $node := .Values.nodes }}
+{{- if $node.enabled }}
+{{- $n := mergeOverwrite (deepCopy $.Values.defaults) (deepCopy $node) }}
+{{- $pod := deepCopy $n.pod }}
+{{- $_ := set $pod "nodeSelector" $.Values.nodeSelector }}
+{{- $_ := set $pod "tolerations" $.Values.tolerations }}
+{{- if $.Values.imagePullSecrets }}
+{{- $_ := set $pod "imagePullSecrets" $.Values.imagePullSecrets }}
+{{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "fabric-chaincode.labels" $ | nindent 4 }}
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      {{- toYaml $n.selectorLabels | nindent 6 }}
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        {{- toYaml $n.podLabels | nindent 8 }}
+      annotations:
+        checksum/config: {{ toJson $.Values.configMaps | sha256sum }}
+        {{- with (mergeOverwrite (deepCopy $n.podAnnotations) $.Values.podAnnotations) }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- include "fabric-chaincode.pod" $pod | nindent 6 }}
+{{- end }}
+{{- end }}

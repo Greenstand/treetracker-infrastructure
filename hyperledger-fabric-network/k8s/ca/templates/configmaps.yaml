@@ -1,0 +1,11 @@
+{{- range $name, $data := .Values.configMaps }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "fabric-ca.labels" $ | nindent 4 }}
+data:
+  {{- toYaml $data | nindent 2 }}
+{{- end }}

@@ -1,0 +1,398 @@
+Organizations:
+- Name: CboMSP
+  ID: CboMSP
+  MSPDir: msp/cbo
+  Policies:
+    Readers:
+      Type: Signature
+      Rule: OR('CboMSP.admin', 'CboMSP.peer', 'CboMSP.client')
+    Writers:
+      Type: Signature
+      Rule: OR('CboMSP.admin', 'CboMSP.client')
+    Admins:
+      Type: Signature
+      Rule: OR('CboMSP.admin')
+    Endorsement:
+      Type: Signature
+      Rule: OR('CboMSP.peer')
+  AnchorPeers:
+  - Host: peer0-cbo.hlf-peer-org.svc.cluster.local
+    Port: 7051
+- Name: GreenstandMSP
+  ID: GreenstandMSP
+  MSPDir: msp/greenstand
+  Policies:
+    Readers:
+      Type: Signature
+      Rule: OR('GreenstandMSP.admin', 'GreenstandMSP.peer', 'GreenstandMSP.client')
+    Writers:
+      Type: Signature
+      Rule: OR('GreenstandMSP.admin', 'GreenstandMSP.client')
+    Admins:
+      Type: Signature
+      Rule: OR('GreenstandMSP.admin')
+    Endorsement:
+      Type: Signature
+      Rule: OR('GreenstandMSP.peer')
+  AnchorPeers:
+  - Host: peer0-greenstand.hlf-peer-org.svc.cluster.local
+    Port: 7051
+- Name: OrdererOrg
+  ID: OrdererMSP
+  MSPDir: msp/orderer
+  Policies:
+    Readers:
+      Type: Signature
+      Rule: OR('OrdererMSP.member')
+    Writers:
+      Type: Signature
+      Rule: OR('OrdererMSP.member')
+    Admins:
+      Type: Signature
+      Rule: OR('OrdererMSP.admin')
+  OrdererEndpoints:
+  - v2-orderer0.hlf-orderer.svc.cluster.local:7050
+  - v2-orderer1.hlf-orderer.svc.cluster.local:7050
+  - v2-orderer2.hlf-orderer.svc.cluster.local:7050
+  - v2-orderer3.hlf-orderer.svc.cluster.local:7050
+  - v2-orderer4.hlf-orderer.svc.cluster.local:7050
+- Name: InvestorMSP
+  ID: InvestorMSP
+  MSPDir: msp/investor
+  Policies:
+    Readers:
+      Type: Signature
+      Rule: OR('InvestorMSP.admin', 'InvestorMSP.peer', 'InvestorMSP.client')
+    Writers:
+      Type: Signature
+      Rule: OR('InvestorMSP.admin', 'InvestorMSP.client')
+    Admins:
+      Type: Signature
+      Rule: OR('InvestorMSP.admin')
+    Endorsement:
+      Type: Signature
+      Rule: OR('InvestorMSP.peer')
+  AnchorPeers:
+  - Host: peer0-investor.hlf-peer-org.svc.cluster.local
+    Port: 7051
+- Name: VerifierMSP
+  ID: VerifierMSP
+  MSPDir: msp/verifier
+  Policies:
+    Readers:
+      Type: Signature
+      Rule: OR('VerifierMSP.admin', 'VerifierMSP.peer', 'VerifierMSP.client')
+    Writers:
+      Type: Signature
+      Rule: OR('VerifierMSP.admin', 'VerifierMSP.client')
+    Admins:
+      Type: Signature
+      Rule: OR('VerifierMSP.admin')
+    Endorsement:
+      Type: Signature
+      Rule: OR('VerifierMSP.peer')
+  AnchorPeers:
+  - Host: peer0-verifier.hlf-peer-org.svc.cluster.local
+    Port: 7051
+Capabilities:
+  Channel:
+    V2_0: true
+  Orderer:
+    V2_0: true
+  Application:
+    V2_5: true
+Profiles:
+  TreetrackerChannel:
+    Policies:
+      Readers:
+        Type: ImplicitMeta
+        Rule: ANY Readers
+      Writers:
+        Type: ImplicitMeta
+        Rule: ANY Writers
+      Admins:
+        Type: ImplicitMeta
+        Rule: MAJORITY Admins
+    Capabilities:
+      V2_0: true
+    Orderer:
+      OrdererType: etcdraft
+      Addresses:
+      - orderer0.hlf-orderer.svc.cluster.local:7050
+      - orderer1.hlf-orderer.svc.cluster.local:7050
+      - orderer2.hlf-orderer.svc.cluster.local:7050
+      - orderer3.hlf-orderer.svc.cluster.local:7050
+      - orderer4.hlf-orderer.svc.cluster.local:7050
+      BatchTimeout: 2s
+      BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+      EtcdRaft:
+        Consenters:
+        - Host: orderer0.hlf-orderer.svc.cluster.local
+          Port: 7050
+          ClientTLSCert: consenters/orderer0-tls.pem
+          ServerTLSCert: consenters/orderer0-tls.pem
+        - Host: orderer1.hlf-orderer.svc.cluster.local
+          Port: 7050
+          ClientTLSCert: consenters/orderer1-tls.pem
+          ServerTLSCert: consenters/orderer1-tls.pem
+        - Host: orderer2.hlf-orderer.svc.cluster.local
+          Port: 7050
+          ClientTLSCert: consenters/orderer2-tls.pem
+          ServerTLSCert: consenters/orderer2-tls.pem
+        - Host: orderer3.hlf-orderer.svc.cluster.local
+          Port: 7050
+          ClientTLSCert: consenters/orderer3-tls.pem
+          ServerTLSCert: consenters/orderer3-tls.pem
+        - Host: orderer4.hlf-orderer.svc.cluster.local
+          Port: 7050
+          ClientTLSCert: consenters/orderer4-tls.pem
+          ServerTLSCert: consenters/orderer4-tls.pem
+        Options:
+          TickInterval: 500ms
+          ElectionTick: 10
+          HeartbeatTick: 1
+          MaxInflightBlocks: 5
+          SnapshotIntervalSize: 16 MB
+      Organizations:
+      - Name: OrdererOrg
+        ID: OrdererMSP
+        MSPDir: msp/orderer
+        Policies:
+          Readers:
+            Type: Signature
+            Rule: OR('OrdererMSP.member')
+          Writers:
+            Type: Signature
+            Rule: OR('OrdererMSP.member')
+          Admins:
+            Type: Signature
+            Rule: OR('OrdererMSP.admin')
+        OrdererEndpoints:
+        - orderer0.hlf-orderer.svc.cluster.local:7050
+        - orderer1.hlf-orderer.svc.cluster.local:7050
+        - orderer2.hlf-orderer.svc.cluster.local:7050
+        - orderer3.hlf-orderer.svc.cluster.local:7050
+        - orderer4.hlf-orderer.svc.cluster.local:7050
+      Policies:
+        Readers:
+          Type: ImplicitMeta
+          Rule: ANY Readers
+        Writers:
+          Type: ImplicitMeta
+          Rule: ANY Writers
+        Admins:
+          Type: ImplicitMeta
+          Rule: MAJORITY Admins
+        BlockValidation:
+          Type: ImplicitMeta
+          Rule: ANY Writers
+      Capabilities:
+        V2_0: true
+    Application:
+      Organizations:
+      - Name: CboMSP
+        ID: CboMSP
+        MSPDir: msp/cbo
+        Policies:
+          Readers:
+            Type: Signature
+            Rule: OR('CboMSP.admin', 'CboMSP.peer', 'CboMSP.client')
+          Writers:
+            Type: Signature
+            Rule: OR('CboMSP.admin', 'CboMSP.client')
+          Admins:
+            Type: Signature
+            Rule: OR('CboMSP.admin')
+          Endorsement:
+            Type: Signature
+            Rule: OR('CboMSP.peer')
+        AnchorPeers:
+        - Host: peer0-cbo.hlf-peer-org.svc.cluster.local
+          Port: 7051
+      - Name: GreenstandMSP
+        ID: GreenstandMSP
+        MSPDir: msp/greenstand
+        Policies:
+          Readers:
+            Type: Signature
+            Rule: OR('GreenstandMSP.admin', 'GreenstandMSP.peer', 'GreenstandMSP.client')
+          Writers:
+            Type: Signature
+            Rule: OR('GreenstandMSP.admin', 'GreenstandMSP.client')
+          Admins:
+            Type: Signature
+            Rule: OR('GreenstandMSP.admin')
+          Endorsement:
+            Type: Signature
+            Rule: OR('GreenstandMSP.peer')
+        AnchorPeers:
+        - Host: peer0-greenstand.hlf-peer-org.svc.cluster.local
+          Port: 7051
+      Policies:
+        LifecycleEndorsement:
+          Type: ImplicitMeta
+          Rule: MAJORITY Endorsement
+        Endorsement:
+          Type: ImplicitMeta
+          Rule: MAJORITY Endorsement
+        Readers:
+          Type: ImplicitMeta
+          Rule: ANY Readers
+        Writers:
+          Type: ImplicitMeta
+          Rule: ANY Writers
+        Admins:
+          Type: ImplicitMeta
+          Rule: MAJORITY Admins
+      Capabilities:
+        V2_5: true
+  TreetrackerV2Channel:
+    Policies:
+      Readers:
+        Type: ImplicitMeta
+        Rule: ANY Readers
+      Writers:
+        Type: ImplicitMeta
+        Rule: ANY Writers
+      Admins:
+        Type: ImplicitMeta
+        Rule: MAJORITY Admins
+    Capabilities:
+      V2_0: true
+    Orderer:
+      OrdererType: etcdraft
+      Addresses:
+      - v2-orderer0.hlf-orderer.svc.cluster.local:7050
+      - v2-orderer1.hlf-orderer.svc.cluster.local:7050
+      - v2-orderer2.hlf-orderer.svc.cluster.local:7050
+      - v2-orderer3.hlf-orderer.svc.cluster.local:7050
+      - v2-orderer4.hlf-orderer.svc.cluster.local:7050
+      BatchTimeout: 2s
+      BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+      EtcdRaft:
+        Consenters:
+        - Host: v2-orderer0.hlf-orderer.svc.cluster.local
+          Port: 7050
+          ClientTLSCert: consenters/v2-orderer0-tls.pem
+          ServerTLSCert: consenters/v2-orderer0-tls.pem
+        - Host: v2-orderer1.hlf-orderer.svc.cluster.local
+          Port: 7050
+          ClientTLSCert: consenters/v2-orderer1-tls.pem
+          ServerTLSCert: consenters/v2-orderer1-tls.pem
+        - Host: v2-orderer2.hlf-orderer.svc.cluster.local
+          Port: 7050
+          ClientTLSCert: consenters/v2-orderer2-tls.pem
+          ServerTLSCert: consenters/v2-orderer2-tls.pem
+        - Host: v2-orderer3.hlf-orderer.svc.cluster.local
+          Port: 7050
+          ClientTLSCert: consenters/v2-orderer3-tls.pem
+          ServerTLSCert: consenters/v2-orderer3-tls.pem
+        - Host: v2-orderer4.hlf-orderer.svc.cluster.local
+          Port: 7050
+          ClientTLSCert: consenters/v2-orderer4-tls.pem
+          ServerTLSCert: consenters/v2-orderer4-tls.pem
+        Options:
+          TickInterval: 500ms
+          ElectionTick: 10
+          HeartbeatTick: 1
+          MaxInflightBlocks: 5
+          SnapshotIntervalSize: 16 MB
+      Organizations:
+      - Name: OrdererOrg
+        ID: OrdererMSP
+        MSPDir: msp/orderer
+        Policies:
+          Readers:
+            Type: Signature
+            Rule: OR('OrdererMSP.member')
+          Writers:
+            Type: Signature
+            Rule: OR('OrdererMSP.member')
+          Admins:
+            Type: Signature
+            Rule: OR('OrdererMSP.admin')
+        OrdererEndpoints:
+        - v2-orderer0.hlf-orderer.svc.cluster.local:7050
+        - v2-orderer1.hlf-orderer.svc.cluster.local:7050
+        - v2-orderer2.hlf-orderer.svc.cluster.local:7050
+        - v2-orderer3.hlf-orderer.svc.cluster.local:7050
+        - v2-orderer4.hlf-orderer.svc.cluster.local:7050
+      Policies:
+        Readers:
+          Type: ImplicitMeta
+          Rule: ANY Readers
+        Writers:
+          Type: ImplicitMeta
+          Rule: ANY Writers
+        Admins:
+          Type: ImplicitMeta
+          Rule: MAJORITY Admins
+        BlockValidation:
+          Type: ImplicitMeta
+          Rule: ANY Writers
+      Capabilities:
+        V2_0: true
+    Application:
+      Organizations:
+      - Name: CboMSP
+        ID: CboMSP
+        MSPDir: msp/cbo
+        Policies:
+          Readers:
+            Type: Signature
+            Rule: OR('CboMSP.admin', 'CboMSP.peer', 'CboMSP.client')
+          Writers:
+            Type: Signature
+            Rule: OR('CboMSP.admin', 'CboMSP.client')
+          Admins:
+            Type: Signature
+            Rule: OR('CboMSP.admin')
+          Endorsement:
+            Type: Signature
+            Rule: OR('CboMSP.peer')
+        AnchorPeers:
+        - Host: peer0-cbo.hlf-peer-org.svc.cluster.local
+          Port: 7051
+      - Name: GreenstandMSP
+        ID: GreenstandMSP
+        MSPDir: msp/greenstand
+        Policies:
+          Readers:
+            Type: Signature
+            Rule: OR('GreenstandMSP.admin', 'GreenstandMSP.peer', 'GreenstandMSP.client')
+          Writers:
+            Type: Signature
+            Rule: OR('GreenstandMSP.admin', 'GreenstandMSP.client')
+          Admins:
+            Type: Signature
+            Rule: OR('GreenstandMSP.admin')
+          Endorsement:
+            Type: Signature
+            Rule: OR('GreenstandMSP.peer')
+        AnchorPeers:
+        - Host: peer0-greenstand.hlf-peer-org.svc.cluster.local
+          Port: 7051
+      Policies:
+        LifecycleEndorsement:
+          Type: ImplicitMeta
+          Rule: MAJORITY Endorsement
+        Endorsement:
+          Type: ImplicitMeta
+          Rule: MAJORITY Endorsement
+        Readers:
+          Type: ImplicitMeta
+          Rule: ANY Readers
+        Writers:
+          Type: ImplicitMeta
+          Rule: ANY Writers
+        Admins:
+          Type: ImplicitMeta
+          Rule: MAJORITY Admins
+      Capabilities:
+        V2_5: true

@@ -1,0 +1,34 @@
+name: "cdn-tiles"
+
+on:
+  pull_request:
+    paths:
+      - "cdn-tiles/**"
+      - ".github/workflows/cdn-tiles.yaml"
+  push:
+    branches:
+      - master
+    paths:
+      - "cdn-tiles/**"
+      - ".github/workflows/cdn-tiles.yaml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: cdn-tiles
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+    - name: robots-function.js is current
+      run: python3 build.py --check
+    - name: Tests
+      run: |
+        python3 -m venv /tmp/venv
+        /tmp/venv/bin/pip install protego==0.7.0
+        /tmp/venv/bin/python -m unittest -v

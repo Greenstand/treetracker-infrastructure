@@ -1,0 +1,19 @@
+# robots.txt for tiles.treetracker.org and tiles1-4.treetracker.org (map tiles)
+# Search engines can load the unfiltered map images that map.treetracker.org pages show.
+# No crawler may load filtered tiles or .grid.json files.
+# A crawler that does not support "*" matches only "Disallow: /".
+# The Disallow line comes before the Allow line for crawlers that use the first matching rule.
+# All other crawlers must not load tiles.
+
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: Baiduspider
+User-agent: YandexBot
+User-agent: Applebot
+User-agent: DuckDuckBot
+Disallow: /*.png?icon=*&
+Allow: /*.png?icon=
+Disallow: /
+
+User-agent: *
+Disallow: /

@@ -1,0 +1,19 @@
+{
+    "version": "1.0",
+    "context": {
+        "eventType": "viewer-request"
+    },
+    "viewer": {
+        "ip": "192.0.2.1"
+    },
+    "request": {
+        "method": "GET",
+        "uri": "/robots.txt",
+        "querystring": {},
+        "headers": {
+            "host": { "value": "tiles.treetracker.org" },
+            "user-agent": { "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15 (Applebot/0.1)" }
+        },
+        "cookies": {}
+    }
+}

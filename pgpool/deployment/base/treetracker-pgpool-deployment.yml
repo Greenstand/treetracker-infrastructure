@@ -18,6 +18,13 @@ spec:
       containers:
       - name: "treetracker-pgpool"
         image: pgpool/pgpool:4.2.2
+        # Startup only: the pod gets traffic once pgpool listens. No readiness probe,
+        # so a busy pgpool is not taken out of the Service.
+        startupProbe:
+          tcpSocket:
+            port: 9999
+          periodSeconds: 2
+          failureThreshold: 30
         env:
         volumeMounts:
         - name: pgpool-config

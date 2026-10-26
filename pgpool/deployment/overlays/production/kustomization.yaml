@@ -1,4 +1,6 @@
-bases:
+resources:
   - ../../base
-patchesStrategicMerge:
-  - pgpool_configmap.yaml
+patches:
+  - path: pgpool_configmap.yaml
+  - path: pgpool_resources.yaml
+  - path: pgpool_affinity.yaml

@@ -1,0 +1,17 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "treetracker-pgpool"
+  namespace: "pgpool"
+spec:
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: "doks.digitalocean.com/node-pool"
+                operator: "In"
+                values:
+                - "microservices-node-pool"

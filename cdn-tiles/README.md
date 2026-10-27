@@ -42,8 +42,17 @@ The tests also need `node`. The workflow `.github/workflows/cdn-tiles.yaml` runs
 - The tiles distribution has a cache behavior `/robots.txt` with the cache policy `Managed-CachingDisabled` and this function as the viewer request function. The default behavior does not change.
 - Rollback: remove the cache behavior `/robots.txt`. Then `/robots.txt` goes to the tile server again.
 
+## Origin Shield
+
+- The tiles origin has Origin Shield on, in the Region `us-east-2` (since 2026-10-26). Each regional edge cache sends its cache misses to the Origin Shield cache, not to the tile server. A tile in the Origin Shield cache does not go to the tile server again when another regional edge cache asks for it.
+- Region: AWS recommends the Region with the lowest latency to the origin. The closest Region to the tile server is `us-east-1`. `us-east-2` is the next closest and keeps the shield out of `us-east-1`. It adds a little latency to each Origin Shield miss (not measured).
+- If the Origin Shield Region is not available, CloudFront sends the requests to a secondary Origin Shield location.
+- AWS charges each request that goes to Origin Shield.
+- Change: edit the origin of the tiles distribution and set Origin Shield and its Region. With the AWS CLI: `get-distribution-config`, change `OriginShield` of the origin, then `update-distribution --if-match <ETag>`.
+- Rollback: set `OriginShield` to `{"Enabled": false}`. Then the regional edge caches send their misses to the tile server again.
+
 ## Notes
 
 - AWS WAF checks a request before the function runs. A crawler that the web ACL blocks also gets 403 for robots.txt.
 - Crawlers keep a copy of robots.txt for up to 24 hours (RFC 9309). A change takes effect after their next fetch.
-- The distribution itself is not in code yet.
+- The distribution itself is not in code yet. "Deployment" and "Origin Shield" record the settings that were made by hand.

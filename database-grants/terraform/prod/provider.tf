@@ -11,6 +11,8 @@ variable "password" {
 }
 
 terraform {
+  required_version = "~> 1.4.6"
+
   required_providers {
     postgresql = {
       source  = "cyrilgdn/postgresql"
@@ -44,4 +46,3 @@ provider "postgresql" {
   connect_timeout = 15
   superuser       = false
 }
-

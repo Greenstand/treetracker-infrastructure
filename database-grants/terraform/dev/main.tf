@@ -103,3 +103,10 @@ module "queue_schema" {
     postgresql = postgresql.treetracker
   }
 }
+
+module "like_schema" {
+  source = "./schemas/like"
+  providers = {
+    postgresql = postgresql.treetracker
+  }
+}

@@ -39,6 +39,65 @@ Once you have the playbook run in the cluster, you can run `edgectl install` and
     1. click through
     1. add the host you configured in the last step and get an ssl certificate
 
+### Ambassador health checks
+
+Ambassador can take more than one second to answer health checks while reloading
+configuration. With the chart defaults (a one-second timeout and three-second
+period), these delays can trigger unnecessary restarts and drop requests in
+flight. See [issue #343](https://github.com/Greenstand/treetracker-infrastructure/issues/343).
+
+The Ambassador role sets both probes to a five-second timeout and ten-second
+period, with three consecutive failures required. The chart's health endpoints
+and initial delays are preserved. This also makes readiness detection less
+frequent, so validate the change in development before production.
+
+The issue reports chart version 6.5.9 in production. That chart's templates do not
+render `timeoutSeconds`, so setting it in Helm values alone has no effect. The
+6.7.8 version pinned in this repository supports the role's probe values.
+
+For an existing release, apply the following patch from a Bash shell. It changes
+only the two probes and avoids upgrading the installed chart. Confirm the
+deployment and container are both named `ambassador`, and record their current
+probe settings before applying it.
+
+```sh
+CONTEXT="your-development-context"
+kubectl --context "$CONTEXT" -n ambassador get deployment ambassador -o yaml
+kubectl --context "$CONTEXT" -n ambassador patch deployment ambassador \
+  --type=strategic --patch-file=/dev/stdin <<'YAML'
+spec:
+  template:
+    spec:
+      containers:
+        - name: ambassador
+          livenessProbe:
+            timeoutSeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            timeoutSeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+YAML
+kubectl --context "$CONTEXT" -n ambassador rollout status deployment/ambassador
+```
+
+Watch pod restart counts and new probe failures for at least 24 hours in
+development before repeating the procedure with the production context:
+
+```sh
+kubectl --context "$CONTEXT" -n ambassador get pods \
+  -l app.kubernetes.io/name=ambassador -o wide
+kubectl --context "$CONTEXT" -n ambassador get events \
+  --field-selector type=Warning --sort-by=.lastTimestamp
+```
+
+For rollback, repeat the patch with the recorded original probe settings. The
+settings reported in #343 are `timeoutSeconds: 1`, `periodSeconds: 3`, and
+`failureThreshold: 3` for both probes. The patch triggers another rollout.
+If the release still uses chart 6.5.9, recheck the probes after future Helm
+upgrades because the chart cannot preserve the timeout through its values.
+
 ### Adding authentication using basic auth
 
 * There is a file to produce the required yaml, `produce_yaml_from_pw.py` that will give you a base64-ed value which is an admin username and requires a supplied password

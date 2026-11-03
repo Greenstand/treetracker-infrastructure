@@ -15,6 +15,15 @@
     release_namespace: ambassador
     create_namespace: true
     release_values:
+      # Give health endpoints time to respond during configuration reloads (#343).
+      livenessProbe:
+        timeoutSeconds: 5
+        periodSeconds: 10
+        failureThreshold: 3
+      readinessProbe:
+        timeoutSeconds: 5
+        periodSeconds: 10
+        failureThreshold: 3
       resources:
         requests:
           memory: "200Mi"

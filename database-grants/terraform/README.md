@@ -45,8 +45,16 @@ terraform version # check if the version matches with the required_version in pr
 Init:
 
 ```bash
-terraform init -backend-config=backend-config.tfvars
+terraform init
 ```
+
+Each environment's `backend.tf` specifies its existing Spaces bucket and state
+key. Run initialization from the intended environment directory (`dev`, `test`,
+or `prod`). A separate backend configuration file is no longer needed.
+
+If an existing checkout reports a backend configuration change after updating,
+run `terraform init -reconfigure` to reload those settings. The bucket names and
+state keys are unchanged, so no state migration is required.
 
 Plan, in the prompt input the database password:
 

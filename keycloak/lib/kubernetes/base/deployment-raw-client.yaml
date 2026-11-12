@@ -59,11 +59,17 @@ spec:
                                 const decoded = jwt_decode(keycloak.token);
                                 console.warn("decoded:", decoded);
                                 if(decoded && decoded.preferred_username){
+                                  const timestamp = Number(decoded.createdTimestamp);
+                                  const createdAt = decoded.createdTimestamp != null &&
+                                    Number.isFinite(timestamp) && timestamp > 0
+                                    ? new Date(timestamp).toLocaleString()
+                                    : "Not available";
                                   jQuery("#user_info h2").html("Welcome: " + decoded.preferred_username);
                                   jQuery("#user_info table tr td:nth-child(2)").eq(0).html(decoded.preferred_username);
                                   jQuery("#user_info table tr td:nth-child(2)").eq(1).html(decoded.email);
                                   jQuery("#user_info table tr td:nth-child(2)").eq(2).html(decoded.realm_access.roles.join(","));
                                   jQuery("#user_info table tr td:nth-child(2)").eq(3).html(decoded.sub);
+                                  jQuery("#user_info table tr td:nth-child(2)").eq(4).text(createdAt);
                       jQuery("button[name='userprofile']").removeAttr("disabled");
                                 }
                               }
@@ -112,6 +118,10 @@ spec:
                             <td>user id:</td>
                             <td>
                             </td>
+                          </tr>
+                          <tr>
+                            <td>Account created:</td>
+                            <td></td>
                           </tr>
                         </table>
                       </div>

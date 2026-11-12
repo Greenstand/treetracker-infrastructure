@@ -30,6 +30,11 @@
             const decoded = jwt_decode(keycloak.token);
             console.warn("decoded:", decoded);
             if(decoded && decoded.preferred_username){
+              const timestamp = Number(decoded.createdTimestamp);
+              const createdAt = decoded.createdTimestamp != null &&
+                Number.isFinite(timestamp) && timestamp > 0
+                ? new Date(timestamp).toLocaleString()
+                : "Not available";
               document.getElementById('user_info').innerHTML = `
                 <h2>Welcome: ${decoded.preferred_username}</h2>
                 <h3>User Info</h3>
@@ -53,6 +58,10 @@
                   <tr>
                     <td>user id:</td>
                     <td>${decoded.sub}</td>
+                  </tr>
+                  <tr>
+                    <td>Account created:</td>
+                    <td>${createdAt}</td>
                   </tr>
                 </table>
               `;

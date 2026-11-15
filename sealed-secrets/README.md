@@ -18,33 +18,53 @@ The above command prompts for API token, the one you got from Greenstand Infrast
 
 ## Set up kubectl to connect to k8 clusters.
 
-Install kubectl on your machine if you don't have done already. Here version 1.18.8 is used, the version should be within one minor version difference of
-the k8 cluster. For e.g. 1.18 will work with 1.19 or 1.17 k8 master cluster.
+Install kubectl on your machine if you don't have done already. Install a kubectl version compatible with your Kubernetes cluster. The kubectl client should be within one minor version of the Kubernetes control plane.
 
-curl -LO https://dl.k8s.io/release/v1.18.8/bin/linux/amd64/kubectl
+Follow the official installation instructions:
+https://kubernetes.io/docs/tasks/tools/
 
 Execute the following to save the kubeconfig relevant to the cluster so that kubectl is able to connect, for e.g. for dev cluster
 
 `doctl kubernetes cluster kubeconfig save dev-k8s-treetracker`
-   df
+
 `kubectl config set-context do-sfo2-dev-k8s-treetracker`
 
-
 ## Sealed Secret CRD & Controller
-`kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.13.1/controller.yaml`
+
+The Sealed Secrets CRD and controller must already be installed in the Kubernetes cluster.
+
+**Important:** The previous v0.13.1 controller installation manifest is obsolete and must not be applied to the production cluster. Refer to the official release documentation for supported installation and upgrade instructions.
 
 ## Kubeseal
-### Mac
-`brew install kubeseal`
-### Linux
-`wget https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.13.1/kubeseal-linux-amd64 -O kubeseal`
 
-`sudo install -m 755 kubeseal /usr/local/bin/kubeseal`
+The Kubeseal client version should match the Sealed Secrets controller version.
+
+### Mac
+
+Install Kubeseal using Homebrew:
+
+```bash
+brew install kubeseal
+kubeseal --version
+```
+### Linux
+
+Install Kubeseal v0.41.2:
+
+```bash
+curl -OL "https://github.com/bitnami/sealed-secrets/releases/download/v0.41.2/kubeseal-0.41.2-linux-amd64.tar.gz"
+
+tar -xvzf kubeseal-0.41.2-linux-amd64.tar.gz kubeseal
+
+sudo install -m 755 kubeseal /usr/local/bin/kubeseal
+
+kubeseal --version
+```
 
 ## Official Documentation
-https://github.com/bitnami-labs/sealed-secrets#installation
-https://github.com/bitnami-labs/sealed-secrets/releases
 
+https://github.com/bitnami/sealed-secrets
+https://github.com/bitnami/sealed-secrets/releases
 
 # Usage: Creating Sealed Secrets With Kubeseal
 
@@ -53,27 +73,30 @@ https://github.com/bitnami-labs/sealed-secrets/releases
 Run scripts/create-secret.sh to perform an interactive, automated sealed secret creation routine.  You will need kubectl access to the k8s cluster to successfully run this script.
 
 ## Manually:
-
+export NAMESPACE="development"
+export RESOURCE_NAME="treetracker-example-secret"
+export KEY_NAME="example-key"
+export SECRET="replace-with-your-secret-value"
 ### 1. Creating a temporary k8s secret to be encrypted
 `echo -n $SECRET | kubectl -n $NAMESPACE create secret generic $RESOURCE_NAME --dry-run=client --from-file=$KEY_NAME=/dev/stdin -o yaml >treetracker-new-secret.yaml`
 
-This will create a new file called **treetracker-test-secret.yaml** that will be used as input to Kubeseal.
+This will create a new file called **treetracker-new-secret.yaml** that will be used as input to Kubeseal.
 
 Remove any unnecessary metadata such as **creation timestamp, namespace**.
 ### 2. Using Kubeseal to create a SealedSecret resource
-`kubeseal -n development -o yaml <treetracker-test-secret.yaml >treetracker-sealed-secret.yaml`
+`kubeseal -n $NAMESPACE -o yaml <treetracker-new-secret.yaml >treetracker-sealed-secret.yaml`
 
 This will create a new file called **treetracker-sealed-secret.yaml** that can be safely committed to source control.
 
 Remove any unnecessary metadata such as **creation timestamp, namespace**.
 
 ### 3. Deploy newly created SealedSecret
-`kubectl -n development create -f treetracker-sealed-secret.yaml`
+`kubectl -n $NAMESPACE create -f treetracker-sealed-secret.yaml`
 
 You will now see a SealedSecret resource along with a Secret resource created.
 You can verify the created resource by using the following command:
 
-`kubectl -n development get sealedsecrets`
+`kubectl -n $NAMESPACE get sealedsecrets`
 
 
 ## Official Documentation

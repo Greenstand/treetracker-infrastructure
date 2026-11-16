@@ -1,25 +1,32 @@
 ---
 - name: Add keitaro-charts repository
   tags: [ckan]
-  community.kubernetes.helm_repository:
+  kubernetes.core.helm_repository:
     name: keitaro-charts
     repo_url: https://keitaro-charts.storage.googleapis.com
 
+- name: Create ckan namespace
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: ckan
+    state: present
+
 - name: Create headless service to connect to ckan database
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     namespace: ckan
     src: "{{ role_path }}/files/ckan-database-service.yaml" 
 
 - name: Create endpoint to external ckan database
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     namespace: ckan
     src: "{{ role_path }}/files/ckan-database-endpoint.yaml" 
 
 - name: Install ckan
   tags: [ckan]
-  community.kubernetes.helm:
+  kubernetes.core.helm:
     name: ckan
     chart_ref: keitaro-charts/ckan
     chart_version: 1.0.2

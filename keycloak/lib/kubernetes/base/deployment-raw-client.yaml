@@ -50,24 +50,51 @@ spec:
                               clientId: 'raw-client',
                             });
                             console.warn("keycloak:", keycloak);
-                            var initResult = keycloak.init({onLoad: 'login-required'});
-
-                            setTimeout(() => {
-                              if(keycloak.token){
-                                console.warn("token:", keycloak.token);
-                                // decode jwt token
+                            keycloak.init({onLoad: 'login-required'}).then((authenticated) => {
+                              if (authenticated && keycloak.token) {
                                 const decoded = jwt_decode(keycloak.token);
-                                console.warn("decoded:", decoded);
-                                if(decoded && decoded.preferred_username){
-                                  jQuery("#user_info h2").html("Welcome: " + decoded.preferred_username);
-                                  jQuery("#user_info table tr td:nth-child(2)").eq(0).html(decoded.preferred_username);
-                                  jQuery("#user_info table tr td:nth-child(2)").eq(1).html(decoded.email);
-                                  jQuery("#user_info table tr td:nth-child(2)").eq(2).html(decoded.realm_access.roles.join(","));
-                                  jQuery("#user_info table tr td:nth-child(2)").eq(3).html(decoded.sub);
-                      jQuery("button[name='userprofile']").removeAttr("disabled");
+
+                                if (decoded && decoded.preferred_username) {
+                                  jQuery("#user_info h2").text("Welcome: " + decoded.preferred_username);
+                                  jQuery("#user_info table tr td:nth-child(2)").eq(0).text(decoded.preferred_username);
+                                  jQuery("#user_info table tr td:nth-child(2)").eq(1).text(decoded.email || "");
+                                  jQuery("#user_info table tr td:nth-child(2)").eq(2).text((decoded.realm_access?.roles || []).join(","));
+                                  jQuery("#user_info table tr td:nth-child(2)").eq(3).text(decoded.sub || "");
+                                  jQuery("button[name='userprofile']").removeAttr("disabled");
+
+                                  if (typeof decoded.avatar_url === "string") {
+                                    try {
+                                      const avatarUrl = new URL(decoded.avatar_url);
+                                      const allowedAvatarHosts = [
+                                        "avatars.githubusercontent.com",
+                                        "lh3.googleusercontent.com"
+                                      ];
+
+                                      if (
+                                        avatarUrl.protocol === "https:" &&
+                                        allowedAvatarHosts.includes(avatarUrl.hostname)
+                                      ) {
+                                        const avatar = document.getElementById("user_avatar");
+                                        const avatarContainer = document.getElementById("avatar_container");
+
+                                        avatar.referrerPolicy = "no-referrer";
+                                        avatar.onerror = () => {
+                                          avatarContainer.hidden = true;
+                                        };
+                                        avatar.onload = () => {
+                                          avatarContainer.hidden = false;
+                                        };
+                                        avatar.src = avatarUrl.href;
+                                      }
+                                    } catch (error) {
+                                      console.warn("Invalid avatar URL");
+                                    }
+                                  }
                                 }
                               }
-                            }, 1000*2);
+                            }).catch((error) => {
+                              console.error("Keycloak initialization failed:", error);
+                            });
                           }
                           function handleLogin(){
                             window.location.href = keycloak.createLoginUrl();
@@ -91,6 +118,9 @@ spec:
                 <button disabled="true" onclick={javascript:handleUserProfile();} name="userprofile" >User Profile</button>
                       <div id="user_info" >
                         <h2>Welcome: </h2>
+                        <div id="avatar_container" hidden>
+                          <img id="user_avatar" alt="User avatar" width="96" height="96" style="border-radius: 50%; object-fit: cover;">
+                        </div>
                         <h3>User Info</h3>
                         <table>
                           <tr>
